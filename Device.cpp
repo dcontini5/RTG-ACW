@@ -192,6 +192,37 @@ HRESULT Device::InitDevice() {
 
 	_pImmediateContext->OMSetRenderTargets(1, &_pRenderTargetView, nullptr);
 
+	D3D11_TEXTURE2D_DESC descDepth;
+	ZeroMemory(&descDepth, sizeof(descDepth));
+	descDepth.Width = width;
+	descDepth.Height = height;
+	descDepth.MipLevels = 1;
+	descDepth.ArraySize = 1;
+	descDepth.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	descDepth.SampleDesc.Count = 1;
+	descDepth.SampleDesc.Quality = 0;
+	descDepth.Usage = D3D11_USAGE_DEFAULT;
+	descDepth.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+	descDepth.CPUAccessFlags = 0;
+	descDepth.MiscFlags = 0;
+	hr = _pd3dDevice->CreateTexture2D(&descDepth, nullptr, &_pDepthStencil);
+	if (FAILED(hr))
+		return hr;
+
+	// Create the depth stencil view
+	D3D11_DEPTH_STENCIL_VIEW_DESC descDSV;
+	ZeroMemory(&descDSV, sizeof(descDSV));
+	descDSV.Format = descDepth.Format;
+	descDSV.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+	descDSV.Texture2D.MipSlice = 0;
+	hr = _pd3dDevice->CreateDepthStencilView(_pDepthStencil, &descDSV, &_pDepthStencilView);
+	if (FAILED(hr))
+		return hr;
+
+	_pImmediateContext->OMSetRenderTargets(1, &_pRenderTargetView, _pDepthStencilView);
+
+
+	
 	// Setup the viewport
 	D3D11_VIEWPORT vp;
 	vp.Width = (FLOAT)width;
@@ -202,6 +233,26 @@ HRESULT Device::InitDevice() {
 	vp.TopLeftY = 0;
 	_pImmediateContext->RSSetViewports(1, &vp);
 
+
+	//Define the Rasterization State
+
+	ID3D11RasterizerState* m_rasterState = nullptr;
+
+	D3D11_RASTERIZER_DESC rasterDesc;
+
+	rasterDesc.CullMode = D3D11_CULL_FRONT;
+	rasterDesc.FillMode = D3D11_FILL_SOLID;
+	rasterDesc.ScissorEnable = false;
+	rasterDesc.DepthBias = 0;
+	rasterDesc.DepthBiasClamp = 0.0f;
+	rasterDesc.DepthClipEnable = true;
+	rasterDesc.MultisampleEnable = false;
+	rasterDesc.SlopeScaledDepthBias = 0.0f;
+
+	hr = _pd3dDevice->CreateRasterizerState(&rasterDesc, &m_rasterState);
+	_pImmediateContext->RSSetState(m_rasterState);
+	
+	
 	return S_OK;
 	
 }

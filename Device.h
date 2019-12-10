@@ -3,6 +3,7 @@
 #include <d3d11_1.h>
 #include <directxcolors.h>
 #include "resource.h"
+#include "SettingLoader.h"
 
 class Device
 {
@@ -28,6 +29,8 @@ private:
 	IDXGISwapChain*         _pSwapChain = nullptr;
 	IDXGISwapChain1*        _pSwapChain1 = nullptr;
 	ID3D11RenderTargetView* _pRenderTargetView = nullptr;
+	ID3D11Texture2D*		_pDepthStencil = nullptr;
+	ID3D11DepthStencilView*	_pDepthStencilView = nullptr;
 	
 };
 
