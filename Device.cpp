@@ -57,8 +57,8 @@ HRESULT Device::InitDevice() {
 
 	RECT rc;
 	GetClientRect(_hWnd, &rc);
-	UINT width = rc.right - rc.left;
-	UINT height = rc.bottom - rc.top;
+	const UINT width = rc.right - rc.left;
+	const UINT height = rc.bottom - rc.top;
 
 	UINT createDeviceFlags = 0;
 #ifdef _DEBUG
