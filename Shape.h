@@ -30,6 +30,9 @@ private:
 	UINT16 _noOfIndices;
 	ID3D11Buffer* _pVertexBuffer = nullptr;
 	ID3D11Buffer* _pIndexBuffer = nullptr;
+	ID3D11VertexShader* _vertexShader;
+	ID3D11PixelShader* _pixelShader;
+	DirectX::XMFLOAT3 _position;
+	DirectX::XMFLOAT3 _scale;
 	
-
 };

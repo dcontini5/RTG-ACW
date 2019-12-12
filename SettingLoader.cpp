@@ -14,7 +14,7 @@ SettingLoader::~SettingLoader()
 //
 //	ID3DBlob* pVSBlob = nullptr;
 //
-//	
+//
 //	hr = CompileShaderFromFile(L"VSTexture.hlsl", "VS", "vs_4_0", &pVSBlob);
 //	if (FAILED(hr))
 //	{
@@ -24,7 +24,7 @@ SettingLoader::~SettingLoader()
 //	}
 //
 //	ID3D11VertexShader* v = nullptr;
-//	
+//
 //	// Create the vertex shader
 //	hr = pd3dDevice->CreateVertexShader(pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize(), nullptr, &v);
 //	if (FAILED(hr))
@@ -54,12 +54,12 @@ SettingLoader::~SettingLoader()
 //	// Set the input layout
 //	pImmediateContext->IASetInputLayout(_pVertexLayout);
 //
-//	
+//
 //	return S_OK;
-//	
+//
 //}
-
-//HRESULT SettingLoader::CreatePixelShaders(HRESULT hr, ID3D11Device * pd3dDevice){
+//
+//HRESULT SettingLoader::CreatePixelShaders(HRESULT hr, ID3D11Device * pd3dDevice) {
 //
 //	ID3DBlob* pPSBlob = nullptr;
 //	hr = CompileShaderFromFile(L"PSTexture.hlsl", "PS", "ps_4_0", &pPSBlob);
@@ -71,7 +71,7 @@ SettingLoader::~SettingLoader()
 //	}
 //
 //	ID3D11PixelShader* p = nullptr;
-//	
+//
 //	// Create the pixel shader
 //	hr = pd3dDevice->CreatePixelShader(pPSBlob->GetBufferPointer(), pPSBlob->GetBufferSize(), nullptr, &p);
 //	pPSBlob->Release();
@@ -81,11 +81,11 @@ SettingLoader::~SettingLoader()
 //	_pixelShaderList.push_back(p);
 //
 //	return S_OK;
-//	
-//}
-
 //
-//HRESULT CompileShaderFromFile(WCHAR* szFileName, LPCSTR szEntryPoint, LPCSTR szShaderModel, ID3DBlob** ppBlobOut)
+//}
+//
+//
+//HRESULT SettingLoader::CompileShaderFromFile(WCHAR* szFileName, LPCSTR szEntryPoint, LPCSTR szShaderModel, ID3DBlob** ppBlobOut)
 //{
 //	HRESULT hr = S_OK;
 //
