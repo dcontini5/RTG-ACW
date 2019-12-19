@@ -32,8 +32,8 @@ class SettingLoader
 public:
 	SettingLoader();
 	~SettingLoader();
-	HRESULT CreateVertexShaders(HRESULT hr, ID3D11Device* pd3dDevice, ID3D11DeviceContext* pImmediateContext);
-	HRESULT CreatePixelShaders(HRESULT hr, ID3D11Device* pd3dDevice);
+	HRESULT CreateVertexShaders(HRESULT hr, ID3D11Device* pd3dDevice, ID3D11DeviceContext* pImmediateContext, std::vector<std::string> fileName);
+	HRESULT CreatePixelShaders(HRESULT hr, ID3D11Device* pd3dDevice, std::string fileName);
 	ID3D11PixelShader* GetPs() const { return _pixelShaderList[0]; };
 	ID3D11VertexShader* GetVs() const { return _vertexShaderList[0]; };
 	ID3D11InputLayout* GetvertexLayout() const { return _pVertexLayout; };
@@ -49,7 +49,11 @@ private:
 	std::vector<ShapeCoordinates> _objectCoordinates;
 	std::vector<CameraCoordinates> _cameraCoordinates;
 
-	static HRESULT CompileShaderFromFile(WCHAR* szFileName, LPCSTR szEntryPoint, LPCSTR szShaderModel, ID3DBlob** ppBlobOut);
+	static HRESULT CompileShaderFromFile(const WCHAR* szFileName, LPCSTR szEntryPoint, LPCSTR szShaderModel, ID3DBlob** ppBlobOut);
+
+
+	//std::vector<WCHAR*> _vertexShaderFileList = { L"vertex_shader.hlsl" };
+	//std::vector<WCHAR*> _pixelShaderFileList = {  L"pixel_shader.hlsl" };
 
 };
 

@@ -1,5 +1,4 @@
 #include "SettingLoader.h"
-#include <string>
 
 
 SettingLoader::SettingLoader()
@@ -10,40 +9,40 @@ SettingLoader::SettingLoader()
 SettingLoader::~SettingLoader()
 = default;
 
-HRESULT SettingLoader::CreateVertexShaders(HRESULT hr, ID3D11Device* pd3dDevice, ID3D11DeviceContext* pImmediateContext ) {
+HRESULT SettingLoader::CreateVertexShaders(HRESULT hr, ID3D11Device* pd3dDevice, ID3D11DeviceContext* pImmediateContext, std::vector<std::string> fileName ) {
 
+
+
+	
 	ID3DBlob* pVSBlob = nullptr;
 
+	for (auto s : fileName) {
 
-	std::string s = "snlkhjl";
+		hr = CompileShaderFromFile(std::wstring(s.begin(), s.end()).c_str(), "VS", "vs_4_0", &pVSBlob);
+		
+		if (FAILED(hr))
+		{
+			MessageBox(nullptr,
+				L"The FX file cannot be compiled.  Please run this executable from the directory that contains the FX file.", L"Error", MB_OK);
+			return hr;
+		}
+		
+		ID3D11VertexShader* v = nullptr;
+		
+		// Create the vertex shader
+		hr = pd3dDevice->CreateVertexShader(pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize(), nullptr, &v);
+		if (FAILED(hr))
+		{
+			pVSBlob->Release();
+			return hr;
+		}
+		
+		_vertexShaderList.push_back(v);
 
-	auto c = s.c_str();
-
-	WCHAR* w = static_cast<WCHAR*> (c);
-	
-	
-
-	
-	hr = CompileShaderFromFile(L"VS_Name", "VS", "vs_4_0", &pVSBlob);
-	if (FAILED(hr))
-	{
-		MessageBox(nullptr,
-			L"The FX file cannot be compiled.  Please run this executable from the directory that contains the FX file.", L"Error", MB_OK);
-		return hr;
+		
 	}
-
-	ID3D11VertexShader* v = nullptr;
-
-	// Create the vertex shader
-	hr = pd3dDevice->CreateVertexShader(pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize(), nullptr, &v);
-	if (FAILED(hr))
-	{
-		pVSBlob->Release();
-		return hr;
-	}
-
-	_vertexShaderList.push_back(v);
-
+	    	
+	
 	D3D11_INPUT_ELEMENT_DESC layout[] =
 	{
 		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
@@ -68,10 +67,11 @@ HRESULT SettingLoader::CreateVertexShaders(HRESULT hr, ID3D11Device* pd3dDevice,
 
 }
 
-HRESULT SettingLoader::CreatePixelShaders(HRESULT hr, ID3D11Device * pd3dDevice) {
+HRESULT SettingLoader::CreatePixelShaders(HRESULT hr, ID3D11Device * pd3dDevice, std::string fileName) {
 
 	ID3DBlob* pPSBlob = nullptr;
-	hr = CompileShaderFromFile(L"PSTexture.hlsl", "PS", "ps_4_0", &pPSBlob);
+	
+	hr = CompileShaderFromFile(std::wstring(fileName.begin(), fileName.end()).c_str(), "PS", "ps_4_0", &pPSBlob);
 	if (FAILED(hr))
 	{
 		MessageBox(nullptr,
@@ -250,7 +250,7 @@ void SettingLoader::FileLoader() {
 void SettingLoader::ObjLoader(std::string filename) {
 }
 
-HRESULT SettingLoader::CompileShaderFromFile(WCHAR* szFileName, const LPCSTR szEntryPoint, const LPCSTR szShaderModel, ID3DBlob** ppBlobOut)
+HRESULT SettingLoader::CompileShaderFromFile(const WCHAR* szFileName, const LPCSTR szEntryPoint, const LPCSTR szShaderModel, ID3DBlob** ppBlobOut)
 {
 	HRESULT hr = S_OK;
 
