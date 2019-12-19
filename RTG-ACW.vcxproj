@@ -348,12 +348,14 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Device.cpp" />
     <ClCompile Include="RTG-ACW.cpp" />
     <ClCompile Include="SettingLoader.cpp" />
     <ClCompile Include="Shape.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Camera.h" />
     <ClInclude Include="Device.h" />
     <CLInclude Include="resource.h" />
     <ClInclude Include="SettingLoader.h" />

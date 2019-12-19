@@ -3,26 +3,53 @@
 #include <d3d11.h>
 #include <windows.h>
 #include <d3dcompiler.h>
+#include <iostream>
+#include <fstream>
+#include <strstream>
+#include <string>
+#include <DirectXMath.h>
+
+struct ShapeCoordinates {
+
+	DirectX::XMFLOAT3 Pos;
+	DirectX::XMFLOAT3 Rot;
+	DirectX::XMFLOAT3 Scal;
+	
+
+};
+
+struct CameraCoordinates {
+
+	DirectX::XMFLOAT3 Eye;
+	DirectX::XMFLOAT3 At;
+	DirectX::XMFLOAT3 Up;
+	
+};
+
 
 class SettingLoader
 {
 public:
 	SettingLoader();
 	~SettingLoader();
-	//HRESULT SettingLoader::CreateVertexShaders(HRESULT hr, ID3D11Device* pd3dDevice, ID3D11DeviceContext* pImmediateContext);
-	//HRESULT SettingLoader::CreatePixelShaders(HRESULT hr, ID3D11Device* pd3dDevice);
-	//ID3D11PixelShader* getPS() { return _pixelShaderList[0]; };
-	//ID3D11VertexShader* getVS() { return _vertexShaderList[0]; };
-	//ID3D11InputLayout* getvertexLayout() { return _pVertexLayout; };
+	HRESULT CreateVertexShaders(HRESULT hr, ID3D11Device* pd3dDevice, ID3D11DeviceContext* pImmediateContext);
+	HRESULT CreatePixelShaders(HRESULT hr, ID3D11Device* pd3dDevice);
+	ID3D11PixelShader* GetPs() const { return _pixelShaderList[0]; };
+	ID3D11VertexShader* GetVs() const { return _vertexShaderList[0]; };
+	ID3D11InputLayout* GetvertexLayout() const { return _pVertexLayout; };
+	void FileLoader();
+	void ObjLoader(std::string);
 
+	
 private:
 
 	std::vector<ID3D11VertexShader*> _vertexShaderList;
 	std::vector<ID3D11PixelShader*> _pixelShaderList;
 	ID3D11InputLayout* _pVertexLayout;
+	std::vector<ShapeCoordinates> _objectCoordinates;
+	std::vector<CameraCoordinates> _cameraCoordinates;
 
-
-	//HRESULT CompileShaderFromFile(WCHAR* szFileName, LPCSTR szEntryPoint, LPCSTR szShaderModel, ID3DBlob** ppBlobOut);
+	static HRESULT CompileShaderFromFile(WCHAR* szFileName, LPCSTR szEntryPoint, LPCSTR szShaderModel, ID3DBlob** ppBlobOut);
 
 };
 
