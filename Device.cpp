@@ -234,6 +234,9 @@ HRESULT Device::InitDevice() {
 	_pImmediateContext->RSSetViewports(1, &vp);
 
 
+
+
+	
 	//Define the Rasterization State
 
 	ID3D11RasterizerState* m_rasterState = nullptr;
@@ -252,6 +255,8 @@ HRESULT Device::InitDevice() {
 	hr = _pd3dDevice->CreateRasterizerState(&rasterDesc, &m_rasterState);
 	_pImmediateContext->RSSetState(m_rasterState);
 	
+	
+
 	
 	return S_OK;
 	
