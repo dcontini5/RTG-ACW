@@ -37,7 +37,7 @@ HRESULT Shape::CreateBuffers(HRESULT hr, ID3D11Device* pd3dDevice, ID3D11DeviceC
 	//pImmediateContext->IASetIndexBuffer(_pIndexBuffer, DXGI_FORMAT_R16_UINT, 0);
 
 
-
+	return S_OK;
 }
 
 //void Shape::Draw(ID3D11DeviceContext* pImmediateContext, ID3D11Buffer* pConstantBuffer) {
@@ -82,11 +82,11 @@ void Shape::Draw(ID3D11DeviceContext* pImmediateContext, ID3D11Buffer* pConstant
 
 
 	ConstantBuffer cb;
-	cb.mWorld = DirectX::XMMatrixTranspose(World);
-	cb.mView = DirectX::XMMatrixTranspose(View);
-	cb.mProjection = DirectX::XMMatrixTranspose(Projection);
-	cb.time = t;
-	cb.lightPos = DirectX::XMVectorSet(-2.0f, 2.0f, -2.0f, 0.0f);
+	cb.World = DirectX::XMMatrixTranspose(World);
+	cb.View = DirectX::XMMatrixTranspose(View);
+	cb.Projection = DirectX::XMMatrixTranspose(Projection);
+	cb.Time = t;
+	cb.LightPos = DirectX::XMVectorSet(-2.0f, 2.0f, -2.0f, 0.0f);
 	cb.Eye = DirectX::XMVectorSet(3.0f, 3.0f, 0.0f, 0.0f);
 	pImmediateContext->UpdateSubresource(pConstantBuffer, 0, nullptr, &cb, 0, 0);
 

@@ -9,59 +9,56 @@ SettingLoader::SettingLoader()
 SettingLoader::~SettingLoader()
 = default;
 
-HRESULT SettingLoader::CreateVertexShaders(HRESULT hr, ID3D11Device* pd3dDevice, ID3D11DeviceContext* pImmediateContext, std::vector<std::string> fileName ) {
+HRESULT SettingLoader::CreateVertexShaders(HRESULT hr, ID3D11Device* pd3dDevice, ID3D11DeviceContext* pImmediateContext, std::string fileName ) {
 
-
-
-	
+	static bool createLayout = true;
 	ID3DBlob* pVSBlob = nullptr;
 
-	for (auto s : fileName) {
 
-		hr = CompileShaderFromFile(std::wstring(s.begin(), s.end()).c_str(), "VS", "vs_4_0", &pVSBlob);
-		
-		if (FAILED(hr))
-		{
-			MessageBox(nullptr,
-				L"The FX file cannot be compiled.  Please run this executable from the directory that contains the FX file.", L"Error", MB_OK);
-			return hr;
-		}
-		
-		ID3D11VertexShader* v = nullptr;
-		
-		// Create the vertex shader
-		hr = pd3dDevice->CreateVertexShader(pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize(), nullptr, &v);
-		if (FAILED(hr))
-		{
-			pVSBlob->Release();
-			return hr;
-		}
-		
-		_vertexShaderList.push_back(v);
 
+	hr = CompileShaderFromFile(std::wstring(fileName.begin(), fileName.end()).c_str(), "VS", "vs_4_0", &pVSBlob);
+	
+	if (FAILED(hr))
+	{
+		MessageBox(nullptr,
+			L"The FX file cannot be compiled.  Please run this executable from the directory that contains the FX file.", L"Error", MB_OK);
+		return hr;
+	}
+	
+	ID3D11VertexShader* v = nullptr;
+	
+	// Create the vertex shader
+	hr = pd3dDevice->CreateVertexShader(pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize(), nullptr, &v);
+	if (FAILED(hr))
+	{
+		pVSBlob->Release();
+		return hr;
+	}
+	
+	_vertexShaderList.push_back(v);
+
+	if(createLayout) {
+
+		D3D11_INPUT_ELEMENT_DESC layout[] =
+		{
+			{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 28, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 40, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		};
+		UINT numElements = ARRAYSIZE(layout);
+
+		// Create the input layout
+		hr = pd3dDevice->CreateInputLayout(layout, numElements, pVSBlob->GetBufferPointer(),
+			pVSBlob->GetBufferSize(), &_pVertexLayout);
+		pVSBlob->Release();
+		if (FAILED(hr))
+			return hr;
+
+		// Set the input layout
+		pImmediateContext->IASetInputLayout(_pVertexLayout);
 		
 	}
-	    	
-	
-	D3D11_INPUT_ELEMENT_DESC layout[] =
-	{
-		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 28, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 40, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-	};
-	UINT numElements = ARRAYSIZE(layout);
-
-	// Create the input layout
-	hr = pd3dDevice->CreateInputLayout(layout, numElements, pVSBlob->GetBufferPointer(),
-		pVSBlob->GetBufferSize(), &_pVertexLayout);
-	pVSBlob->Release();
-	if (FAILED(hr))
-		return hr;
-
-	// Set the input layout
-	pImmediateContext->IASetInputLayout(_pVertexLayout);
-
 
 	return S_OK;
 
@@ -93,14 +90,13 @@ HRESULT SettingLoader::CreatePixelShaders(HRESULT hr, ID3D11Device * pd3dDevice,
 
 }
 
-void SettingLoader::FileLoader() {
+void SettingLoader::FileLoader(HRESULT hr, ID3D11Device* pd3Device, ID3D11DeviceContext* pImmediateContext) {
 
 	std::string variable;
 
 	std::ifstream fin("settings.ini");
 
 	std::string str;
-
 
 	getline(fin, str);
 
@@ -149,7 +145,7 @@ void SettingLoader::FileLoader() {
 			i = str.find(',', i);
 			object.Rot.z = stof(str.substr(i + 2, str.size() - i + 1));
 			getline(fin, str);
-
+			
 			i = str.find('=');
 
 			object.Scal.x = stof(str.substr(i + 2, str.find(',') - i));
@@ -235,7 +231,17 @@ void SettingLoader::FileLoader() {
 
 		if (field == "VertexShaders") {
 
-			
+			CreateVertexShaders(hr, pd3Device, pImmediateContext, str);
+			getline(fin, str);
+
+			continue;
+
+		}
+
+		if (field == "PixelShaders") {
+
+			CreatePixelShaders(hr, pd3Device, str);
+			getline(fin, str);
 
 			continue;
 
@@ -247,8 +253,6 @@ void SettingLoader::FileLoader() {
 	
 }
 
-void SettingLoader::ObjLoader(std::string filename) {
-}
 
 HRESULT SettingLoader::CompileShaderFromFile(const WCHAR* szFileName, const LPCSTR szEntryPoint, const LPCSTR szShaderModel, ID3DBlob** ppBlobOut)
 {
@@ -281,4 +285,32 @@ HRESULT SettingLoader::CompileShaderFromFile(const WCHAR* szFileName, const LPCS
 	if (pErrorBlob) pErrorBlob->Release();
 
 	return S_OK;
+}
+
+
+
+void SettingLoader::ObjLoader(std::string filename) {
+
+	Assimp::Importer importer;
+	const aiScene* scene = importer.ReadFile(filename, aiProcess_Triangulate);
+	const aiMesh* teapotMesh = scene->mMeshes[0];
+
+	std::vector<SimpleVertex> mesh_vertices;
+
+	for (auto i = 0; i<teapotMesh->mNumVertices; i++) {
+
+		SimpleVertex vertex;
+
+		vertex.Pos.x = teapotMesh->mVertices[i].x;
+		vertex.Pos.y = teapotMesh->mVertices[i].y;
+		vertex.Pos.z = teapotMesh->mVertices[i].z;
+
+		vertex.TexCoord.x = teapotMesh->mNormals[i].x;
+		vertex.TexCoord.x = teapotMesh->mTextureCoords[0]->x;
+
+		
+	}
+	
+
+	
 }

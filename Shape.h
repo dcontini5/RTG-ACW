@@ -4,7 +4,6 @@
 #include <d3d11_1.h>
 
 
-
 struct SimpleVertex {
 
 	DirectX::XMFLOAT3 Pos;

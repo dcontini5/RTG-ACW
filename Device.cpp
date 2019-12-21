@@ -269,7 +269,6 @@ HRESULT Device::InitDevice() {
 void Device::CleanupDevice() {
 
 	if (_pImmediateContext) _pImmediateContext->ClearState();
-
 	if (_pRenderTargetView) _pRenderTargetView->Release();
 	if (_pSwapChain1) _pSwapChain1->Release();
 	if (_pSwapChain) _pSwapChain->Release();
