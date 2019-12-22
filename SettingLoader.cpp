@@ -36,6 +36,7 @@ HRESULT SettingLoader::CreateVertexShaders(HRESULT hr, ID3D11Device* pd3dDevice,
 	}
 	
 	_vertexShaderList.push_back(v);
+	v = nullptr;
 
 	if(createLayout) {
 
@@ -85,6 +86,7 @@ HRESULT SettingLoader::CreatePixelShaders(HRESULT hr, ID3D11Device * pd3dDevice,
 		return hr;
 
 	_pixelShaderList.push_back(p);
+	p = nullptr;
 
 	return S_OK;
 
@@ -92,19 +94,24 @@ HRESULT SettingLoader::CreatePixelShaders(HRESULT hr, ID3D11Device * pd3dDevice,
 
 void SettingLoader::FileLoader(HRESULT hr, ID3D11Device* pd3Device, ID3D11DeviceContext* pImmediateContext) {
 
-	std::string variable;
-
 	std::ifstream fin("settings.ini");
-
+	
 	std::string str;
 
 	getline(fin, str);
 
-	std::string field;
+	std::string field = "";
+	
+	while (fin.peek() != EOF) {
 
-	while (fin) {
-
+		
 		if (str.empty()) {
+			getline(fin, str);
+			continue;
+		}
+
+		if (str[0] == '#') {
+
 			getline(fin, str);
 			continue;
 		}
@@ -113,6 +120,7 @@ void SettingLoader::FileLoader(HRESULT hr, ID3D11Device* pd3Device, ID3D11Device
 
 			field = str.substr(1, str.find(']') - 1);
 			getline(fin, str);
+			continue;
 		}
 
 		if (field == "Geometries") {
@@ -198,29 +206,36 @@ void SettingLoader::FileLoader(HRESULT hr, ID3D11Device* pd3Device, ID3D11Device
 
 			auto i = str.find('=');
 
-			camera.Eye.x = stof(str.substr(i + 2, str.find(',') - i));
+			auto x = stof(str.substr(i + 2, str.find(',') - i));
 			i = str.find(',');
-			camera.Eye.y = stof(str.substr(i + 2, str.find(',') - i + 1));
+			auto y = stof(str.substr(i + 2, str.find(',') - i + 1));
 			i = str.find(',', i);
-			camera.Eye.z = stof(str.substr(i + 2, str.size() - i + 1));
-			getline(fin, str);
+			auto z = stof(str.substr(i + 2, str.size() - i + 1));
 
+			camera.Eye = DirectX::XMVectorSet(x, y, z, 0);
+			
+			getline(fin, str);
 			i = str.find('=');
 
-			camera.At.x = stof(str.substr(i + 2, str.find(',') - i));
+			x = stof(str.substr(i + 2, str.find(',') - i));
 			i = str.find(',');
-			camera.At.y = stof(str.substr(i + 2, str.find(',') - i + 1));
+			y = stof(str.substr(i + 2, str.find(',') - i + 1));
 			i = str.find(',', i);
-			camera.At.z = stof(str.substr(i + 2, str.size() - i + 1));
-			getline(fin, str);
+			z = stof(str.substr(i + 2, str.size() - i + 1));
 
+			camera.At = DirectX::XMVectorSet(x, y, z, 0);
+			
+			getline(fin, str);			
 			i = str.find('=');
 
-			camera.Up.x = stof(str.substr(i + 2, str.find(',') - i));
+			x = stof(str.substr(i + 2, str.find(',') - i));
 			i = str.find(',');
-			camera.Up.y = stof(str.substr(i + 2, str.find(',') - i + 1));
+			y = stof(str.substr(i + 2, str.find(',') - i + 1));
 			i = str.find(',', i);
-			camera.Up.z = stof(str.substr(i + 2, str.size() - i + 1));
+			z = stof(str.substr(i + 2, str.size() - i + 1));
+
+			camera.Up = DirectX::XMVectorSet(x, y, z, 0);
+			
 			getline(fin, str);
 
 			_cameraCoordinates.push_back(camera);
@@ -230,25 +245,27 @@ void SettingLoader::FileLoader(HRESULT hr, ID3D11Device* pd3Device, ID3D11Device
 		}
 
 		if (field == "VertexShaders") {
-
+		
 			CreateVertexShaders(hr, pd3Device, pImmediateContext, str);
 			getline(fin, str);
-
+		
 			continue;
-
+		
 		}
-
+		
 		if (field == "PixelShaders") {
-
+		
 			CreatePixelShaders(hr, pd3Device, str);
 			getline(fin, str);
-
+		
 			continue;
-
+		
 		}
 
 
 	}
+
+	
 
 	
 }
@@ -295,7 +312,7 @@ void SettingLoader::ObjLoader(std::string filename) {
 	const aiScene* scene = importer.ReadFile(filename, aiProcess_Triangulate);
 	const aiMesh* teapotMesh = scene->mMeshes[0];
 
-	std::vector<SimpleVertex> mesh_vertices;
+	
 
 	for (auto i = 0; i<teapotMesh->mNumVertices; i++) {
 
@@ -304,13 +321,28 @@ void SettingLoader::ObjLoader(std::string filename) {
 		vertex.Pos.x = teapotMesh->mVertices[i].x;
 		vertex.Pos.y = teapotMesh->mVertices[i].y;
 		vertex.Pos.z = teapotMesh->mVertices[i].z;
-
-		vertex.TexCoord.x = teapotMesh->mNormals[i].x;
-		vertex.TexCoord.x = teapotMesh->mTextureCoords[0]->x;
-
+		vertex.Color.x = 1.0f;
+		vertex.Color.y = 1.0f;
+		vertex.Color.z = 1.0f;
+		vertex.Normal.x = teapotMesh->mNormals[i].x;
+		vertex.Normal.y = teapotMesh->mNormals[i].y;
+		vertex.Normal.z = teapotMesh->mNormals[i].z;
+		//vertex.TexCoord.x = teapotMesh->mTextureCoords[i]->x;
+		//vertex.TexCoord.y = teapotMesh->mTextureCoords[i]->y;
+		
+		
+		_sphereVertices.push_back(vertex);
 		
 	}
-	
+
+	for (auto i = 0; i < teapotMesh->mNumFaces; i++) {
+		
+		const aiFace face = teapotMesh->mFaces[i];
+
+		for (auto j = 0; j < face.mNumIndices; j++) _sphereIndices.push_back(face.mIndices[j]);
+
+
+	}
 
 	
 }

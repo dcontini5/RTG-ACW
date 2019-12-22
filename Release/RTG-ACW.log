@@ -1,0 +1,8 @@
+﻿  SettingLoader.cpp
+d:\vs projects\rtg-acw\shape.h(22): warning C4324: 'ConstantBuffer': structure was padded due to alignment specifier
+  Generating code
+  1 of 591 functions ( 0.2%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    1 functions had inline decision re-evaluated but remain unchanged
+  Finished generating code
+  RTG-ACW.vcxproj -> D:\VS Projects\RTG-ACW\Release\RTG-ACW.exe

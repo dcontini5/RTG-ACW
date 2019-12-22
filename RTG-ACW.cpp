@@ -23,17 +23,18 @@ using namespace DirectX;
 //--------------------------------------------------------------------------------------
 int WINAPI wWinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR lpCmdLine, _In_ int nCmdShow ) {
 
-	Device Device{};
+	auto device = new Device();
+
 	
     UNREFERENCED_PARAMETER( hPrevInstance );
     UNREFERENCED_PARAMETER( lpCmdLine );
 
-    if( FAILED(Device.InitWindow( hInstance, nCmdShow ) ) )
+    if( FAILED(device->InitWindow( hInstance, nCmdShow ) ) )
         return 0;
 
-    if( FAILED(Device.InitDevice() ) )
+    if( FAILED(device->InitDevice() ) )
     {
-        Device.CleanupDevice();
+        device->CleanupDevice();
         return 0;
     }
 
@@ -48,11 +49,11 @@ int WINAPI wWinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
         }
         else
         {
-			Device.Render();
+			device->Render();
         }
     }
 
-	Device.CleanupDevice();
+	device->CleanupDevice();
 
     return static_cast<int>(msg.wParam);
 }

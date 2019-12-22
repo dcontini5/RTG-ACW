@@ -1,8 +1,9 @@
 #include "Device.h"
 
 
-
 Device::Device(){
+
+	
 }
 
 
@@ -192,6 +193,7 @@ HRESULT Device::InitDevice() {
 
 	_pImmediateContext->OMSetRenderTargets(1, &_pRenderTargetView, nullptr);
 
+	// Create depth stencil texture
 	D3D11_TEXTURE2D_DESC descDepth;
 	ZeroMemory(&descDepth, sizeof(descDepth));
 	descDepth.Width = width;
@@ -232,10 +234,6 @@ HRESULT Device::InitDevice() {
 	vp.TopLeftX = 0;
 	vp.TopLeftY = 0;
 	_pImmediateContext->RSSetViewports(1, &vp);
-
-
-
-
 	
 	//Define the Rasterization State
 
@@ -256,7 +254,20 @@ HRESULT Device::InitDevice() {
 	_pImmediateContext->RSSetState(m_rasterState);
 	
 	
+	_settingLoader = new SettingLoader();
+	_settingLoader->FileLoader(hr, _pd3dDevice, _pImmediateContext);
+	_cameraManager = new Camera();
+	_cameraManager->InitCamera(_settingLoader->GetCameraCoords(), true);
+	
+	_sphere = new Shape(_settingLoader->GetVs(), _settingLoader->GetPs());
+	hr = _sphere->CreateBuffers(hr, _pd3dDevice, _pImmediateContext, _settingLoader->GetVertices(), _settingLoader->GetIndices());
 
+
+	_projection = DirectX::XMMatrixPerspectiveFovLH(DirectX::XM_PIDIV2, width / (FLOAT)height, 0.01f, 100.0f);
+	
+	
+	if (FAILED(hr))
+		return hr;
 	
 	return S_OK;
 	
@@ -315,8 +326,12 @@ LRESULT Device::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 void Device::Render() {
 
 	// Just clear the backbuffer
-	_pImmediateContext->ClearRenderTargetView(_pRenderTargetView, DirectX::Colors::MidnightBlue);
+	_pImmediateContext->ClearRenderTargetView(_pRenderTargetView, DirectX::Colors::DarkSlateBlue);
 	_pSwapChain->Present(0, 0);
+
+	//todo remove world
+	DirectX::XMMATRIX world = DirectX::XMMatrixIdentity();
+	_sphere->Draw(_pImmediateContext, world, _cameraManager->GetCamera(), _projection, 1.0f);
 	
 }
 

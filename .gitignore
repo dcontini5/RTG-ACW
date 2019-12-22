@@ -5,7 +5,6 @@
 *.slo
 *.lo
 *.o
-*.obj
 
 # Precompiled Headers
 *.gch
@@ -33,6 +32,7 @@
 
 #Debug Code
 Debug/*
+x64/*
 
 #VisualStudioStuff
 .vs/*

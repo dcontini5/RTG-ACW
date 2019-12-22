@@ -12,24 +12,8 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 #include "Shape.h"
+#include "Camera.h"
 
-
-struct ShapeCoordinates {
-
-	DirectX::XMFLOAT3 Pos;
-	DirectX::XMFLOAT3 Rot;
-	DirectX::XMFLOAT3 Scal;
-	
-
-};
-
-struct CameraCoordinates {
-
-	DirectX::XMFLOAT3 Eye;
-	DirectX::XMFLOAT3 At;
-	DirectX::XMFLOAT3 Up;
-	
-};
 
 
 class SettingLoader
@@ -41,9 +25,13 @@ public:
 	HRESULT CreatePixelShaders(HRESULT hr, ID3D11Device* pd3dDevice, std::string fileName);
 	ID3D11PixelShader* GetPs() const { return _pixelShaderList[0]; };
 	ID3D11VertexShader* GetVs() const { return _vertexShaderList[0]; };
-	ID3D11InputLayout* GetvertexLayout() const { return _pVertexLayout; };
+	ID3D11InputLayout* GetVertexLayout() const { return _pVertexLayout; };
 	void FileLoader(HRESULT, ID3D11Device*, ID3D11DeviceContext*);
 	void ObjLoader(std::string);
+	std::vector<SimpleVertex> GetVertices() const { return _sphereVertices; };
+	std::vector<UINT16> GetIndices() const { return _sphereIndices; };
+	CameraCoordinates GetCameraCoords() const { return _cameraCoordinates[0]; };
+	
 
 	
 private:
@@ -54,6 +42,9 @@ private:
 	std::vector<ShapeCoordinates> _objectCoordinates;
 	std::vector<CameraCoordinates> _cameraCoordinates;
 
+	std::vector<SimpleVertex> _sphereVertices;
+	std::vector<UINT16> _sphereIndices;
+	
 	static HRESULT CompileShaderFromFile(const WCHAR* szFileName, LPCSTR szEntryPoint, LPCSTR szShaderModel, ID3DBlob** ppBlobOut);
 
 
