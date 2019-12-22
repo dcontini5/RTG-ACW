@@ -252,16 +252,18 @@ HRESULT Device::InitDevice() {
 
 	hr = _pd3dDevice->CreateRasterizerState(&rasterDesc, &m_rasterState);
 	_pImmediateContext->RSSetState(m_rasterState);
-	
+
+	_pImmediateContext->IASetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	
 	_settingLoader = new SettingLoader();
 	_settingLoader->FileLoader(hr, _pd3dDevice, _pImmediateContext);
 	_cameraManager = new Camera();
 	_cameraManager->InitCamera(_settingLoader->GetCameraCoords(), true);
+
+	auto x = _settingLoader->GetVs();
 	
 	_sphere = new Shape(_settingLoader->GetVs(), _settingLoader->GetPs());
 	hr = _sphere->CreateBuffers(hr, _pd3dDevice, _pImmediateContext, _settingLoader->GetVertices(), _settingLoader->GetIndices());
-
 
 	_projection = DirectX::XMMatrixPerspectiveFovLH(DirectX::XM_PIDIV2, width / (FLOAT)height, 0.01f, 100.0f);
 	
@@ -327,12 +329,19 @@ void Device::Render() {
 
 	// Just clear the backbuffer
 	_pImmediateContext->ClearRenderTargetView(_pRenderTargetView, DirectX::Colors::DarkSlateBlue);
-	_pSwapChain->Present(0, 0);
+	_pImmediateContext->ClearDepthStencilView(_pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
+	//_pImmediateContext->PSSetShaderResources(0, 1, &wood_TexureRV);
+	//g_pImmediateContext->PSSetSamplers(0, 1, &wood_Sampler);
+	//
+
 
 	//todo remove world
 	DirectX::XMMATRIX world = DirectX::XMMatrixIdentity();
-	_sphere->Draw(_pImmediateContext, world, _cameraManager->GetCamera(), _projection, 1.0f);
 	
+	_sphere->Draw(_pImmediateContext, world, _cameraManager->GetCamera(), _projection, 1.0f);
+
+
+	_pSwapChain->Present(0, 0);
 }
 
 

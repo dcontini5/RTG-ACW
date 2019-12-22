@@ -10,7 +10,7 @@ HRESULT Shape::CreateBuffers(HRESULT& hr, ID3D11Device* pd3dDevice, ID3D11Device
 	_bd.CPUAccessFlags = 0;
 	D3D11_SUBRESOURCE_DATA InitData;
 	ZeroMemory(&InitData, sizeof(InitData));
-	InitData.pSysMem = &vertices[0];
+	InitData.pSysMem = vertices.data();
 	hr = pd3dDevice->CreateBuffer(&_bd, &InitData, &_pVertexBuffer);
 	if (FAILED(hr))
 		return hr;
@@ -18,10 +18,10 @@ HRESULT Shape::CreateBuffers(HRESULT& hr, ID3D11Device* pd3dDevice, ID3D11Device
 	// Create index buffer
 
 	_bd.Usage = D3D11_USAGE_DEFAULT;
-	_bd.ByteWidth = sizeof(WORD) * indices.size();
+	_bd.ByteWidth = sizeof(UINT16) * indices.size();
 	_bd.BindFlags = D3D11_BIND_INDEX_BUFFER;
 	_bd.CPUAccessFlags = 0;
-	InitData.pSysMem = &indices[0];
+	InitData.pSysMem = indices.data();
 	hr = pd3dDevice->CreateBuffer(&_bd, &InitData, &_pIndexBuffer);
 	if (FAILED(hr))
 		return hr;

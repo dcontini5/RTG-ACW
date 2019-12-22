@@ -36,7 +36,6 @@ HRESULT SettingLoader::CreateVertexShaders(HRESULT hr, ID3D11Device* pd3dDevice,
 	}
 	
 	_vertexShaderList.push_back(v);
-	v = nullptr;
 
 	if(createLayout) {
 
@@ -86,7 +85,6 @@ HRESULT SettingLoader::CreatePixelShaders(HRESULT hr, ID3D11Device * pd3dDevice,
 		return hr;
 
 	_pixelShaderList.push_back(p);
-	p = nullptr;
 
 	return S_OK;
 
@@ -98,28 +96,26 @@ void SettingLoader::FileLoader(HRESULT hr, ID3D11Device* pd3Device, ID3D11Device
 	
 	std::string str;
 
-	getline(fin, str);
+	
 
 	std::string field = "";
 	
-	while (fin.peek() != EOF) {
+	while (getline(fin, str)) {
 
 		
 		if (str.empty()) {
-			getline(fin, str);
+			
 			continue;
 		}
 
 		if (str[0] == '#') {
 
-			getline(fin, str);
 			continue;
 		}
 
 		if (str[0] == '[') {
 
 			field = str.substr(1, str.find(']') - 1);
-			getline(fin, str);
 			continue;
 		}
 
@@ -127,7 +123,6 @@ void SettingLoader::FileLoader(HRESULT hr, ID3D11Device* pd3Device, ID3D11Device
 
 			const auto i = str.find('=');
 			ObjLoader(str.substr(i + 2, str.size() - i));
-			getline(fin, str);
 			continue;
 
 		}
@@ -161,7 +156,6 @@ void SettingLoader::FileLoader(HRESULT hr, ID3D11Device* pd3Device, ID3D11Device
 			object.Scal.y = stof(str.substr(i + 2, str.find(',') - i + 1));
 			i = str.find(',', i);
 			object.Scal.z = stof(str.substr(i + 2, str.size() - i + 1));
-			getline(fin, str);
 
 			_objectCoordinates.push_back(object);
 
@@ -236,7 +230,6 @@ void SettingLoader::FileLoader(HRESULT hr, ID3D11Device* pd3Device, ID3D11Device
 
 			camera.Up = DirectX::XMVectorSet(x, y, z, 0);
 			
-			getline(fin, str);
 
 			_cameraCoordinates.push_back(camera);
 
@@ -247,7 +240,6 @@ void SettingLoader::FileLoader(HRESULT hr, ID3D11Device* pd3Device, ID3D11Device
 		if (field == "VertexShaders") {
 		
 			CreateVertexShaders(hr, pd3Device, pImmediateContext, str);
-			getline(fin, str);
 		
 			continue;
 		
@@ -256,7 +248,6 @@ void SettingLoader::FileLoader(HRESULT hr, ID3D11Device* pd3Device, ID3D11Device
 		if (field == "PixelShaders") {
 		
 			CreatePixelShaders(hr, pd3Device, str);
-			getline(fin, str);
 		
 			continue;
 		
@@ -314,7 +305,7 @@ void SettingLoader::ObjLoader(std::string filename) {
 
 	
 
-	for (auto i = 0; i<teapotMesh->mNumVertices; i++) {
+	for (unsigned int i = 0; i < teapotMesh->mNumVertices; i++) {
 
 		SimpleVertex vertex;
 
@@ -329,17 +320,19 @@ void SettingLoader::ObjLoader(std::string filename) {
 		vertex.Normal.z = teapotMesh->mNormals[i].z;
 		//vertex.TexCoord.x = teapotMesh->mTextureCoords[i]->x;
 		//vertex.TexCoord.y = teapotMesh->mTextureCoords[i]->y;
+		vertex.TexCoord.x = teapotMesh->mVertices[i].x;
+		vertex.TexCoord.y = teapotMesh->mVertices[i].x;
 		
 		
 		_sphereVertices.push_back(vertex);
 		
 	}
 
-	for (auto i = 0; i < teapotMesh->mNumFaces; i++) {
+	for (unsigned int i = 0; i < teapotMesh->mNumFaces; i++) {
 		
 		const aiFace face = teapotMesh->mFaces[i];
 
-		for (auto j = 0; j < face.mNumIndices; j++) _sphereIndices.push_back(face.mIndices[j]);
+		for (unsigned int j = 0; j < face.mNumIndices; j++) _sphereIndices.push_back(face.mIndices[j]);
 
 
 	}
