@@ -37,3 +37,5 @@ x64/*
 #VisualStudioStuff
 .vs/*
 RTG-ACW.sln
+*.psess
+*.vspx

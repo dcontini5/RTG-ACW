@@ -135,8 +135,9 @@ void SettingLoader::FileLoader(HRESULT hr, ID3D11Device* pd3Device, ID3D11Device
 
 			object.Pos.x = stof(str.substr(i + 2, str.find(',') - i));
 			i = str.find(',');
-			object.Pos.y = stof(str.substr(i + 2, str.find(',') - i + 1));
-			i = str.find(',', i);
+			auto x = str.substr(i + 2, str.find(',', i + 1) - i + 1);
+			object.Pos.y = stof( x );
+			i = str.find(',', i + 1);
 			object.Pos.z = stof(str.substr(i + 2, str.size() - i + 1));
 			getline(fin, str);
 
@@ -144,8 +145,8 @@ void SettingLoader::FileLoader(HRESULT hr, ID3D11Device* pd3Device, ID3D11Device
 
 			object.Rot.x = stof(str.substr(i + 2, str.find(',') - i));
 			i = str.find(',');
-			object.Rot.y = stof(str.substr(i + 2, str.find(',') - i + 1));
-			i = str.find(',', i);
+			object.Rot.y = stof(str.substr(i + 2, str.find(',', i + 1) - i + 1));
+			i = str.find(',', i + 1);
 			object.Rot.z = stof(str.substr(i + 2, str.size() - i + 1));
 			getline(fin, str);
 			
@@ -153,8 +154,8 @@ void SettingLoader::FileLoader(HRESULT hr, ID3D11Device* pd3Device, ID3D11Device
 
 			object.Scal.x = stof(str.substr(i + 2, str.find(',') - i));
 			i = str.find(',');
-			object.Scal.y = stof(str.substr(i + 2, str.find(',') - i + 1));
-			i = str.find(',', i);
+			object.Scal.y = stof(str.substr(i + 2, str.find(',', i + 1) - i + 1));
+			i = str.find(',', i + 1);
 			object.Scal.z = stof(str.substr(i + 2, str.size() - i + 1));
 
 			_objectCoordinates.push_back(object);
@@ -202,33 +203,33 @@ void SettingLoader::FileLoader(HRESULT hr, ID3D11Device* pd3Device, ID3D11Device
 
 			auto x = stof(str.substr(i + 2, str.find(',') - i));
 			i = str.find(',');
-			auto y = stof(str.substr(i + 2, str.find(',') - i + 1));
-			i = str.find(',', i);
+			auto y = stof(str.substr(i + 2, str.find(',', i + 1) - i + 1));
+			i = str.find(',', i+1);
 			auto z = stof(str.substr(i + 2, str.size() - i + 1));
 
-			camera.Eye = DirectX::XMVectorSet(x, y, z, 0);
+			camera.Eye = DirectX::XMVectorSet(x, y, z, 0.0f);
 			
 			getline(fin, str);
 			i = str.find('=');
 
 			x = stof(str.substr(i + 2, str.find(',') - i));
 			i = str.find(',');
-			y = stof(str.substr(i + 2, str.find(',') - i + 1));
-			i = str.find(',', i);
+			y = stof(str.substr(i + 2, str.find(',', i + 1) - i + 1));
+			i = str.find(',', i + 1);
 			z = stof(str.substr(i + 2, str.size() - i + 1));
 
-			camera.At = DirectX::XMVectorSet(x, y, z, 0);
+			camera.At = DirectX::XMVectorSet(x, y, z, 0.0f);
 			
 			getline(fin, str);			
 			i = str.find('=');
 
 			x = stof(str.substr(i + 2, str.find(',') - i));
 			i = str.find(',');
-			y = stof(str.substr(i + 2, str.find(',') - i + 1));
-			i = str.find(',', i);
+			y = stof(str.substr(i + 2, str.find(',', i + 1) - i + 1));
+			i = str.find(',', i + 1);
 			z = stof(str.substr(i + 2, str.size() - i + 1));
 
-			camera.Up = DirectX::XMVectorSet(x, y, z, 0);
+			camera.Up = DirectX::XMVectorSet(x, y, z, 0.0f);
 			
 
 			_cameraCoordinates.push_back(camera);
@@ -301,41 +302,47 @@ void SettingLoader::ObjLoader(std::string filename) {
 
 	Assimp::Importer importer;
 	const aiScene* scene = importer.ReadFile(filename, aiProcess_Triangulate);
-	const aiMesh* teapotMesh = scene->mMeshes[0];
+	const aiMesh* mesh = scene->mMeshes[0];
 
+	ShapeGeometry shape;
 	
 
-	for (unsigned int i = 0; i < teapotMesh->mNumVertices; i++) {
+	for (unsigned int i = 0; i < mesh->mNumVertices; i++) {
 
 		SimpleVertex vertex;
 
-		vertex.Pos.x = teapotMesh->mVertices[i].x;
-		vertex.Pos.y = teapotMesh->mVertices[i].y;
-		vertex.Pos.z = teapotMesh->mVertices[i].z;
+		vertex.Pos.x = mesh->mVertices[i].x;
+		vertex.Pos.y = mesh->mVertices[i].y;
+		vertex.Pos.z = mesh->mVertices[i].z;
 		vertex.Color.x = 1.0f;
 		vertex.Color.y = 1.0f;
 		vertex.Color.z = 1.0f;
-		vertex.Normal.x = teapotMesh->mNormals[i].x;
-		vertex.Normal.y = teapotMesh->mNormals[i].y;
-		vertex.Normal.z = teapotMesh->mNormals[i].z;
+		vertex.Normal.x = mesh->mNormals[i].x;
+		vertex.Normal.y = mesh->mNormals[i].y;
+		vertex.Normal.z = mesh->mNormals[i].z;
 		//vertex.TexCoord.x = teapotMesh->mTextureCoords[i]->x;
 		//vertex.TexCoord.y = teapotMesh->mTextureCoords[i]->y;
-		vertex.TexCoord.x = teapotMesh->mVertices[i].x;
-		vertex.TexCoord.y = teapotMesh->mVertices[i].x;
+		vertex.TexCoord.x = mesh->mVertices[i].x;
+		vertex.TexCoord.y = mesh->mVertices[i].x;
 		
 		
-		_sphereVertices.push_back(vertex);
+		shape.vertices.push_back(vertex);
+		
 		
 	}
+	
 
-	for (unsigned int i = 0; i < teapotMesh->mNumFaces; i++) {
+	std::vector<UINT16> indices;
+
+	for (unsigned int i = 0; i < mesh->mNumFaces; i++) {
 		
-		const aiFace face = teapotMesh->mFaces[i];
+		const aiFace face = mesh->mFaces[i];
 
-		for (unsigned int j = 0; j < face.mNumIndices; j++) _sphereIndices.push_back(face.mIndices[j]);
+		for (unsigned int j = 0; j < face.mNumIndices; j++) shape.indices.push_back(face.mIndices[j]);
 
 
 	}
 
+	_shapeGeometries.push_back(shape);
 	
 }

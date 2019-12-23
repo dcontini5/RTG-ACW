@@ -241,8 +241,8 @@ HRESULT Device::InitDevice() {
 
 	D3D11_RASTERIZER_DESC rasterDesc;
 
-	rasterDesc.CullMode = D3D11_CULL_FRONT;
-	rasterDesc.FillMode = D3D11_FILL_SOLID;
+	rasterDesc.CullMode = D3D11_CULL_NONE;
+	rasterDesc.FillMode = D3D11_FILL_WIREFRAME;
 	rasterDesc.ScissorEnable = false;
 	rasterDesc.DepthBias = 0;
 	rasterDesc.DepthBiasClamp = 0.0f;
@@ -259,12 +259,28 @@ HRESULT Device::InitDevice() {
 	_settingLoader->FileLoader(hr, _pd3dDevice, _pImmediateContext);
 	_cameraManager = new Camera();
 	_cameraManager->InitCamera(_settingLoader->GetCameraCoords(), true);
-	_cameraManager->SwapCamera(true);
 
-	auto x = _settingLoader->GetVs();
-	
-	_sphere = new Shape(_settingLoader->GetVs(), _settingLoader->GetPs());
-	hr = _sphere->CreateBuffers(hr, _pd3dDevice,  _settingLoader->GetVertices(), _settingLoader->GetIndices());
+	auto j = true;
+	for (auto i: _settingLoader->GetObjectsCoords()) {
+
+		if(j) {
+
+			auto shape = new Shape(_settingLoader->GetVs(), _settingLoader->GetPs(), i);
+			hr = shape->CreateBuffers(hr, _pd3dDevice, _settingLoader->GetVertices(0), _settingLoader->GetIndices(0));
+			_shapeList.push_back(shape);
+			j = !j;
+			continue;
+			
+		}
+
+		auto randShape = rand() % 2;
+		auto shape = new Shape(_settingLoader->GetVs(), _settingLoader->GetPs(), i);
+		hr = shape->CreateBuffers(hr, _pd3dDevice, _settingLoader->GetVertices(randShape), _settingLoader->GetIndices(randShape));
+		_shapeList.push_back(shape);
+		
+	}
+	//_sphere = new Shape(_settingLoader->GetVs(), _settingLoader->GetPs());
+	//hr = _sphere->CreateBuffers(hr, _pd3dDevice,  _settingLoader->GetVertices(), _settingLoader->GetIndices());
 
 	_projection = DirectX::XMMatrixPerspectiveFovLH(DirectX::XM_PIDIV2, width / (FLOAT)height, 0.01f, 100.0f);
 	
@@ -328,6 +344,24 @@ LRESULT Device::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 //--------------------------------------------------------------------------------------
 void Device::Render() {
 
+	// Update our time
+	static float t = 0.0f;
+	if (_driverType == D3D_DRIVER_TYPE_REFERENCE)
+	{
+		t += (float)DirectX::XM_PI * 0.0125f;
+	}
+	else
+	{
+		static ULONGLONG timeStart = 0;
+		ULONGLONG timeCur = GetTickCount64();
+		if (timeStart == 0)
+			timeStart = timeCur;
+		t = (timeCur - timeStart) / 1000.0f;
+	}
+
+
+
+	
 	// Just clear the backbuffer
 	_pImmediateContext->ClearRenderTargetView(_pRenderTargetView, DirectX::Colors::DarkSlateBlue);
 	_pImmediateContext->ClearDepthStencilView(_pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
@@ -336,10 +370,7 @@ void Device::Render() {
 	//
 
 
-	//todo remove world
-	DirectX::XMMATRIX world = DirectX::XMMatrixIdentity();
-	
-	_sphere->Draw(_pImmediateContext, world, _cameraManager->GetCamera(), _projection, 1.0f);
+	for (auto i : _shapeList)	i->Draw(_pImmediateContext, _cameraManager->GetCamera(), _projection, t);
 
 
 	_pSwapChain->Present(0, 0);

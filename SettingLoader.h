@@ -14,7 +14,14 @@
 #include "Shape.h"
 #include "Camera.h"
 
+struct ShapeGeometry {
 
+
+	std::vector<SimpleVertex> vertices;
+	std::vector<UINT16> indices;
+
+	
+};
 
 class SettingLoader
 {
@@ -28,12 +35,12 @@ public:
 	ID3D11InputLayout* GetVertexLayout() const { return _pVertexLayout; };
 	void FileLoader(HRESULT, ID3D11Device*, ID3D11DeviceContext*);
 	void ObjLoader(std::string);
-	std::vector<SimpleVertex> GetVertices() const { return _sphereVertices; };
-	std::vector<UINT16> GetIndices() const { return _sphereIndices; };
+	std::vector<SimpleVertex> GetVertices(int i) const { return _shapeGeometries[i].vertices; };
+	std::vector<UINT16> GetIndices(int i) const { return _shapeGeometries[i].indices; };
 	CameraCoordinates GetCameraCoords() const { return _cameraCoordinates[0]; };
-	
+	std::vector<ShapeCoordinates> GetObjectsCoords() const { return _objectCoordinates; }
 
-	
+
 private:
 
 	std::vector<ID3D11VertexShader*> _vertexShaderList;
@@ -41,11 +48,10 @@ private:
 	ID3D11InputLayout* _pVertexLayout;
 	std::vector<ShapeCoordinates> _objectCoordinates;
 	std::vector<CameraCoordinates> _cameraCoordinates;
-
-	std::vector<SimpleVertex> _sphereVertices;
-	std::vector<UINT16> _sphereIndices;
+	std::vector<ShapeGeometry> _shapeGeometries;
 	
 	static HRESULT CompileShaderFromFile(const WCHAR* szFileName, LPCSTR szEntryPoint, LPCSTR szShaderModel, ID3DBlob** ppBlobOut);
+
 
 
 	//std::vector<WCHAR*> _vertexShaderFileList = { L"vertex_shader.hlsl" };

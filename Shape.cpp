@@ -38,12 +38,11 @@ HRESULT Shape::CreateBuffers(HRESULT& hr, ID3D11Device* pd3dDevice, std::vector<
 	hr = pd3dDevice->CreateBuffer(&bd, nullptr, &_pConstantBuffer);
 	if (FAILED(hr))	return hr;
 
-	
 	return S_OK;
 }
 
 
-void Shape::Draw(ID3D11DeviceContext* pImmediateContext, DirectX::XMMATRIX World, DirectX::XMMATRIX view, DirectX::XMMATRIX Projection, float t) const {
+void Shape::Draw(ID3D11DeviceContext* pImmediateContext, DirectX::XMMATRIX view, DirectX::XMMATRIX Projection, float t) const {
 
 	// Set vertex buffer
 	UINT stride = sizeof(SimpleVertex);
@@ -53,7 +52,13 @@ void Shape::Draw(ID3D11DeviceContext* pImmediateContext, DirectX::XMMATRIX World
 
 
 	ConstantBuffer cb;
-	cb.World = DirectX::XMMatrixTranspose(World);
+	auto world = DirectX::XMMatrixIdentity();
+
+	world *= DirectX::XMMatrixScaling(_coordinates.Scal.x, _coordinates.Scal.y, _coordinates.Scal.z);
+	world *= DirectX::XMMatrixRotationRollPitchYaw(_coordinates.Rot.x, _coordinates.Rot.y, _coordinates.Rot.z);
+	world *= DirectX::XMMatrixTranslation(_coordinates.Pos.x, _coordinates.Pos.y, _coordinates.Pos.z);
+	
+	cb.World = DirectX::XMMatrixTranspose(world);
 	cb.View = DirectX::XMMatrixTranspose(view);
 	cb.Projection = DirectX::XMMatrixTranspose(Projection);
 	cb.Time = t;

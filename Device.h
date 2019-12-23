@@ -35,6 +35,7 @@ private:
 
 	SettingLoader* _settingLoader;
 	Shape* _sphere;
+	std::vector<Shape*> _shapeList;
 	Camera* _cameraManager;
 	
 };

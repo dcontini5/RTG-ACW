@@ -37,14 +37,11 @@ VS_OUTPUT VS(float4 Pos : POSITION, float4 Color : COLOR, float4 N : NORMAL, flo
     const float pi = 3.1415f;
     const float angle = -1 * pi / 2 * Time;
 
-
-
-    float3 scaling = float3(2, 2, 2);
     float4x4 rotationY = float4x4(
 		cos(angle), 0, -sin(angle), 0,
-		0, 1, 0, 0,
-		sin(angle), 0, cos(angle), 0,
-		0, 0, 0, 1
+		0,          1,           0, 0,
+		sin(angle), 0, cos(angle),  0,
+		0,          0,          0,  1
 		);
 
     float3 translation = float3(4, 0, 4);
