@@ -1,28 +1,28 @@
 ﻿#include "Shape.h"
 
-HRESULT Shape::CreateBuffers(HRESULT& hr, ID3D11Device* pd3dDevice, ID3D11DeviceContext* pImmediateContext, std::vector<SimpleVertex> vertices, std::vector<UINT16> indices) {
+HRESULT Shape::CreateBuffers(HRESULT& hr, ID3D11Device* pd3dDevice, std::vector<SimpleVertex> vertices, std::vector<UINT16> indices) {
 
-
-	ZeroMemory(&_bd, sizeof(_bd));
-	_bd.Usage = D3D11_USAGE_DEFAULT;
-	_bd.ByteWidth = sizeof(SimpleVertex) * vertices.size();
-	_bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	_bd.CPUAccessFlags = 0;
+	D3D11_BUFFER_DESC bd;
+	ZeroMemory(&bd, sizeof(bd));
+	bd.Usage = D3D11_USAGE_DEFAULT;
+	bd.ByteWidth = sizeof(SimpleVertex) * vertices.size();
+	bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	bd.CPUAccessFlags = 0;
 	D3D11_SUBRESOURCE_DATA InitData;
 	ZeroMemory(&InitData, sizeof(InitData));
 	InitData.pSysMem = vertices.data();
-	hr = pd3dDevice->CreateBuffer(&_bd, &InitData, &_pVertexBuffer);
+	hr = pd3dDevice->CreateBuffer(&bd, &InitData, &_pVertexBuffer);
 	if (FAILED(hr))
 		return hr;
 
 	// Create index buffer
 
-	_bd.Usage = D3D11_USAGE_DEFAULT;
-	_bd.ByteWidth = sizeof(UINT16) * indices.size();
-	_bd.BindFlags = D3D11_BIND_INDEX_BUFFER;
-	_bd.CPUAccessFlags = 0;
+	bd.Usage = D3D11_USAGE_DEFAULT;
+	bd.ByteWidth = sizeof(UINT16) * indices.size();
+	bd.BindFlags = D3D11_BIND_INDEX_BUFFER;
+	bd.CPUAccessFlags = 0;
 	InitData.pSysMem = indices.data();
-	hr = pd3dDevice->CreateBuffer(&_bd, &InitData, &_pIndexBuffer);
+	hr = pd3dDevice->CreateBuffer(&bd, &InitData, &_pIndexBuffer);
 	if (FAILED(hr))
 		return hr;
 
@@ -31,11 +31,11 @@ HRESULT Shape::CreateBuffers(HRESULT& hr, ID3D11Device* pd3dDevice, ID3D11Device
 
 	//Create Constant Buffer
 	
-	_bd.Usage = D3D11_USAGE_DEFAULT;
-	_bd.ByteWidth = sizeof(ConstantBuffer);
-	_bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	_bd.CPUAccessFlags = 0;
-	hr = pd3dDevice->CreateBuffer(&_bd, nullptr, &_pConstantBuffer);
+	bd.Usage = D3D11_USAGE_DEFAULT;
+	bd.ByteWidth = sizeof(ConstantBuffer);
+	bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	bd.CPUAccessFlags = 0;
+	hr = pd3dDevice->CreateBuffer(&bd, nullptr, &_pConstantBuffer);
 	if (FAILED(hr))	return hr;
 
 	

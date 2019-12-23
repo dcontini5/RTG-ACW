@@ -259,11 +259,12 @@ HRESULT Device::InitDevice() {
 	_settingLoader->FileLoader(hr, _pd3dDevice, _pImmediateContext);
 	_cameraManager = new Camera();
 	_cameraManager->InitCamera(_settingLoader->GetCameraCoords(), true);
+	_cameraManager->SwapCamera(true);
 
 	auto x = _settingLoader->GetVs();
 	
 	_sphere = new Shape(_settingLoader->GetVs(), _settingLoader->GetPs());
-	hr = _sphere->CreateBuffers(hr, _pd3dDevice, _pImmediateContext, _settingLoader->GetVertices(), _settingLoader->GetIndices());
+	hr = _sphere->CreateBuffers(hr, _pd3dDevice,  _settingLoader->GetVertices(), _settingLoader->GetIndices());
 
 	_projection = DirectX::XMMatrixPerspectiveFovLH(DirectX::XM_PIDIV2, width / (FLOAT)height, 0.01f, 100.0f);
 	
