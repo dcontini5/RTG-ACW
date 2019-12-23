@@ -144,7 +144,9 @@ HRESULT Device::InitDevice() {
 		sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 		sd.BufferCount = 1;
 
-		hr = dxgiFactory2->CreateSwapChainForHwnd(_pd3dDevice, _hWnd, &sd, nullptr, nullptr, &_pSwapChain1);
+
+		auto ptr = _pd3dDevice.Get();
+		hr = dxgiFactory2->CreateSwapChainForHwnd(ptr, _hWnd, &sd, nullptr, nullptr, &_pSwapChain1);
 		if (SUCCEEDED(hr))
 		{
 			hr = _pSwapChain1->QueryInterface(__uuidof(IDXGISwapChain), reinterpret_cast<void**>(&_pSwapChain));
@@ -237,12 +239,12 @@ HRESULT Device::InitDevice() {
 	
 	//Define the Rasterization State
 
-	ID3D11RasterizerState* m_rasterState = nullptr;
+	//ID3D11RasterizerState* m_rasterState = nullptr;
 
 	D3D11_RASTERIZER_DESC rasterDesc;
 
-	rasterDesc.CullMode = D3D11_CULL_NONE;
-	rasterDesc.FillMode = D3D11_FILL_WIREFRAME;
+	rasterDesc.CullMode = D3D11_CULL_FRONT;
+	rasterDesc.FillMode = D3D11_FILL_SOLID;
 	rasterDesc.ScissorEnable = false;
 	rasterDesc.DepthBias = 0;
 	rasterDesc.DepthBiasClamp = 0.0f;
@@ -250,8 +252,20 @@ HRESULT Device::InitDevice() {
 	rasterDesc.MultisampleEnable = false;
 	rasterDesc.SlopeScaledDepthBias = 0.0f;
 
-	hr = _pd3dDevice->CreateRasterizerState(&rasterDesc, &m_rasterState);
-	_pImmediateContext->RSSetState(m_rasterState);
+	hr = _pd3dDevice->CreateRasterizerState(&rasterDesc, &_rasterState1);
+
+	rasterDesc.CullMode = D3D11_CULL_BACK;
+	rasterDesc.FillMode = D3D11_FILL_SOLID;
+	rasterDesc.ScissorEnable = false;
+	rasterDesc.DepthBias = 0;
+	rasterDesc.DepthBiasClamp = 0.0f;
+	rasterDesc.DepthClipEnable = true;
+	rasterDesc.MultisampleEnable = false;
+	rasterDesc.SlopeScaledDepthBias = 0.0f;
+
+	hr = _pd3dDevice->CreateRasterizerState(&rasterDesc, &_rasterState2);
+	_pImmediateContext->RSSetState(_rasterState2);
+
 
 	_pImmediateContext->IASetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	
@@ -369,10 +383,22 @@ void Device::Render() {
 	//g_pImmediateContext->PSSetSamplers(0, 1, &wood_Sampler);
 	//
 
+	const auto c = 0;
+	for (auto i : _shapeList) {
 
-	for (auto i : _shapeList)	i->Draw(_pImmediateContext, _cameraManager->GetCamera(), _projection, t);
+		if(!c) {
 
+			i->Draw(_pImmediateContext, _cameraManager->GetCamera(), _projection, t);
+			_pImmediateContext->RSSetState(_rasterState1);
+			continue;
+			
+		}
+		
+		i->Draw(_pImmediateContext, _cameraManager->GetCamera(), _projection, t);
+	}
 
+	_pImmediateContext->RSSetState(_rasterState2);
+	
 	_pSwapChain->Present(0, 0);
 }
 

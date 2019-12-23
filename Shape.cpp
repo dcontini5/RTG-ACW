@@ -55,15 +55,16 @@ void Shape::Draw(ID3D11DeviceContext* pImmediateContext, DirectX::XMMATRIX view,
 	auto world = DirectX::XMMatrixIdentity();
 
 	world *= DirectX::XMMatrixScaling(_coordinates.Scal.x, _coordinates.Scal.y, _coordinates.Scal.z);
-	world *= DirectX::XMMatrixRotationRollPitchYaw(_coordinates.Rot.x, _coordinates.Rot.y, _coordinates.Rot.z);
+	//world *= DirectX::XMMatrixRotationRollPitchYaw(_coordinates.Rot.x, _coordinates.Rot.y, _coordinates.Rot.z);
 	world *= DirectX::XMMatrixTranslation(_coordinates.Pos.x, _coordinates.Pos.y, _coordinates.Pos.z);
 	
 	cb.World = DirectX::XMMatrixTranspose(world);
 	cb.View = DirectX::XMMatrixTranspose(view);
 	cb.Projection = DirectX::XMMatrixTranspose(Projection);
 	cb.Time = t;
-	cb.LightPos = DirectX::XMVectorSet(-2.0f, 2.0f, -2.0f, 0.0f);
-	cb.Eye = DirectX::XMVectorSet(3.0f, 3.0f, 0.0f, 0.0f);
+	cb.LightPos = DirectX::XMVectorSet(0.0f, 2.6f, 0.0f, 0.0f);
+	//auto x = view.r[0].m128_f32[0];
+	cb.Eye = DirectX::XMVectorSet(0.0f, 4.0f, 10.0f, 0.0f);
 	pImmediateContext->UpdateSubresource(_pConstantBuffer, 0, nullptr, &cb, 0, 0);
 
 	//

@@ -44,12 +44,12 @@ VS_OUTPUT VS(float4 Pos : POSITION, float4 Color : COLOR, float4 N : NORMAL, flo
 		0,          0,          0,  1
 		);
 
-    float3 translation = float3(4, 0, 4);
-
+    float3 translation = float3(0, -5.0, -2.5);
 	//output.Pos = mul(output.Pos, rotationY);
 	//output.Pos.xyz *= scaling;
 	//output.Pos.xyz += translation;
     output.RotatedL = LightPos.xyz + translation;
+  //  output.RotatedL = LightPos.xyz;
     output.RotatedL = mul(output.RotatedL, rotationY);
     output.Pos = mul(output.Pos, View);
     output.Pos = mul(output.Pos, Projection);

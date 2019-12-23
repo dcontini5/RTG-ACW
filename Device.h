@@ -4,6 +4,7 @@
 #include <directxcolors.h>
 #include "resource.h"
 #include "SettingLoader.h"
+#include <wrl.h>
 
 class Device
 {
@@ -22,7 +23,8 @@ private:
 	HWND                    _hWnd = nullptr;
 	D3D_DRIVER_TYPE         _driverType = D3D_DRIVER_TYPE_NULL;
 	D3D_FEATURE_LEVEL       _featureLevel = D3D_FEATURE_LEVEL_11_0;
-	ID3D11Device*           _pd3dDevice = nullptr;
+	Microsoft::WRL::ComPtr<ID3D11Device> _pd3dDevice;
+	//ID3D11Device*           _pd3dDevice = nullptr;
 	ID3D11Device1*          _pd3dDevice1 = nullptr;
 	ID3D11DeviceContext*    _pImmediateContext = nullptr;
 	ID3D11DeviceContext1*   _pImmediateContext1 = nullptr;
@@ -31,6 +33,9 @@ private:
 	ID3D11RenderTargetView* _pRenderTargetView = nullptr;
 	ID3D11Texture2D*		_pDepthStencil = nullptr;
 	ID3D11DepthStencilView*	_pDepthStencilView = nullptr;
+	ID3D11RasterizerState* _rasterState1 = nullptr;
+	ID3D11RasterizerState* _rasterState2 = nullptr;
+	
 	DirectX::XMMATRIX _projection;
 
 	SettingLoader* _settingLoader;
