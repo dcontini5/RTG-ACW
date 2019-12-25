@@ -23,8 +23,7 @@ private:
 	HWND                    _hWnd = nullptr;
 	D3D_DRIVER_TYPE         _driverType = D3D_DRIVER_TYPE_NULL;
 	D3D_FEATURE_LEVEL       _featureLevel = D3D_FEATURE_LEVEL_11_0;
-	Microsoft::WRL::ComPtr<ID3D11Device> _pd3dDevice;
-	//ID3D11Device*           _pd3dDevice = nullptr;
+	ID3D11Device*           _pd3dDevice = nullptr;
 	ID3D11Device1*          _pd3dDevice1 = nullptr;
 	ID3D11DeviceContext*    _pImmediateContext = nullptr;
 	ID3D11DeviceContext1*   _pImmediateContext1 = nullptr;

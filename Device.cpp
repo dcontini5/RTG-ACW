@@ -145,8 +145,7 @@ HRESULT Device::InitDevice() {
 		sd.BufferCount = 1;
 
 
-		auto ptr = _pd3dDevice.Get();
-		hr = dxgiFactory2->CreateSwapChainForHwnd(ptr, _hWnd, &sd, nullptr, nullptr, &_pSwapChain1);
+		hr = dxgiFactory2->CreateSwapChainForHwnd(_pd3dDevice, _hWnd, &sd, nullptr, nullptr, &_pSwapChain1);
 		if (SUCCEEDED(hr))
 		{
 			hr = _pSwapChain1->QueryInterface(__uuidof(IDXGISwapChain), reinterpret_cast<void**>(&_pSwapChain));
@@ -263,6 +262,7 @@ HRESULT Device::InitDevice() {
 	rasterDesc.MultisampleEnable = false;
 	rasterDesc.SlopeScaledDepthBias = 0.0f;
 
+
 	hr = _pd3dDevice->CreateRasterizerState(&rasterDesc, &_rasterState2);
 	_pImmediateContext->RSSetState(_rasterState2);
 
@@ -296,7 +296,7 @@ HRESULT Device::InitDevice() {
 	//_sphere = new Shape(_settingLoader->GetVs(), _settingLoader->GetPs());
 	//hr = _sphere->CreateBuffers(hr, _pd3dDevice,  _settingLoader->GetVertices(), _settingLoader->GetIndices());
 
-	_projection = DirectX::XMMatrixPerspectiveFovLH(DirectX::XM_PIDIV2, width / (FLOAT)height, 0.01f, 100.0f);
+	_projection = DirectX::XMMatrixPerspectiveFovLH(DirectX::XM_PIDIV4, width / (FLOAT)height, 0.01f, 100.0f);
 	
 	
 	if (FAILED(hr))
@@ -362,7 +362,7 @@ void Device::Render() {
 	static float t = 0.0f;
 	if (_driverType == D3D_DRIVER_TYPE_REFERENCE)
 	{
-		t += (float)DirectX::XM_PI * 0.0125f;
+		t += (float)DirectX::XM_PI * 0.0125f * 2;
 	}
 	else
 	{
