@@ -258,7 +258,7 @@ HRESULT Device::InitDevice() {
 	rasterDesc.ScissorEnable = false;
 	rasterDesc.DepthBias = 0;
 	rasterDesc.DepthBiasClamp = 0.0f;
-	rasterDesc.DepthClipEnable = true;
+	rasterDesc.DepthClipEnable = false;
 	rasterDesc.MultisampleEnable = false;
 	rasterDesc.SlopeScaledDepthBias = 0.0f;
 

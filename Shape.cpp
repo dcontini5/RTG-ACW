@@ -66,7 +66,7 @@ void Shape::Draw(ID3D11DeviceContext* pImmediateContext, DirectX::XMMATRIX view,
 	//cb.LightPos = DirectX::XMVectorSet(0.0f, 2.49f, 2.5f, 0.0f);
 	cb.LightPos = DirectX::XMVectorSet(0.0f, 4.5f, 0.0f, 0.0f);
 	
-	cb.Eye = DirectX::XMVectorSet(0.0f, 4.0f, 10.0f, 0.0f);
+	cb.Eye = DirectX::XMVectorSet(0.0f, 4.0f, 20.0f, 0.0f);
 	pImmediateContext->UpdateSubresource(_pConstantBuffer, 0, nullptr, &cb, 0, 0);
 
 	//

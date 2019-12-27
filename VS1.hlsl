@@ -59,6 +59,7 @@ VS_OUTPUT VS(float4 Pos : POSITION, float4 Color : COLOR, float4 N : NORMAL, flo
     output.Pos = mul(output.Pos, Projection);
     output.Norm = N.xyz;
     //output.PosWorld = Pos.xyz;
+    //output.PosWorld = World._11_11_11_11;
     output.PosWorld = mul(Pos, World).xyz;
     output.Color = Color;
     output.Tex = Tex;
