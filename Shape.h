@@ -27,9 +27,9 @@ struct ConstantBuffer
 	DirectX::XMMATRIX World;
 	DirectX::XMMATRIX View;
 	DirectX::XMMATRIX Projection;
-	float Time;
 	DirectX::XMVECTOR LightPos;
 	DirectX::XMVECTOR Eye;
+	float Time;
 	
 };
 

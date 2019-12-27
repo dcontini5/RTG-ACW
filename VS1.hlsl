@@ -5,10 +5,9 @@ cbuffer ConstantBuffer : register(b0)
     matrix World;
     matrix View;
     matrix Projection;
-    float Time;
     float4 LightPos;
     float4 Eye;
-	
+	float Time;
 }
 
 Texture2D txWoodColor : register(t0);
@@ -27,7 +26,7 @@ struct VS_OUTPUT
 };
 
 
-VS_OUTPUT VS(float4 Pos : POSITION, float4 Color : COLOR, float4 N : NORMAL, float2 Tex : TEXCOORD)
+VS_OUTPUT VS(float4 Pos : POSITION, float4 Color : COLOR, float3 N : NORMAL, float2 Tex : TEXCOORD)
 {
     VS_OUTPUT output = (VS_OUTPUT) 0;
     output.Pos = mul(Pos, World);
@@ -35,7 +34,7 @@ VS_OUTPUT VS(float4 Pos : POSITION, float4 Color : COLOR, float4 N : NORMAL, flo
 	
 
     const float pi = 3.1415f;
-    const float angle = -1 * pi / 2 * Time;
+    const float angle = 1 * pi / 2 * Time;
 
     float4x4 rotationY = float4x4(
 		cos(angle), 0, -sin(angle), 0,
@@ -52,17 +51,18 @@ VS_OUTPUT VS(float4 Pos : POSITION, float4 Color : COLOR, float4 N : NORMAL, flo
     
     //output.RotatedL = LightPos.xyz;
     output.RotatedL = LightPos.xyz + translation;
-    output.RotatedL = mul(output.RotatedL, rotationY);
+    output.RotatedL = mul(output.RotatedL, (float3x3)rotationY);
     
     
     output.Pos = mul(output.Pos, View);
     output.Pos = mul(output.Pos, Projection);
-    output.Norm = N.xyz;
-    //output.PosWorld = Pos.xyz;
-    //output.PosWorld = World._11_11_11_11;
+    output.Norm = mul(N, (float3x3)World);
+    
+    output.Norm = normalize(output.Norm);
     output.PosWorld = mul(Pos, World).xyz;
+    
     output.Color = Color;
-    output.Tex = Tex;
+    output.Tex = float2(0,0);
 
 	
     return output;
