@@ -31,7 +31,7 @@ public:
 	HRESULT CreateVertexShaders(HRESULT hr, ID3D11Device* pd3dDevice, ID3D11DeviceContext* pImmediateContext, std::string fileName);
 	HRESULT CreatePixelShaders(HRESULT hr, ID3D11Device* pd3dDevice, std::string fileName);
 	ID3D11PixelShader* GetPs() const { return _pixelShaderList[0]; };
-	ID3D11VertexShader* GetVs() const { return _vertexShaderList[0]; };
+	ID3D11VertexShader* GetVs(const int i) const { return _vertexShaderList[i]; };
 	ID3D11InputLayout* GetVertexLayout() const { return _pVertexLayout; };
 	void FileLoader(HRESULT, ID3D11Device*, ID3D11DeviceContext*);
 	void ObjLoader(std::string);

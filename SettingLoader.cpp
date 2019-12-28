@@ -322,9 +322,8 @@ void SettingLoader::ObjLoader(std::string filename) {
 		vertex.Normal.z = mesh->mNormals[i].z;
 		//vertex.TexCoord.x = teapotMesh->mTextureCoords[i]->x;
 		//vertex.TexCoord.y = teapotMesh->mTextureCoords[i]->y;
-		vertex.TexCoord.x = mesh->mVertices[i].x;
-		vertex.TexCoord.y = mesh->mVertices[i].x;
-		
+		vertex.TexCoord.x = mesh->mTextureCoords[0][i].x;
+		vertex.TexCoord.y = mesh->mTextureCoords[0][i].y;
 		
 		shape.vertices.push_back(vertex);
 		

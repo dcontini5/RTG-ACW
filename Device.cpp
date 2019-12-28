@@ -251,6 +251,7 @@ HRESULT Device::InitDevice() {
 	rasterDesc.MultisampleEnable = false;
 	rasterDesc.SlopeScaledDepthBias = 0.0f;
 
+	
 	hr = _pd3dDevice->CreateRasterizerState(&rasterDesc, &_rasterState1);
 
 	rasterDesc.CullMode = D3D11_CULL_BACK;
@@ -267,7 +268,7 @@ HRESULT Device::InitDevice() {
 	_pImmediateContext->RSSetState(_rasterState2);
 
 
-	_pImmediateContext->IASetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	_pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	
 	_settingLoader = new SettingLoader();
 	_settingLoader->FileLoader(hr, _pd3dDevice, _pImmediateContext);
@@ -279,7 +280,7 @@ HRESULT Device::InitDevice() {
 
 		if(j) {
 
-			auto shape = new Shape(_settingLoader->GetVs(), _settingLoader->GetPs(), i);
+			auto shape = new Shape(_settingLoader->GetVs(1), _settingLoader->GetPs(), i);
 			hr = shape->CreateBuffers(hr, _pd3dDevice, _settingLoader->GetVertices(0), _settingLoader->GetIndices(0));
 			_shapeList.push_back(shape);
 			j = !j;
@@ -288,7 +289,7 @@ HRESULT Device::InitDevice() {
 		}
 
 		auto randShape = rand() % 2;
-		auto shape = new Shape(_settingLoader->GetVs(), _settingLoader->GetPs(), i);
+		auto shape = new Shape(_settingLoader->GetVs(0), _settingLoader->GetPs(), i);
 		hr = shape->CreateBuffers(hr, _pd3dDevice, _settingLoader->GetVertices(randShape), _settingLoader->GetIndices(randShape));
 		_shapeList.push_back(shape);
 		
@@ -297,6 +298,21 @@ HRESULT Device::InitDevice() {
 	//hr = _sphere->CreateBuffers(hr, _pd3dDevice,  _settingLoader->GetVertices(), _settingLoader->GetIndices());
 
 	_projection = DirectX::XMMatrixPerspectiveFovLH(DirectX::XM_PIDIV4, width / (FLOAT)height, 0.01f, 100.0f);
+	
+	hr = DirectX::CreateDDSTextureFromFile(_pd3dDevice, L"rocks.dds", nullptr, &_textureRV);
+	_pImmediateContext->PSSetShaderResources(0, 1, &_textureRV);
+
+	D3D11_SAMPLER_DESC sampDesc;
+	ZeroMemory(&sampDesc, sizeof(sampDesc));
+	sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	sampDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+
+	hr = _pd3dDevice->CreateSamplerState(&sampDesc, &_sampler);
+
+	
 	
 	
 	if (FAILED(hr))
@@ -393,8 +409,10 @@ void Device::Render() {
 			continue;
 			
 		}
-		
+
+		_pImmediateContext->PSSetSamplers(0, 1, &_sampler);
 		i->Draw(_pImmediateContext, _cameraManager->GetCamera(), _projection, t);
+		
 	}
 
 	_pImmediateContext->RSSetState(_rasterState2);

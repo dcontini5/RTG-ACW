@@ -7,7 +7,7 @@ cbuffer ConstantBuffer : register(b0)
     matrix Projection;
     float4 LightPos;
     float4 Eye;
-	float Time;
+    float Time;
 }
 
 Texture2D txWoodColor : register(t0);
@@ -38,9 +38,9 @@ VS_OUTPUT VS(float4 Pos : POSITION, float4 Color : COLOR, float3 N : NORMAL, flo
 
     float4x4 rotationY = float4x4(
 		cos(angle), 0, -sin(angle), 0,
-		0,          1,           0, 0,
-		sin(angle), 0, cos(angle),  0,
-		0,          0,          0,  1
+		0, 1, 0, 0,
+		sin(angle), 0, cos(angle), 0,
+		0, 0, 0, 1
 		);
 
  
@@ -56,13 +56,13 @@ VS_OUTPUT VS(float4 Pos : POSITION, float4 Color : COLOR, float3 N : NORMAL, flo
     
     output.Pos = mul(output.Pos, View);
     output.Pos = mul(output.Pos, Projection);
-    output.Norm = mul(N, (float3x3)World);
+    output.Norm = mul(-N, (float3x3) World);
     
     output.Norm = normalize(output.Norm);
     output.PosWorld = mul(Pos, World).xyz;
     
-    output.Color = Color;
-    output.Tex = Tex;
+    output.Color = float4(0.2f, 0.8f, 0.1f, 1.0f);
+    output.Tex = float2(1, 1);
 
 	
     return output;

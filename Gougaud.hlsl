@@ -7,7 +7,7 @@ cbuffer ConstantBuffer : register(b0)
     matrix Projection;
     float4 LightPos;
     float4 Eye;
-	float Time;
+    float Time;
 }
 
 Texture2D txWoodColor : register(t0);
@@ -38,9 +38,9 @@ VS_OUTPUT VS(float4 Pos : POSITION, float4 Color : COLOR, float3 N : NORMAL, flo
 
     float4x4 rotationY = float4x4(
 		cos(angle), 0, -sin(angle), 0,
-		0,          1,           0, 0,
-		sin(angle), 0, cos(angle),  0,
-		0,          0,          0,  1
+		0, 1, 0, 0,
+		sin(angle), 0, cos(angle), 0,
+		0, 0, 0, 1
 		);
 
  
@@ -51,18 +51,48 @@ VS_OUTPUT VS(float4 Pos : POSITION, float4 Color : COLOR, float3 N : NORMAL, flo
     
     //output.RotatedL = LightPos.xyz;
     output.RotatedL = LightPos.xyz + translation;
-    output.RotatedL = mul(output.RotatedL, (float3x3)rotationY);
+    output.RotatedL = mul(output.RotatedL, (float3x3) rotationY);
     
     
     output.Pos = mul(output.Pos, View);
     output.Pos = mul(output.Pos, Projection);
-    output.Norm = mul(N, (float3x3)World);
     
-    output.Norm = normalize(output.Norm);
+    output.Norm = normalize(mul(N, (float3x3) World));
+    
     output.PosWorld = mul(Pos, World).xyz;
     
-    output.Color = Color;
-    output.Tex = Tex;
+    float4 materialAmb = float4(0.1f, 0.2f, 0.2f, 1.0f);
+    float4 materialDiff = float4(0.5f, 0.3f, 0.6f, 1.0f);
+    float4 materialSpec = float4(0.4f, 0.2f, 0.5f, 1.0f);
+    //float4 lightCol = float4(1.0f, 0.6f, 0.8f, 1.0f);
+    float4 lightCol = float4(1.0f, 1.0f, 1.0f, 1.0f);
+    
+    float3 viewDis = normalize(Eye.xyz - output.PosWorld);
+    float3 lightDir = normalize(output.RotatedL - output.PosWorld);
+    
+    //float3 lightDir = output.RotatedL - output.PosWorld;
+
+    
+
+    float f = 32.0f; //vaolr in [1, 200], specifies the degree of shininess
+    
+    
+    float diff = saturate(dot(lightDir, output.Norm));
+    
+    float3 refl = reflect(-lightDir, output.Norm);
+    float spec = pow(saturate(dot(refl, viewDis)), f);
+    
+    
+    
+    spec *= materialSpec;
+    diff *= materialDiff;
+	
+    float4 lightColor = materialAmb + (diff + spec) * lightCol;
+    //return lightColor;
+    output.Color = lightColor;
+    
+    
+    output.Tex = float2(0, 0);
 
 	
     return output;

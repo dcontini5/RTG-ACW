@@ -9,7 +9,7 @@ void Camera::InitCamera(const DirectX::XMFLOAT3 eye, const DirectX::XMFLOAT3 up,
 
 	if (sel) {
 		
-		_camera1.Eye = DirectX::XMVectorSet(eye.x, eye.y, eye.z, 0);
+		_camera1.Eye = DirectX::XMVectorSet(eye.x, eye.y, eye.z, 1.0f);
 		_camera1.At = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
 		_camera1.Up = DirectX::XMVectorSet(up.x, up.y, up.z, 0);
 

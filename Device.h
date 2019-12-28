@@ -5,6 +5,7 @@
 #include "resource.h"
 #include "SettingLoader.h"
 #include <wrl.h>
+#include "DDSTextureLoader.h"
 
 class Device
 {
@@ -34,6 +35,8 @@ private:
 	ID3D11DepthStencilView*	_pDepthStencilView = nullptr;
 	ID3D11RasterizerState* _rasterState1 = nullptr;
 	ID3D11RasterizerState* _rasterState2 = nullptr;
+	ID3D11ShaderResourceView* _textureRV;
+	ID3D11SamplerState* _sampler;
 	
 	DirectX::XMMATRIX _projection;
 
