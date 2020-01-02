@@ -33,8 +33,8 @@ private:
 	ID3D11RenderTargetView* _pRenderTargetView = nullptr;
 	ID3D11Texture2D*		_pDepthStencil = nullptr;
 	ID3D11DepthStencilView*	_pDepthStencilView = nullptr;
-	ID3D11RasterizerState* _rasterState1 = nullptr;
-	ID3D11RasterizerState* _rasterState2 = nullptr;
+	ID3D11RasterizerState* _rasterStateBox = nullptr;
+	ID3D11RasterizerState* _rasterStateShape = nullptr;
 	ID3D11ShaderResourceView* _textureRV;
 	ID3D11SamplerState* _sampler;
 	

@@ -141,6 +141,7 @@ void SettingLoader::FileLoader(HRESULT hr, ID3D11Device* pd3Device, ID3D11Device
 			object.Pos.z = stof(str.substr(i + 2, str.size() - i + 1));
 			getline(fin, str);
 
+			
 			i = str.find('=');
 
 			object.Rot.x = stof(str.substr(i + 2, str.find(',') - i));
@@ -351,10 +352,10 @@ void SettingLoader::CreateParticleGeometry() {
 
 	ShapeGeometry particle;
 
-	particle.vertices.push_back({ DirectX::XMFLOAT3(1.0f, 1.0f, -1.0f), DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f), DirectX::XMFLOAT2(0.625f, 0.5f) });
-	particle.vertices.push_back({ DirectX::XMFLOAT3(1.0f, -1.0f, -1.0f), DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f), DirectX::XMFLOAT2(0.875f, 0.5f) });
-	particle.vertices.push_back({ DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f), DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f), DirectX::XMFLOAT2(0.875f, 0.75f) });
-	particle.vertices.push_back({ DirectX::XMFLOAT3(1.0f, -1.0f, 1.0f), DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f), DirectX::XMFLOAT2(0.625f, 0.75f) });
+	particle.vertices.push_back({ DirectX::XMFLOAT3(-1.0f, 1.0f, 0.0f), DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f), DirectX::XMFLOAT2(0.625f, 0.5f) });
+	particle.vertices.push_back({ DirectX::XMFLOAT3(1.0f, 1.0f, 0.0f), DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f), DirectX::XMFLOAT2(0.875f, 0.5f) });
+	particle.vertices.push_back({ DirectX::XMFLOAT3(-1.0f, -1.0f, 0.0f), DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f), DirectX::XMFLOAT2(0.875f, 0.75f) });
+	particle.vertices.push_back({ DirectX::XMFLOAT3(1.0f, -1.0f, 0.0f), DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f), DirectX::XMFLOAT2(0.625f, 0.75f) });
 
 	particle.indices.push_back(0);
 	particle.indices.push_back(2);

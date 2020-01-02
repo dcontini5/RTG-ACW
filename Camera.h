@@ -19,10 +19,10 @@ public:
 	Camera(const CameraCoordinates camera1, const CameraCoordinates camera2): _camera1(camera1), _camera2(camera2) {};
 	Camera(const std::vector<CameraCoordinates>& cameras): _camera1(cameras[0]), _camera2(cameras[1]) {};
 	~Camera();
-	void InitCamera(const DirectX::XMFLOAT3,const DirectX::XMFLOAT3,const bool);
 	void InitCamera(const CameraCoordinates,const bool);
 	void SwapCamera(const bool sel) { _view = sel ? DirectX::XMMatrixLookAtLH(_camera1.Eye, _camera1.At, _camera1.Up) : DirectX::XMMatrixLookAtLH(_camera2.Eye, _camera2.At, _camera2.Up); }
 	DirectX::XMMATRIX GetCamera() const { return _view; }
+	DirectX::XMFLOAT3 GetEye() const { return {_camera1.Eye.m128_f32[0], _camera1.Eye.m128_f32[0], _camera1.Eye.m128_f32[0]	}; }
 	//todo camera movements
 	
 private:

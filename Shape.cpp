@@ -51,12 +51,14 @@ void Shape::Draw(ID3D11DeviceContext* pImmediateContext, DirectX::XMMATRIX view,
 	pImmediateContext->IASetIndexBuffer(_pIndexBuffer, DXGI_FORMAT_R16_UINT, 0);
 
 
-	
+	auto static  xx = 0.0f;
 	auto world = DirectX::XMMatrixIdentity();
-
+	
 	world *= DirectX::XMMatrixScaling(_coordinates.Scal.x, _coordinates.Scal.y, _coordinates.Scal.z);
 	world *= DirectX::XMMatrixRotationRollPitchYaw(_coordinates.Rot.x, _coordinates.Rot.y, _coordinates.Rot.z);
-	world *= DirectX::XMMatrixTranslation(_coordinates.Pos.x, _coordinates.Pos.y, _coordinates.Pos.z);
+	world *= DirectX::XMMatrixTranslation(_coordinates.Pos.x + xx , _coordinates.Pos.y, _coordinates.Pos.z);
+
+	xx += 0.0000001f;
 	
 	ConstantBuffer cb;
 	cb.World = DirectX::XMMatrixTranspose(world);
@@ -64,6 +66,7 @@ void Shape::Draw(ID3D11DeviceContext* pImmediateContext, DirectX::XMMATRIX view,
 	cb.Projection = DirectX::XMMatrixTranspose(Projection);
 	//cb.LightPos = DirectX::XMVectorSet(-4.9f, 4.9f, 4.9f, 0.0f);
 	cb.LightPos = DirectX::XMVectorSet(0.0f, 5.0f, 0.0f, 0.0f);
+	//cb.Eye = DirectX::XMVectorSet(view.r[0].m128_f32[0], view.r[0].m128_f32[1], view.r[2].m128_f32[0], 0.0f);
 	cb.Eye = DirectX::XMVectorSet(0.0f, 4.0f, 20.0f, 0.0f);
 	cb.Time = t;
 	

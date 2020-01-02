@@ -5,22 +5,6 @@ Camera::~Camera()
 {
 }
 
-void Camera::InitCamera(const DirectX::XMFLOAT3 eye, const DirectX::XMFLOAT3 up, const bool sel) {
-
-	if (sel) {
-		
-		_camera1.Eye = DirectX::XMVectorSet(eye.x, eye.y, eye.z, 1.0f);
-		_camera1.At = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
-		_camera1.Up = DirectX::XMVectorSet(up.x, up.y, up.z, 0);
-
-	}else {
-
-		_camera2.Eye = DirectX::XMVectorSet(eye.x, eye.y, eye.z, 0);
-		_camera2.At = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
-		_camera2.Up = DirectX::XMVectorSet(up.x, up.y, up.z, 0);
-
-	}
-}
 
 void Camera::InitCamera(CameraCoordinates coords, const bool sel) {
 

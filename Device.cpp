@@ -225,7 +225,6 @@ HRESULT Device::InitDevice() {
 	_pImmediateContext->OMSetRenderTargets(1, &_pRenderTargetView, _pDepthStencilView);
 
 
-
 	// Setup the viewport
 	D3D11_VIEWPORT vp;
 	vp.Width = (FLOAT)width;
@@ -238,11 +237,9 @@ HRESULT Device::InitDevice() {
 
 	//Define the Rasterization State
 
-	//ID3D11RasterizerState* m_rasterState = nullptr;
-
 	D3D11_RASTERIZER_DESC rasterDesc;
 
-	rasterDesc.CullMode = D3D11_CULL_NONE;
+	rasterDesc.CullMode = D3D11_CULL_BACK;
 	rasterDesc.FillMode = D3D11_FILL_SOLID;
 	rasterDesc.ScissorEnable = false;
 	rasterDesc.DepthBias = 0;
@@ -252,9 +249,9 @@ HRESULT Device::InitDevice() {
 	rasterDesc.SlopeScaledDepthBias = 0.0f;
 
 
-	hr = _pd3dDevice->CreateRasterizerState(&rasterDesc, &_rasterState1);
+	hr = _pd3dDevice->CreateRasterizerState(&rasterDesc, &_rasterStateBox);
 
-	rasterDesc.CullMode = D3D11_CULL_BACK;
+	rasterDesc.CullMode = D3D11_CULL_FRONT;
 	rasterDesc.FillMode = D3D11_FILL_SOLID;
 	rasterDesc.ScissorEnable = false;
 	rasterDesc.DepthBias = 0;
@@ -264,10 +261,25 @@ HRESULT Device::InitDevice() {
 	rasterDesc.SlopeScaledDepthBias = 0.0f;
 
 
-	hr = _pd3dDevice->CreateRasterizerState(&rasterDesc, &_rasterState2);
-	_pImmediateContext->RSSetState(_rasterState2);
+	hr = _pd3dDevice->CreateRasterizerState(&rasterDesc, &_rasterStateShape);
+	//_pImmediateContext->RSSetState(_rasterStateShape);
+
+	rasterDesc.CullMode = D3D11_CULL_NONE;
+	rasterDesc.FillMode = D3D11_FILL_SOLID;
+	rasterDesc.ScissorEnable = false;
+	rasterDesc.DepthBias = 0;
+	rasterDesc.DepthBiasClamp = 0.0f;
+	rasterDesc.DepthClipEnable = false;
+	rasterDesc.MultisampleEnable = false;
+	rasterDesc.SlopeScaledDepthBias = 0.0f;
 
 
+	hr = _pd3dDevice->CreateRasterizerState(&rasterDesc, &_rasterStateShape);
+	_pImmediateContext->RSSetState(_rasterStateShape);
+
+
+
+	
 	_pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	_settingLoader = new SettingLoader();
@@ -299,11 +311,14 @@ HRESULT Device::InitDevice() {
 	//_sphere = new Shape(_settingLoader->GetVs(), _settingLoader->GetPs());
 	//hr = _sphere->CreateBuffers(hr, _pd3dDevice,  _settingLoader->GetVertices(), _settingLoader->GetIndices());
 
-	auto shape = new Shape(_settingLoader->GetVs(1), _settingLoader->GetPs(1), _settingLoader->GetObjectsCoords()[3]);
-	hr = shape->CreateBuffers(hr, _pd3dDevice, _settingLoader->GetVertices(2), _settingLoader->GetIndices(2));
-	_shapeList.push_back(shape);
-	
-	
+	for (auto i = 0; i< 50; i++) {
+
+		auto shape = new Shape(_settingLoader->GetVs(2), _settingLoader->GetPs(1), _settingLoader->GetObjectsCoords()[3]);
+		hr = shape->CreateBuffers(hr, _pd3dDevice, _settingLoader->GetVertices(2), _settingLoader->GetIndices(2));
+		_shapeList.push_back(shape);
+
+	}
+
 	_projection = DirectX::XMMatrixPerspectiveFovLH(DirectX::XM_PIDIV4, width / (FLOAT)height, 0.01f, 100.0f);
 	
 	hr = DirectX::CreateDDSTextureFromFile(_pd3dDevice, L"rocks.dds", nullptr, &_textureRV);
@@ -402,8 +417,7 @@ void Device::Render() {
 	// Just clear the backbuffer
 	_pImmediateContext->ClearRenderTargetView(_pRenderTargetView, DirectX::Colors::DarkSlateBlue);
 	_pImmediateContext->ClearDepthStencilView(_pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
-	//_pImmediateContext->PSSetShaderResources(0, 1, &wood_TexureRV);
-	//g_pImmediateContext->PSSetSamplers(0, 1, &wood_Sampler);
+
 	//
 
 	auto c = 0;
@@ -411,12 +425,12 @@ void Device::Render() {
 
 		if(!c) {
 
-			 i->Draw(_pImmediateContext, _cameraManager->GetCamera(), _projection, t);
-			_pImmediateContext->RSSetState(_rasterState1);
+			//i->Draw(_pImmediateContext, _cameraManager->GetCamera(), _projection, t);
+			_pImmediateContext->RSSetState(_rasterStateShape);
 			c++;
 			continue;
 		}
-		if(c!=4) {
+		if(c>=4) {
 			_pImmediateContext->PSSetSamplers(0, 1, &_sampler);
 			i->Draw(_pImmediateContext, _cameraManager->GetCamera(), _projection, t);
 		}
@@ -426,7 +440,7 @@ void Device::Render() {
 		
 	}
 
-	_pImmediateContext->RSSetState(_rasterState2);
+	_pImmediateContext->RSSetState(_rasterStateBox);
 	
 	_pSwapChain->Present(0, 0);
 }
