@@ -9,8 +9,8 @@ cbuffer ConstantBuffer : register(b0)
     float Time;
 }
 
-Texture2D txWoodColor : register(t0);
-SamplerState txWoodSampler : register(s0);
+Texture2D txColor : register(t0);
+SamplerState txSampler : register(s0);
 
 //--------------------------------------------------------------------------------------
 struct VS_OUTPUT
@@ -47,7 +47,9 @@ float4 PS(VS_OUTPUT input) : SV_Target
     float diff = saturate(dot(lightDir, input.Norm));
     float spec = pow(saturate(dot(refl, -viewDis)), f);
     
-    float4 woodColor = txWoodColor.SampleLevel(txWoodSampler, input.Tex, 1.0f);
+    float4 texColor = txColor.SampleLevel(txSampler, input.Tex, 1.0f);
+    //float4 texColor = txColor.Sample(txSampler, input.Tex);
+    //texColor *= (1.0f - smoothstep(0.0f, 0.43f, length(input.Tex - 0.5f)));
     
     spec *= materialSpec;
     diff *= materialDiff;
@@ -55,10 +57,11 @@ float4 PS(VS_OUTPUT input) : SV_Target
     float4 lightColor = materialAmb + (diff + spec) * lightCol;
     
     
-    return input.Color * lightColor * woodColor;
+    //return input.Color * lightColor * woodColor;
     //return spec * lightCol;
 	
-    //float4 woodColor = txWoodColor.Sample(txWoodSampler, input.Tex);
-    return woodColor * lightColor ;
+    //float4 texColor = txWoodColor.Sample(txWoodSampler, input.Tex);
+    return texColor * lightColor ;
+    //return texColor;
     
 }

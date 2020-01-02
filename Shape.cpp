@@ -51,14 +51,14 @@ void Shape::Draw(ID3D11DeviceContext* pImmediateContext, DirectX::XMMATRIX view,
 	pImmediateContext->IASetIndexBuffer(_pIndexBuffer, DXGI_FORMAT_R16_UINT, 0);
 
 
-	auto static  xx = 0.0f;
+
 	auto world = DirectX::XMMatrixIdentity();
 	
 	world *= DirectX::XMMatrixScaling(_coordinates.Scal.x, _coordinates.Scal.y, _coordinates.Scal.z);
 	world *= DirectX::XMMatrixRotationRollPitchYaw(_coordinates.Rot.x, _coordinates.Rot.y, _coordinates.Rot.z);
-	world *= DirectX::XMMatrixTranslation(_coordinates.Pos.x + xx , _coordinates.Pos.y, _coordinates.Pos.z);
+	world *= DirectX::XMMatrixTranslation(_coordinates.Pos.x, _coordinates.Pos.y, _coordinates.Pos.z);
 
-	xx += 0.0000001f;
+	
 	
 	ConstantBuffer cb;
 	cb.World = DirectX::XMMatrixTranspose(world);

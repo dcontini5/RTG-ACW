@@ -46,7 +46,7 @@ VS_OUTPUT VS(float4 Pos : POSITION, float4 Color : COLOR, float3 N : NORMAL, flo
 
  
     float3 translation = float3(0.0, 0.0, 3.5);
-	//output.Pos = mul(output.Pos, rotationY);
+    //output.Pos = mul(output.Pos, rotationY);
 	//output.Pos.xyz *= scaling;
 	//output.Pos.xyz += translation;
     

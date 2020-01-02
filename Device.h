@@ -37,6 +37,8 @@ private:
 	ID3D11RasterizerState* _rasterStateShape = nullptr;
 	ID3D11ShaderResourceView* _textureRV;
 	ID3D11SamplerState* _sampler;
+	ID3D11BlendState* _pBlendStateNoBlend = nullptr;
+	ID3D11DepthStencilState* _pDepthStencilStateSky = nullptr;
 	
 	DirectX::XMMATRIX _projection;
 

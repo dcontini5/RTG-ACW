@@ -211,7 +211,7 @@ HRESULT Device::InitDevice() {
 	hr = _pd3dDevice->CreateTexture2D(&descDepth, nullptr, &_pDepthStencil);
 	if (FAILED(hr))
 		return hr;
-
+	
 	// Create the depth stencil view
 	D3D11_DEPTH_STENCIL_VIEW_DESC descDSV;
 	ZeroMemory(&descDSV, sizeof(descDSV));
@@ -221,7 +221,7 @@ HRESULT Device::InitDevice() {
 	hr = _pd3dDevice->CreateDepthStencilView(_pDepthStencil, &descDSV, &_pDepthStencilView);
 	if (FAILED(hr))
 		return hr;
-
+	
 	_pImmediateContext->OMSetRenderTargets(1, &_pRenderTargetView, _pDepthStencilView);
 
 
@@ -262,23 +262,44 @@ HRESULT Device::InitDevice() {
 
 
 	hr = _pd3dDevice->CreateRasterizerState(&rasterDesc, &_rasterStateShape);
-	//_pImmediateContext->RSSetState(_rasterStateShape);
-
-	rasterDesc.CullMode = D3D11_CULL_NONE;
-	rasterDesc.FillMode = D3D11_FILL_SOLID;
-	rasterDesc.ScissorEnable = false;
-	rasterDesc.DepthBias = 0;
-	rasterDesc.DepthBiasClamp = 0.0f;
-	rasterDesc.DepthClipEnable = false;
-	rasterDesc.MultisampleEnable = false;
-	rasterDesc.SlopeScaledDepthBias = 0.0f;
-
-
-	hr = _pd3dDevice->CreateRasterizerState(&rasterDesc, &_rasterStateShape);
 	_pImmediateContext->RSSetState(_rasterStateShape);
 
+	//rasterDesc.CullMode = D3D11_CULL_NONE;
+	//rasterDesc.FillMode = D3D11_FILL_SOLID;
+	//rasterDesc.ScissorEnable = false;
+	//rasterDesc.DepthBias = 0;
+	//rasterDesc.DepthBiasClamp = 0.0f;
+	//rasterDesc.DepthClipEnable = false;
+	//rasterDesc.MultisampleEnable = false;
+	//rasterDesc.SlopeScaledDepthBias = 0.0f;
 
+	//hr = _pd3dDevice->CreateRasterizerState(&rasterDesc, &_rasterStateShape);
+	//_pImmediateContext->RSSetState(_rasterStateShape);
 
+	D3D11_DEPTH_STENCIL_DESC dsDesc;
+
+	dsDesc.DepthEnable = false;
+	dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+	dsDesc.DepthFunc = D3D11_COMPARISON_LESS;
+
+	//_pd3dDevice->CreateDepthStencilState(&dsDesc, &_pDepthStencilStateSky);
+	//_pImmediateContext->OMSetDepthStencilState(_pDepthStencilStateSky, 1);
+	D3D11_BLEND_DESC blendDesc;
+
+	ZeroMemory(&blendDesc, sizeof(D3D11_BLEND_DESC));
+
+	blendDesc.RenderTarget[0].BlendEnable = TRUE;
+	blendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_ONE;
+	blendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_ONE;
+	blendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+	blendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+	blendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+	blendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+	blendDesc.RenderTarget[0].RenderTargetWriteMask = 0x0f;
+
+	//hr = _pd3dDevice->CreateBlendState(&blendDesc, &_pBlendStateNoBlend);
+	//_pImmediateContext->OMSetBlendState(_pBlendStateNoBlend, nullptr, 1);
+	
 	
 	_pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
@@ -311,13 +332,13 @@ HRESULT Device::InitDevice() {
 	//_sphere = new Shape(_settingLoader->GetVs(), _settingLoader->GetPs());
 	//hr = _sphere->CreateBuffers(hr, _pd3dDevice,  _settingLoader->GetVertices(), _settingLoader->GetIndices());
 
-	for (auto i = 0; i< 50; i++) {
+	
 
-		auto shape = new Shape(_settingLoader->GetVs(2), _settingLoader->GetPs(1), _settingLoader->GetObjectsCoords()[3]);
-		hr = shape->CreateBuffers(hr, _pd3dDevice, _settingLoader->GetVertices(2), _settingLoader->GetIndices(2));
-		_shapeList.push_back(shape);
+	//auto shape = new Shape(_settingLoader->GetVs(2), _settingLoader->GetPs(1), _settingLoader->GetObjectsCoords()[3]);
+	//hr = shape->CreateBuffers(hr, _pd3dDevice, _settingLoader->GetVertices(2), _settingLoader->GetIndices(2));
+	//_shapeList.push_back(shape);
 
-	}
+	
 
 	_projection = DirectX::XMMatrixPerspectiveFovLH(DirectX::XM_PIDIV4, width / (FLOAT)height, 0.01f, 100.0f);
 	
@@ -425,12 +446,12 @@ void Device::Render() {
 
 		if(!c) {
 
-			//i->Draw(_pImmediateContext, _cameraManager->GetCamera(), _projection, t);
+			i->Draw(_pImmediateContext, _cameraManager->GetCamera(), _projection, t);
 			_pImmediateContext->RSSetState(_rasterStateShape);
 			c++;
 			continue;
 		}
-		if(c>=4) {
+		if(c<4) {
 			_pImmediateContext->PSSetSamplers(0, 1, &_sampler);
 			i->Draw(_pImmediateContext, _cameraManager->GetCamera(), _projection, t);
 		}
