@@ -63,6 +63,7 @@ VS_OUTPUT VS(float4 Pos : POSITION, float4 Color : COLOR, float3 N : NORMAL, flo
     
     output.Color = float4(0.2f, 0.8f, 0.1f, 1.0f);
     output.Tex = float2(1, 1);
+    //output.Tex = Tex;
 
 	
     return output;

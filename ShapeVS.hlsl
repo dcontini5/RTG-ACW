@@ -30,8 +30,9 @@ VS_OUTPUT VS(float4 Pos : POSITION, float4 Color : COLOR, float3 N : NORMAL, flo
 {
     VS_OUTPUT output = (VS_OUTPUT) 0;
     output.Pos = mul(Pos, World);
+  
 
-	
+
 
     const float pi = 3.1415f;
     const float angle = 1 * pi / 2 * Time;

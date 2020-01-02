@@ -71,12 +71,6 @@
     <FxCompile Include="PS1.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
-    <FxCompile Include="VS1.hlsl">
-      <Filter>Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="VS2.hlsl">
-      <Filter>Shaders</Filter>
-    </FxCompile>
     <FxCompile Include="Gougaud.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
@@ -84,6 +78,12 @@
       <Filter>Shaders</Filter>
     </FxCompile>
     <FxCompile Include="PhongSpotlight.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="BoxVS.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="ShapeVS.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
   </ItemGroup>

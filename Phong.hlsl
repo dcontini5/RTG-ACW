@@ -42,12 +42,12 @@ float4 PS(VS_OUTPUT input) : SV_Target
     
     float3 refl = reflect(-lightDir, input.Norm);
 
-    float f = 128.0f; //vaolr in [1, 200], specifies the degree of shininess
+    float f = 1.0f; //vaolr in [1, 200], specifies the degree of shininess
     
     float diff = saturate(dot(lightDir, input.Norm));
     float spec = pow(saturate(dot(refl, -viewDis)), f);
     
-    float4 woodColor = txWoodColor.Sample(txWoodSampler, input.Tex);
+    float4 woodColor = txWoodColor.SampleLevel(txWoodSampler, input.Tex, 1.0f);
     
     spec *= materialSpec;
     diff *= materialDiff;
@@ -59,6 +59,6 @@ float4 PS(VS_OUTPUT input) : SV_Target
     //return spec * lightCol;
 	
     //float4 woodColor = txWoodColor.Sample(txWoodSampler, input.Tex);
-    //return woodColor * lightColor ;
+    return woodColor * lightColor ;
     
 }
