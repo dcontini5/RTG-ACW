@@ -43,7 +43,6 @@ private:
 	DirectX::XMMATRIX _projection;
 
 	SettingLoader* _settingLoader;
-	Shape* _sphere;
 	std::vector<Shape*> _shapeList;
 	std::vector<Shape*> _particleList;
 	Camera* _cameraManager;

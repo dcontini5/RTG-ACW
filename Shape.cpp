@@ -42,7 +42,7 @@ HRESULT Shape::CreateBuffers(HRESULT& hr, ID3D11Device* pd3dDevice, std::vector<
 }
 
 
-void Shape::Draw(ID3D11DeviceContext* pImmediateContext, DirectX::XMMATRIX view, DirectX::XMMATRIX Projection, float t) const {
+void Shape::Draw(ID3D11DeviceContext* pImmediateContext, DirectX::XMMATRIX view, DirectX::XMVECTOR eye, DirectX::XMMATRIX Projection, float t) const {
 
 	// Set vertex buffer
 	UINT stride = sizeof(SimpleVertex);
@@ -64,10 +64,8 @@ void Shape::Draw(ID3D11DeviceContext* pImmediateContext, DirectX::XMMATRIX view,
 	cb.World = DirectX::XMMatrixTranspose(world);
 	cb.View = DirectX::XMMatrixTranspose(view);
 	cb.Projection = DirectX::XMMatrixTranspose(Projection);
-	//cb.LightPos = DirectX::XMVectorSet(-4.9f, 4.9f, 4.9f, 0.0f);
 	cb.LightPos = DirectX::XMVectorSet(0.0f, 5.0f, 0.0f, 0.0f);
-	//cb.Eye = DirectX::XMVectorSet(view.r[0].m128_f32[0], view.r[0].m128_f32[1], view.r[2].m128_f32[0], 0.0f);
-	cb.Eye = DirectX::XMVectorSet(0.0f, 4.0f, 20.0f, 0.0f);
+	cb.Eye = eye;
 	cb.Time = t;
 	
 	pImmediateContext->UpdateSubresource(_pConstantBuffer, 0, nullptr, &cb, 0, 0);

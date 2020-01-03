@@ -57,11 +57,11 @@ float4 PS(VS_OUTPUT input) : SV_Target
     float4 lightColor = materialAmb + (diff + spec) * lightCol;
     
     
-    //return input.Color * lightColor * woodColor;
+    return input.Color * lightColor * texColor;
     //return spec * lightCol;
 	
     //float4 texColor = txWoodColor.Sample(txWoodSampler, input.Tex);
-    return texColor * lightColor ;
+    //return texColor * lightColor ;
     //return texColor;
     
 }

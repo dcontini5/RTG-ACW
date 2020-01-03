@@ -37,7 +37,7 @@ public:
 	void ObjLoader(std::string);
 	std::vector<SimpleVertex> GetVertices(int i) const { return _shapeGeometries[i].vertices; };
 	std::vector<UINT16> GetIndices(int i) const { return _shapeGeometries[i].indices; };
-	CameraCoordinates GetCameraCoords() const { return _cameraCoordinates[0]; };
+	std::vector<CameraCoordinates> GetCameraCoords() const { return _cameraCoordinates; };
 	std::vector<ShapeCoordinates> GetObjectsCoords() const { return _objectCoordinates; }
 	void CreateParticleGeometry();
 

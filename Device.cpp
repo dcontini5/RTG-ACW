@@ -307,8 +307,7 @@ HRESULT Device::InitDevice() {
 	_settingLoader->FileLoader(hr, _pd3dDevice, _pImmediateContext);
 	_settingLoader->CreateParticleGeometry();
 	
-	_cameraManager = new Camera();
-	_cameraManager->InitCamera(_settingLoader->GetCameraCoords(), true);
+	_cameraManager = new Camera(_settingLoader->GetCameraCoords());
 
 	auto j = true;
 	for (auto i : _settingLoader->GetObjectsCoords()) {
@@ -329,10 +328,7 @@ HRESULT Device::InitDevice() {
 		_shapeList.push_back(shape);
 
 	}
-	//_sphere = new Shape(_settingLoader->GetVs(), _settingLoader->GetPs());
-	//hr = _sphere->CreateBuffers(hr, _pd3dDevice,  _settingLoader->GetVertices(), _settingLoader->GetIndices());
 
-	
 
 	//auto shape = new Shape(_settingLoader->GetVs(2), _settingLoader->GetPs(1), _settingLoader->GetObjectsCoords()[3]);
 	//hr = shape->CreateBuffers(hr, _pd3dDevice, _settingLoader->GetVertices(2), _settingLoader->GetIndices(2));
@@ -446,14 +442,14 @@ void Device::Render() {
 
 		if(!c) {
 
-			i->Draw(_pImmediateContext, _cameraManager->GetCamera(), _projection, t);
+			i->Draw(_pImmediateContext, _cameraManager->GetView(), _cameraManager->GetEye(), _projection, t);
 			_pImmediateContext->RSSetState(_rasterStateShape);
 			c++;
 			continue;
 		}
 		if(c<4) {
 			_pImmediateContext->PSSetSamplers(0, 1, &_sampler);
-			i->Draw(_pImmediateContext, _cameraManager->GetCamera(), _projection, t);
+			i->Draw(_pImmediateContext, _cameraManager->GetView(), _cameraManager->GetEye(), _projection, t);
 		}
 		
 		c++;
