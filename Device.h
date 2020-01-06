@@ -2,14 +2,16 @@
 #include <windows.h>
 #include <d3d11_1.h>
 #include <directxcolors.h>
-#include "resource.h"
-#include "SettingLoader.h"
+#include "Resource.h"
+//#include "SettingLoader.h"
 #include <wrl.h>
 #include "DDSTextureLoader.h"
+#include "Shape.h"
 
 class Device
 {
 public:
+	
 	Device();
 	~Device();
 	HRESULT InitWindow(HINSTANCE hInstance, int nCmdShow);
@@ -43,7 +45,6 @@ private:
 	DirectX::XMMATRIX _projection;
 
 	SettingLoader* _settingLoader;
-	Shape* _sphere;
 	std::vector<Shape*> _shapeList;
 	std::vector<Shape*> _particleList;
 	Camera* _cameraManager;

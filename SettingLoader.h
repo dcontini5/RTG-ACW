@@ -11,8 +11,37 @@
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
-#include "Shape.h"
 #include "Camera.h"
+
+
+struct ShapeCoordinates {
+
+	DirectX::XMFLOAT3 Pos;
+	DirectX::XMFLOAT3 Rot;
+	DirectX::XMFLOAT3 Scal;
+
+
+};
+
+struct SimpleVertex {
+
+	DirectX::XMFLOAT3 Pos;
+	DirectX::XMFLOAT4 Color;
+	DirectX::XMFLOAT3 Normal;
+	DirectX::XMFLOAT2 TexCoord;
+
+};
+
+struct ConstantBuffer
+{
+	DirectX::XMMATRIX World;
+	DirectX::XMMATRIX View;
+	DirectX::XMMATRIX Projection;
+	DirectX::XMVECTOR LightPos;
+	DirectX::XMVECTOR Eye;
+	float Time;
+
+};
 
 struct ShapeGeometry {
 
@@ -22,6 +51,15 @@ struct ShapeGeometry {
 
 	
 };
+
+struct OBB {
+
+	DirectX::XMVECTOR AxisOrientation[3];
+	DirectX::XMVECTOR Center;
+	float BoxHalfwidth[3];
+};
+
+
 
 class SettingLoader
 {
@@ -37,7 +75,7 @@ public:
 	void ObjLoader(std::string);
 	std::vector<SimpleVertex> GetVertices(int i) const { return _shapeGeometries[i].vertices; };
 	std::vector<UINT16> GetIndices(int i) const { return _shapeGeometries[i].indices; };
-	CameraCoordinates GetCameraCoords() const { return _cameraCoordinates[0]; };
+	std::vector<CameraCoordinates> GetCameraCoords() const { return _cameraCoordinates; };
 	std::vector<ShapeCoordinates> GetObjectsCoords() const { return _objectCoordinates; }
 	void CreateParticleGeometry();
 

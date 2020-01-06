@@ -349,21 +349,25 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="Cube.cpp" />
     <ClCompile Include="DDSTextureLoader.cpp" />
     <ClCompile Include="Device.cpp" />
     <ClCompile Include="Particle.cpp" />
     <ClCompile Include="RTG-ACW.cpp" />
     <ClCompile Include="SettingLoader.cpp" />
     <ClCompile Include="Shape.cpp" />
+    <ClCompile Include="Sphere.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="Cube.h" />
     <ClInclude Include="DDSTextureLoader.h" />
     <ClInclude Include="Device.h" />
     <ClInclude Include="Particle.h" />
     <CLInclude Include="resource.h" />
     <ClInclude Include="SettingLoader.h" />
     <ClInclude Include="Shape.h" />
+    <ClInclude Include="Sphere.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="RTG-ACW.rc" />

@@ -1,23 +1,38 @@
 #pragma once
 #include "Shape.h"
 
+using namespace DirectX;
+
+
+
 class Particle : public Shape{
 
 public:
 	
-	Particle(ID3D11VertexShader* vertexShader, ID3D11PixelShader* pixelShader, ShapeCoordinates& coords) :
-		Shape(vertexShader, pixelShader, coords), _position(coords.Pos), _timeToLive(10.0f), _radius(0.5f) {
+	Particle(ID3D11VertexShader* vertexShader, ID3D11PixelShader* pixelShader, ShapeCoordinates& coords, DirectX::XMFLOAT3 velocity) :
+		Shape(vertexShader, pixelShader, coords), _timeToLive(10.0f),
+		_radius(0.5f){
 	}
 
 	~Particle() = default;
 
-
+	void Update();
+	void Draw();
+	void Integrate(const float& t, const float& dt);
+	void CollisionWithBox(const OBB cube);
+	void CollisionWithCube(const OBB cube);
+	void CollisionWithSphere(const XMVECTOR sPos, const float sRadius);
+	//void CollisionWithSphere(glm::vec3 pos, const float radius, const float time);
+	
 private:
 
-	DirectX::XMFLOAT3 _position;
-	DirectX::XMFLOAT3 _velocity{};
+
+	XMFLOAT3 _velocity0;
+	XMFLOAT3 _acceleration;
+	XMFLOAT3 _position0;
 	float _timeToLive;
 	float _radius;
 	
+	
+	
 };
-

@@ -2,36 +2,7 @@
 #include <DirectXMath.h>
 #include <vector>
 #include <d3d11_1.h>
-
-
-struct ShapeCoordinates {
-
-	DirectX::XMFLOAT3 Pos;
-	DirectX::XMFLOAT3 Rot;
-	DirectX::XMFLOAT3 Scal;
-
-
-};
-
-struct SimpleVertex {
-
-	DirectX::XMFLOAT3 Pos;
-	DirectX::XMFLOAT4 Color;
-	DirectX::XMFLOAT3 Normal;
-	DirectX::XMFLOAT2 TexCoord;
-
-};
-
-struct ConstantBuffer
-{
-	DirectX::XMMATRIX World;
-	DirectX::XMMATRIX View;
-	DirectX::XMMATRIX Projection;
-	DirectX::XMVECTOR LightPos;
-	DirectX::XMVECTOR Eye;
-	float Time;
-	
-};
+#include "SettingLoader.h"
 
 class Shape {
 
@@ -42,8 +13,10 @@ public:
 	HRESULT CreateBuffers(HRESULT&, ID3D11Device*, std::vector<SimpleVertex>, std::vector<UINT16>);
 	void Draw();
 	void Draw(ID3D11DeviceContext* pImmediateContext, DirectX::XMMATRIX world, DirectX::XMMATRIX view, DirectX::XMMATRIX projection, float t) const;
-	void Draw(ID3D11DeviceContext* pImmediateContext, DirectX::XMMATRIX view, DirectX::XMMATRIX projection, float t) const;
+	void Draw(ID3D11DeviceContext* pImmediateContext, DirectX::XMMATRIX view, DirectX::XMVECTOR eye, DirectX::XMMATRIX projection, float t) const;
 	UINT16 GetNumberOfIndices() const { return _noOfIndices; }
+	ShapeCoordinates GetCoords() const { return _coordinates; }
+	void SetPos(DirectX::XMFLOAT3 newPos) { _coordinates.Pos = newPos; }
 
 private:
 
