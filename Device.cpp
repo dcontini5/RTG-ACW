@@ -359,7 +359,7 @@ HRESULT Device::InitDevice() {
 
 		if (!j) {
 
-			auto shape = new Shape(_settingLoader->GetVs(0), _settingLoader->GetPs(1), i);
+			auto shape = new Shape(_settingLoader->GetVs(0), _settingLoader->GetPs(0), i);
 			hr = shape->CreateBuffers(hr, _pd3dDevice, _settingLoader->GetVertices(0), _settingLoader->GetIndices(0));
 			_shapeList.push_back(shape);
 			j++;
@@ -368,7 +368,7 @@ HRESULT Device::InitDevice() {
 		}
 
 	
-		auto shape = new Shape(_settingLoader->GetVs(1), _settingLoader->GetPs(1), i);
+		auto shape = new Shape(_settingLoader->GetVs(3), _settingLoader->GetPs(4), i);
 		hr = shape->CreateBuffers(hr, _pd3dDevice, _settingLoader->GetVertices(j % 2), _settingLoader->GetIndices(j % 2));
 		_shapeList.push_back(shape);
 		j++;
@@ -383,13 +383,14 @@ HRESULT Device::InitDevice() {
 	//	_particleList.push_back(particle);
 	//}
 
-
+	//todo unroll loops in shaders
 	
 
 	_projection = DirectX::XMMatrixPerspectiveFovLH(DirectX::XM_PIDIV4, width / (FLOAT)height, 0.01f, 100.0f);
 	
 	hr = DirectX::CreateDDSTextureFromFile(_pd3dDevice, L"sand.dds", nullptr, &_particleTextureRV);
-	hr = DirectX::CreateDDSTextureFromFile(_pd3dDevice, L"wood.dds", nullptr, &_shapetextureRV);
+	hr = DirectX::CreateDDSTextureFromFile(_pd3dDevice, L"stones.dds", nullptr, &_shapeTextureRV);
+	hr = DirectX::CreateDDSTextureFromFile(_pd3dDevice, L"stones_NM_height.dds", nullptr, &_shapeBumpRV);
 	
 	
 
@@ -504,9 +505,10 @@ void Device::Render() {
 			continue;
 		}
 		
-		_pImmediateContext->PSSetShaderResources(0, 1, &_shapetextureRV);
+		_pImmediateContext->PSSetShaderResources(0, 1, &_shapeTextureRV);
+		_pImmediateContext->PSSetShaderResources(1, 1, &_shapeBumpRV);
 		i->Draw(_pImmediateContext, _cameraManager->GetView(), _cameraManager->GetEye(), _projection, t);
-		i->DrawShadow(_pImmediateContext, _cameraManager->GetView(), _cameraManager->GetEye(), _projection, t);
+		//i->DrawShadow(_pImmediateContext, _cameraManager->GetView(), _cameraManager->GetEye(), _projection, t);
 		c++;
 	
 		

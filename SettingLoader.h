@@ -29,6 +29,8 @@ struct SimpleVertex {
 	DirectX::XMFLOAT4 Color;
 	DirectX::XMFLOAT3 Normal;
 	DirectX::XMFLOAT2 TexCoord;
+	DirectX::XMFLOAT3 Tangent;
+	DirectX::XMFLOAT3 Binormal;
 
 };
 

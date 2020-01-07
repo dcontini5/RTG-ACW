@@ -45,6 +45,8 @@ HRESULT SettingLoader::CreateVertexShaders(HRESULT hr, ID3D11Device* pd3dDevice,
 			{ "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 			{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 28, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 			{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 40, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "TANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 48, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "BINORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 60, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 		};
 		UINT numElements = ARRAYSIZE(layout);
 
@@ -304,8 +306,7 @@ void SettingLoader::ObjLoader(std::string filename) {
 	Assimp::Importer importer;
 	const aiScene* scene = importer.ReadFile(filename, aiProcess_Triangulate);
 	const aiMesh* mesh = scene->mMeshes[0];
-	const aiScene* tang = importer.ReadFile(filename, aiProcess_CalcTangentSpace);
-	const aiMesh* some = tang->mMeshes[0];
+	
 
 	ShapeGeometry shape;
 
@@ -323,10 +324,7 @@ void SettingLoader::ObjLoader(std::string filename) {
 		vertex.Normal.y = mesh->mNormals[i].y;
 		vertex.Normal.z = mesh->mNormals[i].z;
 		vertex.TexCoord.x = mesh->mTextureCoords[0][i].x;
-		vertex.TexCoord.y = mesh->mTextureCoords[0][i].y;		
-		//auto x = some->mBitangents[i].x;
-		//auto y = some->mTangents[i].x;
-		//
+		vertex.TexCoord.y = mesh->mTextureCoords[0][i].y;
 	
 
 		
@@ -347,6 +345,21 @@ void SettingLoader::ObjLoader(std::string filename) {
 
 	}
 
+	const aiScene* scene1 = importer.ReadFile(filename, aiProcess_CalcTangentSpace);
+	const aiMesh* tangSpace = scene1->mMeshes[0];
+
+	for (unsigned int i = 0; i < tangSpace->mNumVertices; i++) {
+
+		shape.vertices[i].Tangent.x = tangSpace->mTangents[0].x;
+		shape.vertices[i].Tangent.y = tangSpace->mTangents[0].y;
+		shape.vertices[i].Tangent.z = tangSpace->mTangents[0].z;
+		shape.vertices[i].Binormal.x = tangSpace->mBitangents[0].x;
+		shape.vertices[i].Binormal.y = tangSpace->mBitangents[0].y;
+		shape.vertices[i].Binormal.z = tangSpace->mBitangents[0].z;
+
+	}
+	
+	
 	_shapeGeometries.push_back(shape);
 	
 }

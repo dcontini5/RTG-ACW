@@ -41,10 +41,6 @@ cbuffer ConstantBuffer : register(b0)
     
 }
 
-Texture2D txWoodColor : register(t0);
-Texture2D txWooaadColor : register(t1);
-SamplerState txWoodSampler : register(s0);
-
 //--------------------------------------------------------------------------------------
 struct VS_INPUT
 {
@@ -67,9 +63,8 @@ struct VS_OUTPUT
     float4 PosWorld : TEXCOORD0;
     float2 Tex : TEXCOORD1;
     float3 RotatedL : TEXCOORD2;
-    float3 viewDirInTang : TEXCOORD3;
-    float3 lightDirInTang : TEXCOORD4;
-
+    float3x3 TBN : TEXCOORD5;
+    
 };
 
 
@@ -92,25 +87,38 @@ VS_OUTPUT VS(VS_INPUT input)
 		);
 
     //output.Pos.xyz -= PLight.Pos;
-    //float3 translation = float3(0.0, 0.0, 3.5);
+    float3 translation = float3(0.0, 0.0, 3.5);
     //output.Pos = mul(output.Pos, rotationY);
 	//output.Pos.xyz *= scaling;
 	//output.Pos.xyz += translation;
     
     
     output.RotatedL = PLight.Pos;
+	
     //output.RotatedL = output.RotatedL + translation;
     output.RotatedL = mul(output.RotatedL, (float3x3) rotationY);
     
     
     output.Pos = mul(output.Pos, View);
     output.Pos = mul(output.Pos, Projection);
-    output.Norm = mul(-input.N, (float3x4) World);
+    
+    output.Norm = mul(input.N, (float3x4) World);
+    float3 T = mul(input.T, (float3x4) World);
+    float3 B = mul(input.B, (float3x4) World);
     
     output.Norm = normalize(output.Norm);
+    T = normalize(input.T);
+    B = normalize(input.B);
+    
     output.PosWorld = mul(input.Pos, World);
     
-    output.Color = float4(1.0f, 0.6f, 0.2f, 1.0f);
+    float3 viewDirW = output.PosWorld - Eye;
+    float3 lightDirW = output.RotatedL - output.PosWorld.xyz;
+    
+    
+    output.TBN = float3x3(T, B, output.Norm.xyz);
+    
+    output.Color = input.Color;
     output.Tex = input.Tex;
 
 	

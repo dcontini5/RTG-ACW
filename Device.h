@@ -40,7 +40,8 @@ private:
 	ID3D11RasterizerState* _rasterStateShape = nullptr;
 	ID3D11RasterizerState* _rasterStateParticle = nullptr;
 	ID3D11ShaderResourceView* _particleTextureRV;
-	ID3D11ShaderResourceView* _shapetextureRV;
+	ID3D11ShaderResourceView* _shapeTextureRV;
+	ID3D11ShaderResourceView* _shapeBumpRV;
 	ID3D11SamplerState* _sampler;
 	ID3D11BlendState* _pBlendStateNoBlend = nullptr;
 	ID3D11BlendState* _pBlendStateBlend = nullptr;

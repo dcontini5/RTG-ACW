@@ -41,10 +41,20 @@ cbuffer ConstantBuffer : register(b0)
     
 }
 
-Texture2D txWoodColor : register(t0);
-SamplerState txWoodSampler : register(s0);
-
 //--------------------------------------------------------------------------------------
+struct VS_INPUT
+{
+    float4 Pos : POSITION;
+    float4 Color : COLOR;
+    float3 N : NORMAL;
+    float2 Tex : TEXCOORD;
+    float3 T : TANGENT;
+    float3 B : BINORMAL;
+    
+};
+
+
+
 struct VS_OUTPUT
 {
     float4 Pos : SV_POSITION;
@@ -53,14 +63,19 @@ struct VS_OUTPUT
     float4 PosWorld : TEXCOORD0;
     float2 Tex : TEXCOORD1;
     float3 RotatedL : TEXCOORD2;
+    float3 viewDirInTang : TEXCOORD3;
+    float3 lightDirInTang : TEXCOORD4;
 
 };
 
 
-VS_OUTPUT VS(float4 Pos : POSITION, float4 Color : COLOR, float3 N : NORMAL, float2 Tex : TEXCOORD)
+
+
+VS_OUTPUT VS(VS_INPUT input)
 {
     VS_OUTPUT output = (VS_OUTPUT) 0;
-    output.Pos = mul(Pos, World);
+    
+    output.Pos = mul(input.Pos, World);
 
     const float pi = 3.1415f;
     const float angle = 1 * pi / 2 * Time;
@@ -73,26 +88,26 @@ VS_OUTPUT VS(float4 Pos : POSITION, float4 Color : COLOR, float3 N : NORMAL, flo
 		);
 
     //output.Pos.xyz -= PLight.Pos;
-    float3 translation = float3(0.0, 0.0, 3.5);
+    //float3 translation = float3(0.0, 0.0, 3.5);
     //output.Pos = mul(output.Pos, rotationY);
 	//output.Pos.xyz *= scaling;
 	//output.Pos.xyz += translation;
     
+    
     output.RotatedL = PLight.Pos;
-	
     //output.RotatedL = output.RotatedL + translation;
     output.RotatedL = mul(output.RotatedL, (float3x3) rotationY);
     
     
     output.Pos = mul(output.Pos, View);
     output.Pos = mul(output.Pos, Projection);
-    output.Norm = mul(N, (float3x4)World);
+    output.Norm = mul(input.N, (float3x4) World);
     
     output.Norm = normalize(output.Norm);
-    output.PosWorld = mul(Pos, World);
+    output.PosWorld = mul(input.Pos, World);
     
-    output.Color = Color;
-    output.Tex = Tex;
+    output.Color = input.Color;
+    output.Tex = input.Tex;
 
 	
     return output;

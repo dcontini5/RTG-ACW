@@ -20,22 +20,22 @@ struct SpotLight
 struct Material
 {
 
-	float4 materialAmb;
-	float4 materialDiff;
-	float4 materialSpec;
+    float4 materialAmb;
+    float4 materialDiff;
+    float4 materialSpec;
 
 
 };
 
 cbuffer ConstantBuffer : register(b0)
 {
-	matrix World;
-	matrix View;
-	matrix Projection;
-	float4 Eye;
+    matrix World;
+    matrix View;
+    matrix Projection;
+    float4 Eye;
     PointLight PLight;
-	float Time;
-	SpotLight SLights[4];
+    float Time;
+    SpotLight SLights[4];
     Material mat;
 	
 }
@@ -64,34 +64,44 @@ void CalculateSpotLights(float4 lightcol, float3 lightpos, float3 direction, Mat
 float4 PS(VS_OUTPUT input) : SV_Target
 {
 
-	float4 ambient =  float4(0.0f, 0.0f, 0.0f, 0.0f);
-	float4 diffuse =  float4(0.0f, 0.0f, 0.0f, 0.0f);
-	float4 specular = float4(0.0f, 0.0f, 0.0f, 0.0f);
-	    
+    float4 ambient = float4(0.0f, 0.0f, 0.0f, 0.0f);
+    float4 diffuse = float4(0.0f, 0.0f, 0.0f, 0.0f);
+    float4 specular = float4(0.0f, 0.0f, 0.0f, 0.0f);
+    float4 finalColor = 0.f;
+    float4 texCol = txColor.Sample(txSampler, input.Tex);
+    
     
     input.Norm = normalize(input.Norm);
+    
     float3 viewDis = normalize(input.PosWorld.xyz - Eye.xyz);
-	float4 A, D, S;
+    //float3 viewDis = normalize(input.PosWorld.xyz - Eye.xyz);
+    
+    float4 A, D, S;
+    
+    CalculatePointLight(input.RotatedL, mat, viewDis, input.PosWorld.xyz, input.Norm.xyz, A, D, S);
+    ambient += A;
+    diffuse += D;
+    specular += S;
 	
-		
-	CalculatePointLight(input.RotatedL, mat, viewDis, input.PosWorld.xyz, input.Norm.xyz, A, D, S);
-	ambient += A;
-	diffuse += D;
-	specular += S;
-	
-   for (int i = 0; i < 4; i++)
-   {
-        
-       CalculateSpotLights(SLights[i].Color, SLights[i].Pos.xyz, SLights[i].Dir , mat, viewDis, input.PosWorld.xyz, input.Norm.xyz, A, D, S);
-       ambient += A;
-       diffuse += D;
-       specular += S;
-   
-   }
+    for (int i = 0; i < 4; i++)
+    {
+         
+        CalculateSpotLights(SLights[i].Color, SLights[i].Pos.xyz, SLights[i].Dir, mat, viewDis, input.PosWorld.xyz, input.Norm.xyz, A, D, S);
+        ambient += A;
+        diffuse += D;
+        specular += S;
+ 
+    }
+    
+	//CalculatePointLight(mat, viewDis, input.PosWorld, input.Norm, A, D, S);
+	//ambient += A;
+	//diffuse += D;
+	//specular += S;
 	
     float4 lightColor = ambient + diffuse + specular;
-    lightColor *= input.Color;
-    lightColor.a = mat.materialDiff.a;
+    //lightColor *= input.Color;
+    lightColor *= texCol;
+    //lightColor.a = mat.materialDiff.a;
     
 	//return input.Color * lightColor * texColor;
     //return input.Color * lightColor;
@@ -104,7 +114,7 @@ float4 PS(VS_OUTPUT input) : SV_Target
 }
 
 
-void CalculateSpotLights(float4 lightcol,float3 lightpos, float3 direction,  Material mat, float3 viewDis, float3 posWorld, float3 norm, out float4 ambient, out float4 diffuse, out float4 specular)
+void CalculateSpotLights(float4 lightcol, float3 lightpos, float3 direction, Material mat, float3 viewDis, float3 posWorld, float3 norm, out float4 ambient, out float4 diffuse, out float4 specular)
 {
 	
     ambient.xyzw = 0.f;
@@ -131,19 +141,19 @@ void CalculateSpotLights(float4 lightcol,float3 lightpos, float3 direction,  Mat
 
 void CalculatePointLight(float3 lightpos, Material mat, float3 viewDis, float3 posWorld, float3 norm, out float4 ambient, out float4 diffuse, out float4 specular)
 {
-	ambient.xyzw = 0.f;
-	diffuse.xyzw = 0.f;
-	specular.xyzw = 0.f;
+    ambient.xyzw = 0.f;
+    diffuse.xyzw = 0.f;
+    specular.xyzw = 0.f;
 	
 	
     float3 lightDir = normalize(lightpos - posWorld);
-	float3 refl = reflect(-lightDir, norm);
-	float diff = max(0.f, dot(lightDir, norm));
-	float spec = pow(max(0.f, dot(refl, -viewDis)), mat.materialSpec.w);
+    float3 refl = reflect(-lightDir, norm);
+    float diff = max(0.f, dot(lightDir, norm));
+    float spec = pow(max(0.f, dot(refl, -viewDis)), mat.materialSpec.w);
 	
-	ambient = mat.materialAmb * PLight.Color;
-	diffuse = diff * mat.materialDiff * PLight.Color;
-	specular = spec * mat.materialSpec * PLight.Color;
+    ambient = mat.materialAmb * PLight.Color;
+    diffuse = diff * mat.materialDiff * PLight.Color;
+    specular = spec * mat.materialSpec * PLight.Color;
     //ambient = mat.materialAmb ;
 	//diffuse = diff * mat.materialDiff;
     //specular = spec * mat.materialSpec;
