@@ -36,6 +36,7 @@ cbuffer ConstantBuffer : register(b0)
     PointLight PLight;
 	float Time;
 	SpotLight SLights[4];
+    Material mat;
 	
 }
 
@@ -60,15 +61,12 @@ void CalculateSpotLights(float4 lightcol, float3 lightpos, float3 direction, Mat
 
 float4 PS(VS_OUTPUT input) : SV_Target
 {
-	Material mat;
-	mat.materialAmb = float4(0.1f, 0.2f, 0.2f, 1.0f);
-	mat.materialDiff = float4(0.5f, 0.3f, 0.6f, 1.0f);
-	mat.materialSpec = float4(0.4f, 0.2f, 0.5f, 128.0f);
-	
+
 	float4 ambient =  float4(0.0f, 0.0f, 0.0f, 0.0f);
 	float4 diffuse =  float4(0.0f, 0.0f, 0.0f, 0.0f);
 	float4 specular = float4(0.0f, 0.0f, 0.0f, 0.0f);
-	
+	    
+    
     input.Norm = normalize(input.Norm);
     float3 viewDis = normalize(input.PosWorld.xyz - Eye.xyz);
 	float4 A, D, S;
@@ -95,6 +93,7 @@ float4 PS(VS_OUTPUT input) : SV_Target
 	//specular += S;
 	
     float4 lightColor = ambient + diffuse + specular;
+    lightColor *= input.Color;
     lightColor.a = mat.materialDiff.a;
     
 	//return input.Color * lightColor * texColor;
@@ -103,7 +102,7 @@ float4 PS(VS_OUTPUT input) : SV_Target
 	
     //float4 texColor = txWoodColor.Sample(txWoodSampler, input.Tex);
 	//return texColor * lightColor;
-    return lightColor * input.Color;
+    return lightColor;
     
 }
 

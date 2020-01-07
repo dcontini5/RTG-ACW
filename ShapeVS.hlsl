@@ -18,6 +18,16 @@ struct SpotLight
 	
 };
 
+struct Material
+{
+
+    float4 materialAmb;
+    float4 materialDiff;
+    float4 materialSpec;
+
+
+};
+
 cbuffer ConstantBuffer : register(b0)
 {
     matrix World;
@@ -27,7 +37,8 @@ cbuffer ConstantBuffer : register(b0)
     PointLight PLight;
     float Time;
 	SpotLight SLights[4];
-	
+    Material mat;
+    
 }
 
 Texture2D txWoodColor : register(t0);
@@ -69,16 +80,16 @@ VS_OUTPUT VS(float4 Pos : POSITION, float4 Color : COLOR, float3 N : NORMAL, flo
     
     output.RotatedL = PLight.Pos;
 	
-    output.RotatedL = output.RotatedL + translation;
+    //output.RotatedL = output.RotatedL + translation;
     output.RotatedL = mul(output.RotatedL, (float3x3) rotationY);
     
     
     output.Pos = mul(output.Pos, View);
     output.Pos = mul(output.Pos, Projection);
-    output.Norm = mul(N, World);
+    output.Norm = mul(N, (float3x4)World);
     
     output.Norm = normalize(output.Norm);
-    output.PosWorld = mul(Pos, (float3x4)World);
+    output.PosWorld = mul(Pos, World);
     
     output.Color = Color;
     output.Tex = Tex;

@@ -48,6 +48,14 @@ struct SpotLight {
 	
 };
 
+struct Material {
+
+	DirectX::XMFLOAT4 ambient;
+	DirectX::XMFLOAT4 diffuse;
+	DirectX::XMFLOAT4 specular;
+
+};
+
 struct ConstantBuffer
 {
 	DirectX::XMMATRIX World;
@@ -57,6 +65,8 @@ struct ConstantBuffer
 	PointLight PointLight;
 	float Time;
 	SpotLight SpotLights[4];
+	Material Material;
+	
 	
 };
 

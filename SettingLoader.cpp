@@ -304,9 +304,10 @@ void SettingLoader::ObjLoader(std::string filename) {
 	Assimp::Importer importer;
 	const aiScene* scene = importer.ReadFile(filename, aiProcess_Triangulate);
 	const aiMesh* mesh = scene->mMeshes[0];
+	const aiScene* tang = importer.ReadFile(filename, aiProcess_CalcTangentSpace);
+	const aiMesh* some = tang->mMeshes[0];
 
 	ShapeGeometry shape;
-	
 
 	for (unsigned int i = 0; i < mesh->mNumVertices; i++) {
 
@@ -321,10 +322,13 @@ void SettingLoader::ObjLoader(std::string filename) {
 		vertex.Normal.x = mesh->mNormals[i].x;
 		vertex.Normal.y = mesh->mNormals[i].y;
 		vertex.Normal.z = mesh->mNormals[i].z;
-		//vertex.TexCoord.x = teapotMesh->mTextureCoords[i]->x;
-		//vertex.TexCoord.y = teapotMesh->mTextureCoords[i]->y;
 		vertex.TexCoord.x = mesh->mTextureCoords[0][i].x;
-		vertex.TexCoord.y = mesh->mTextureCoords[0][i].y;
+		vertex.TexCoord.y = mesh->mTextureCoords[0][i].y;		
+		//auto x = some->mBitangents[i].x;
+		//auto y = some->mTangents[i].x;
+		//
+	
+
 		
 		shape.vertices.push_back(vertex);
 		
