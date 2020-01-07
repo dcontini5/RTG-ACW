@@ -61,6 +61,7 @@ VS_OUTPUT VS(float4 Pos : POSITION, float4 Color : COLOR, float3 N : NORMAL, flo
     inPos += float4(0.0f, 0.0f, Pos.z, 0.0f);
     
     
+    
     output.Pos = mul(inPos, World);
     
     

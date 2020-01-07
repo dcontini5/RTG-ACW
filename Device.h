@@ -7,6 +7,7 @@
 #include <wrl.h>
 #include "DDSTextureLoader.h"
 #include "Shape.h"
+#include "Particle.h"
 
 class Device
 {
@@ -37,16 +38,21 @@ private:
 	ID3D11DepthStencilView*	_pDepthStencilView = nullptr;
 	ID3D11RasterizerState* _rasterStateBox = nullptr;
 	ID3D11RasterizerState* _rasterStateShape = nullptr;
-	ID3D11ShaderResourceView* _textureRV;
+	ID3D11RasterizerState* _rasterStateParticle = nullptr;
+	ID3D11ShaderResourceView* _particleTextureRV;
+	ID3D11ShaderResourceView* _shapetextureRV;
 	ID3D11SamplerState* _sampler;
 	ID3D11BlendState* _pBlendStateNoBlend = nullptr;
-	ID3D11DepthStencilState* _pDepthStencilStateSky = nullptr;
+	ID3D11BlendState* _pBlendStateBlend = nullptr;
+	ID3D11DepthStencilState* _pDepthStencilStateParticle = nullptr;
+	ID3D11DepthStencilState* _pDepthStencilStateShape = nullptr;
 	
 	DirectX::XMMATRIX _projection;
 
 	SettingLoader* _settingLoader;
 	std::vector<Shape*> _shapeList;
-	std::vector<Shape*> _particleList;
+	//std::vector<Shape*> _particleList;
+	std::vector<Particle*> _particleList;
 	Camera* _cameraManager;
 	
 };

@@ -10,14 +10,14 @@ class Particle : public Shape{
 public:
 	
 	Particle(ID3D11VertexShader* vertexShader, ID3D11PixelShader* pixelShader, ShapeCoordinates& coords, DirectX::XMFLOAT3 velocity) :
-		Shape(vertexShader, pixelShader, coords), _timeToLive(10.0f),
+		Shape(vertexShader, pixelShader, coords), _velocity0(velocity), _position0(coords.Pos), _timeToLive(10.0f),
 		_radius(0.5f){
 	}
 
 	~Particle() = default;
 
 	void Update();
-	void Draw();
+	//void Draw();
 	void Integrate(const float& t, const float& dt);
 	void CollisionWithBox(const OBB cube);
 	void CollisionWithCube(const OBB cube);
@@ -28,7 +28,7 @@ private:
 
 
 	XMFLOAT3 _velocity0;
-	XMFLOAT3 _acceleration;
+	XMFLOAT3 _acceleration = XMFLOAT3(0.f, -9.8f, 0.f);
 	XMFLOAT3 _position0;
 	float _timeToLive;
 	float _radius;

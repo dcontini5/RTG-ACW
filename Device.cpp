@@ -192,7 +192,6 @@ HRESULT Device::InitDevice() {
 	if (FAILED(hr))
 		return hr;
 
-	_pImmediateContext->OMSetRenderTargets(1, &_pRenderTargetView, nullptr);
 
 	// Create depth stencil texture
 	D3D11_TEXTURE2D_DESC descDepth;
@@ -251,6 +250,7 @@ HRESULT Device::InitDevice() {
 
 	hr = _pd3dDevice->CreateRasterizerState(&rasterDesc, &_rasterStateBox);
 
+
 	rasterDesc.CullMode = D3D11_CULL_FRONT;
 	rasterDesc.FillMode = D3D11_FILL_SOLID;
 	rasterDesc.ScissorEnable = false;
@@ -262,28 +262,50 @@ HRESULT Device::InitDevice() {
 
 
 	hr = _pd3dDevice->CreateRasterizerState(&rasterDesc, &_rasterStateShape);
-	_pImmediateContext->RSSetState(_rasterStateShape);
 
-	//rasterDesc.CullMode = D3D11_CULL_NONE;
-	//rasterDesc.FillMode = D3D11_FILL_SOLID;
-	//rasterDesc.ScissorEnable = false;
-	//rasterDesc.DepthBias = 0;
-	//rasterDesc.DepthBiasClamp = 0.0f;
-	//rasterDesc.DepthClipEnable = false;
-	//rasterDesc.MultisampleEnable = false;
-	//rasterDesc.SlopeScaledDepthBias = 0.0f;
+	rasterDesc.CullMode = D3D11_CULL_NONE;
+	rasterDesc.FillMode = D3D11_FILL_SOLID;
+	rasterDesc.ScissorEnable = false;
+	rasterDesc.DepthBias = 0;
+	rasterDesc.DepthBiasClamp = 0.0f;
+	rasterDesc.DepthClipEnable = false;
+	rasterDesc.MultisampleEnable = false;
+	rasterDesc.SlopeScaledDepthBias = 0.0f;
 
-	//hr = _pd3dDevice->CreateRasterizerState(&rasterDesc, &_rasterStateShape);
-	//_pImmediateContext->RSSetState(_rasterStateShape);
+	hr = _pd3dDevice->CreateRasterizerState(&rasterDesc, &_rasterStateParticle);
+	
 
-	D3D11_DEPTH_STENCIL_DESC dsDesc;
+	D3D11_DEPTH_STENCIL_DESC depthStencilDesc;
+	depthStencilDesc.DepthEnable = FALSE;
+	depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+	//depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
+	depthStencilDesc.DepthFunc = D3D11_COMPARISON_LESS;
+	depthStencilDesc.StencilEnable = FALSE;
+	depthStencilDesc.StencilReadMask = 0xFF;
+	depthStencilDesc.StencilWriteMask = 0xFF;
+	
+	// Stencil operations if pixel is front-facing
+	depthStencilDesc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+	depthStencilDesc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_INCR;
+	depthStencilDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+	depthStencilDesc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+	//
+	//// Stencil operations if pixel is back-facing
+	//depthStencilDesc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+	//depthStencilDesc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_DECR;
+	//depthStencilDesc.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+	//depthStencilDesc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
 
-	dsDesc.DepthEnable = false;
-	dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
-	dsDesc.DepthFunc = D3D11_COMPARISON_LESS;
 
-	//_pd3dDevice->CreateDepthStencilState(&dsDesc, &_pDepthStencilStateSky);
-	//_pImmediateContext->OMSetDepthStencilState(_pDepthStencilStateSky, 1);
+	_pd3dDevice->CreateDepthStencilState(&depthStencilDesc, &_pDepthStencilStateParticle);
+	
+
+
+	depthStencilDesc.DepthEnable = TRUE;
+	
+	_pd3dDevice->CreateDepthStencilState(&depthStencilDesc, &_pDepthStencilStateShape);
+
+
 	D3D11_BLEND_DESC blendDesc;
 
 	ZeroMemory(&blendDesc, sizeof(D3D11_BLEND_DESC));
@@ -296,9 +318,14 @@ HRESULT Device::InitDevice() {
 	blendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
 	blendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
 	blendDesc.RenderTarget[0].RenderTargetWriteMask = 0x0f;
+	
+	
+	hr = _pd3dDevice->CreateBlendState(&blendDesc, &_pBlendStateBlend);
+	
+	
+	blendDesc.RenderTarget[0].BlendEnable = FALSE;
 
-	//hr = _pd3dDevice->CreateBlendState(&blendDesc, &_pBlendStateNoBlend);
-	//_pImmediateContext->OMSetBlendState(_pBlendStateNoBlend, nullptr, 1);
+	hr = _pd3dDevice->CreateBlendState(&blendDesc, &_pBlendStateNoBlend);
 	
 	
 	_pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -309,37 +336,44 @@ HRESULT Device::InitDevice() {
 	
 	_cameraManager = new Camera(_settingLoader->GetCameraCoords());
 
-	auto j = true;
+	auto j = 0;
 	for (auto i : _settingLoader->GetObjectsCoords()) {
 
-		if (j) {
+		if (!j) {
 
 			auto shape = new Shape(_settingLoader->GetVs(0), _settingLoader->GetPs(1), i);
 			hr = shape->CreateBuffers(hr, _pd3dDevice, _settingLoader->GetVertices(0), _settingLoader->GetIndices(0));
 			_shapeList.push_back(shape);
-			j = !j;
+			j++;
 			continue;
 
 		}
 
-		auto randShape = rand() % 2;
+	
 		auto shape = new Shape(_settingLoader->GetVs(1), _settingLoader->GetPs(1), i);
-		hr = shape->CreateBuffers(hr, _pd3dDevice, _settingLoader->GetVertices(randShape), _settingLoader->GetIndices(randShape));
+		hr = shape->CreateBuffers(hr, _pd3dDevice, _settingLoader->GetVertices(j % 2), _settingLoader->GetIndices(j % 2));
 		_shapeList.push_back(shape);
-
+		j++;
 	}
 
+	//for(auto i = 0; i<50; i++) {
+	//	
+	//	auto randV = static_cast<float>(fmod(rand() + i, 10.0f));
+	//	
+	//	auto particle = new Particle(_settingLoader->GetVs(3), _settingLoader->GetPs(3), _settingLoader->GetObjectsCoords()[3], {cos( DirectX::XM_PIDIV2 * randV  ) * randV, randV , sin(DirectX::XM_PIDIV2 * randV) * randV});
+	//	hr = particle->CreateBuffers(hr, _pd3dDevice, _settingLoader->GetVertices(2), _settingLoader->GetIndices(2));
+	//	_particleList.push_back(particle);
+	//}
 
-	//auto shape = new Shape(_settingLoader->GetVs(2), _settingLoader->GetPs(1), _settingLoader->GetObjectsCoords()[3]);
-	//hr = shape->CreateBuffers(hr, _pd3dDevice, _settingLoader->GetVertices(2), _settingLoader->GetIndices(2));
-	//_shapeList.push_back(shape);
 
 	
 
 	_projection = DirectX::XMMatrixPerspectiveFovLH(DirectX::XM_PIDIV4, width / (FLOAT)height, 0.01f, 100.0f);
 	
-	hr = DirectX::CreateDDSTextureFromFile(_pd3dDevice, L"rocks.dds", nullptr, &_textureRV);
-	_pImmediateContext->PSSetShaderResources(0, 1, &_textureRV);
+	hr = DirectX::CreateDDSTextureFromFile(_pd3dDevice, L"sand.dds", nullptr, &_particleTextureRV);
+	hr = DirectX::CreateDDSTextureFromFile(_pd3dDevice, L"wood.dds", nullptr, &_shapetextureRV);
+	
+	
 
 	D3D11_SAMPLER_DESC sampDesc;
 	ZeroMemory(&sampDesc, sizeof(sampDesc));
@@ -350,7 +384,7 @@ HRESULT Device::InitDevice() {
 	sampDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
 
 	hr = _pd3dDevice->CreateSamplerState(&sampDesc, &_sampler);
-
+	_pImmediateContext->PSSetSamplers(0, 1, &_sampler);
 	
 	
 	
@@ -435,29 +469,58 @@ void Device::Render() {
 	_pImmediateContext->ClearRenderTargetView(_pRenderTargetView, DirectX::Colors::DarkSlateBlue);
 	_pImmediateContext->ClearDepthStencilView(_pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
 
+	
+	_pImmediateContext->OMSetDepthStencilState(_pDepthStencilStateShape, 0);
+	_pImmediateContext->OMSetBlendState(_pBlendStateNoBlend, nullptr, 1);
+
 	//
 
 	auto c = 0;
 	for (auto i : _shapeList) {
 
 		if(!c) {
-
+			
+			_pImmediateContext->RSSetState(_rasterStateBox);
 			i->Draw(_pImmediateContext, _cameraManager->GetView(), _cameraManager->GetEye(), _projection, t);
 			_pImmediateContext->RSSetState(_rasterStateShape);
 			c++;
 			continue;
 		}
-		if(c<4) {
-			_pImmediateContext->PSSetSamplers(0, 1, &_sampler);
-			i->Draw(_pImmediateContext, _cameraManager->GetView(), _cameraManager->GetEye(), _projection, t);
-		}
 		
+		_pImmediateContext->PSSetShaderResources(0, 1, &_shapetextureRV);
+		i->Draw(_pImmediateContext, _cameraManager->GetView(), _cameraManager->GetEye(), _projection, t);
 		c++;
 	
 		
 	}
 
-	_pImmediateContext->RSSetState(_rasterStateBox);
+	
+	_pImmediateContext->PSSetShaderResources(0, 1, &_particleTextureRV);
+	_pImmediateContext->RSSetState(_rasterStateParticle);
+	_pImmediateContext->OMSetDepthStencilState(_pDepthStencilStateParticle, 0);
+	_pImmediateContext->OMSetBlendState(_pBlendStateBlend, nullptr, 1);
+	
+	for (auto i : _particleList) {
+
+		i->Integrate(t, t);
+		OBB box;
+		box.AxisOrientation[0] = { 1.f, 0.f, 0.f, 0.f };
+		box.AxisOrientation[1] = { 0.f, 1.f, 0.f, 0.f };
+		box.AxisOrientation[2] = { 0.f, 0.f, 1.f, 0.f };
+		box.Center = { 0.f, 0.f, 0.f, 0.f };
+		box.BoxHalfwidth[0] = 5.f;
+		box.BoxHalfwidth[1] = 5.f;
+		box.BoxHalfwidth[2] = 5.f;
+		i->CollisionWithBox(box);
+
+
+		
+		i->Draw(_pImmediateContext, _cameraManager->GetView(), _cameraManager->GetEye(), _projection, t);
+		
+	}
+
+	
+	
 	
 	_pSwapChain->Present(0, 0);
 }

@@ -32,15 +32,32 @@ struct SimpleVertex {
 
 };
 
+struct PointLight {
+	
+	DirectX::XMFLOAT4 Color;
+	DirectX::XMFLOAT3 Pos;
+	
+};
+
+struct SpotLight {
+
+	DirectX::XMFLOAT4 Pos;
+	DirectX::XMFLOAT4 Color;
+	DirectX::XMFLOAT3 Direction;
+	float Spot;
+	
+};
+
 struct ConstantBuffer
 {
 	DirectX::XMMATRIX World;
 	DirectX::XMMATRIX View;
 	DirectX::XMMATRIX Projection;
-	DirectX::XMVECTOR LightPos;
 	DirectX::XMVECTOR Eye;
+	PointLight PointLight;
 	float Time;
-
+	SpotLight SpotLights[4];
+	
 };
 
 struct ShapeGeometry {

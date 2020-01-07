@@ -77,22 +77,19 @@ VS_OUTPUT VS(float4 Pos : POSITION, float4 Color : COLOR, float3 N : NORMAL, flo
     float f = 32.0f; //vaolr in [1, 200], specifies the degree of shininess
     
     
-    float diff = saturate(dot(lightDir, output.Norm));
-    
     float3 refl = reflect(-lightDir, output.Norm);
     float spec = pow(saturate(dot(refl, viewDis)), f);
-    
+    float diff = saturate(dot(lightDir, output.Norm));
     
     
     spec *= materialSpec;
     diff *= materialDiff;
 	
     float4 lightColor = materialAmb + (diff + spec) * lightCol;
-    //return lightColor;
+
     output.Color = lightColor;
     
-    
-    output.Tex = float2(0, 0);
+    output.Tex = Tex;
 
 	
     return output;

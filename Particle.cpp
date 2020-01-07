@@ -8,7 +8,7 @@ void Particle::Integrate(const float& t, const float& dt) {
 	auto pos = XMVectorSet(_position0.x, _position0.y, _position0.z, 0.f);
 
 
-	pos += pow(t, 2) / 2 * acc + t * vel;
+	pos += (pow(t, 2) / 2 * acc + t * vel )* 0.5f;
 
 
 	this->SetPos({pos.m128_f32[0], pos.m128_f32[1], pos.m128_f32[2]});
@@ -28,10 +28,13 @@ void Particle::CollisionWithBox(const OBB cube) {
 		const auto vProj = XMVector3Dot(v, cube.AxisOrientation[i]).m128_f32[0];
 		
 
-		if (vProj - _radius <= -cube.BoxHalfwidth[i] && vProj + _radius >= cube.BoxHalfwidth[i]) {
+		if (vProj - _radius <= -cube.BoxHalfwidth[i] || vProj + _radius >= cube.BoxHalfwidth[i]) {
+
 			
+
 			_velocity0 = { 0.f, 0.f, 0.f };
 			_acceleration = { 0.f, 0.f, 0.f };
+			_position0 = { this->GetCoords().Pos.x, this->GetCoords().Pos.y, this->GetCoords().Pos.z };
 			break;
 			
 		}

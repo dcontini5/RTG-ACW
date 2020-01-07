@@ -1,13 +1,33 @@
 //#include "Tutorial04.fx"
 
+struct PointLight
+{
+    
+    float4 Color;
+    float3 Pos;
+	
+};
+
+struct SpotLight
+{
+	
+    float4 Pos;
+    float4 Color;
+    float3 Dir;
+    float Spot;
+	
+};
+
 cbuffer ConstantBuffer : register(b0)
 {
     matrix World;
     matrix View;
     matrix Projection;
-    float4 LightPos;
     float4 Eye;
+    PointLight PLight;
     float Time;
+	//SpotLight SLights[4];
+	
 }
 
 Texture2D txWoodColor : register(t0);
@@ -18,10 +38,10 @@ struct VS_OUTPUT
 {
     float4 Pos : SV_POSITION;
     float4 Color : COLOR0;
-    float2 Tex : TEXCOORD0;
-    float3 PosWorld : TEXCOORD1;
+    float4 Norm : NORMAL;
+    float4 PosWorld : TEXCOORD0;
+    float2 Tex : TEXCOORD1;
     float3 RotatedL : TEXCOORD2;
-    float3 Norm : NORMAL;
 
 };
 
@@ -30,8 +50,6 @@ VS_OUTPUT VS(float4 Pos : POSITION, float4 Color : COLOR, float3 N : NORMAL, flo
 {
     VS_OUTPUT output = (VS_OUTPUT) 0;
     output.Pos = mul(Pos, World);
-
-	
 
     const float pi = 3.1415f;
     const float angle = 1 * pi / 2 * Time;
@@ -43,29 +61,30 @@ VS_OUTPUT VS(float4 Pos : POSITION, float4 Color : COLOR, float3 N : NORMAL, flo
 		0, 0, 0, 1
 		);
 
- 
+    //output.Pos.xyz -= PLight.Pos;
     float3 translation = float3(0.0, 0.0, 3.5);
-	//output.Pos = mul(output.Pos, rotationY);
+    //output.Pos = mul(output.Pos, rotationY);
 	//output.Pos.xyz *= scaling;
 	//output.Pos.xyz += translation;
     
-    //output.RotatedL = LightPos.xyz;
-    output.RotatedL = LightPos.xyz + translation;
-    output.RotatedL = mul(output.RotatedL, (float3x3)rotationY);
+    output.RotatedL = PLight.Pos;
+	
+    output.RotatedL = output.RotatedL + translation;
+    output.RotatedL = mul(output.RotatedL, (float3x3) rotationY);
     
     
     output.Pos = mul(output.Pos, View);
     output.Pos = mul(output.Pos, Projection);
-    output.Norm = mul(-N, (float3x3) World);
+    output.Norm = mul(-N, (float3x4)World);
     
     output.Norm = normalize(output.Norm);
-    output.PosWorld = mul(Pos, World).xyz;
+    output.PosWorld = mul(Pos, World);
     
-    output.Color = float4(0.2f, 0.8f, 0.1f, 1.0f);
-    output.Tex = float2(1, 1);
-    //output.Tex = Tex;
+    output.Color = Color;
+    output.Tex = Tex;
 
 	
     return output;
 
 }
+

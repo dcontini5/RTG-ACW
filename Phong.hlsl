@@ -1,12 +1,42 @@
 
+struct PointLight
+{
+    
+    float4 Color;
+    float3 Pos;
+	
+};
+
+struct SpotLight
+{
+	
+    float4 Pos;
+    float4 Color;
+    float3 Dir;
+    float Spot;
+	
+};
+
+struct Material
+{
+
+	float4 materialAmb;
+	float4 materialDiff;
+	float4 materialSpec;
+
+
+};
+
 cbuffer ConstantBuffer : register(b0)
 {
-    matrix World;
-    matrix View;
-    matrix Projection;
-    float4 LightPos;
-    float4 Eye;
-    float Time;
+	matrix World;
+	matrix View;
+	matrix Projection;
+	float4 Eye;
+    PointLight PLight;
+	float Time;
+	SpotLight SLights[4];
+	
 }
 
 Texture2D txColor : register(t0);
@@ -17,55 +47,109 @@ struct VS_OUTPUT
 {
     float4 Pos : SV_POSITION;
     float4 Color : COLOR0;
-    float2 Tex : TEXCOORD0;
-    float3 PosWorld : TEXCOORD1;
+    float4 Norm : NORMAL;
+    float4 PosWorld : TEXCOORD0;
+    float2 Tex : TEXCOORD1;
     float3 RotatedL : TEXCOORD2;
-    float3 Norm : NORMAL;
+
 };
 
+void CalculatePointLight(float3 lightpos, Material mat, float3 viewDis, float3 posWorld, float3 norm, out float4 ambient, out float4 diffuse, out float4 specular);
 
+void CalculateSpotLights(float4 lightcol, float3 lightpos, float3 direction, Material mat, float3 viewDis, float3 posWorld, float3 norm, out float4 ambient, out float4 diffuse, out float4 specular);
 
 float4 PS(VS_OUTPUT input) : SV_Target
 {
-
-    float4 materialAmb = float4(0.1f, 0.2f, 0.2f, 1.0f);
-    float4 materialDiff = float4(0.5f, 0.3f, 0.6f, 1.0f);
-    float4 materialSpec = float4(0.4f, 0.2f, 0.5f, 1.0f);
-    //float4 lightCol = float4(1.0f, 0.6f, 0.8f, 1.0f);
-    float4 lightCol = float4(1.0f, 1.0f, 1.0f, 1.0f);
+	Material mat;
+	mat.materialAmb = float4(0.1f, 0.2f, 0.2f, 1.0f);
+	mat.materialDiff = float4(0.5f, 0.3f, 0.6f, 1.0f);
+	mat.materialSpec = float4(0.4f, 0.2f, 0.5f, 128.0f);
+	
+	float4 ambient =  float4(0.0f, 0.0f, 0.0f, 0.0f);
+	float4 diffuse =  float4(0.0f, 0.0f, 0.0f, 0.0f);
+	float4 specular = float4(0.0f, 0.0f, 0.0f, 0.0f);
+	
     input.Norm = normalize(input.Norm);
-    
-    
-    float3 viewDis = normalize(input.PosWorld - Eye.xyz);
-    float3 lightDir = normalize(input.RotatedL - input.PosWorld);
-    //float3 lightDir = output.RotatedL - output.PosWorld;
-    
-    float3 refl = reflect(-lightDir, input.Norm);
-
-    float f = 1.0f; //vaolr in [1, 200], specifies the degree of shininess
-    
-    //float diff = saturate(dot(lightDir, input.Norm));
-    //float spec = pow(saturate(dot(refl, -viewDis)), f);
+    float3 viewDis = normalize(input.PosWorld.xyz - Eye.xyz);
+	float4 A, D, S;
 	
-	float diff = max(0.f, dot(lightDir, input.Norm));
-    float spec = pow(max(0.f, dot(refl, -viewDis)), f);
-    
-    float4 texColor = txColor.SampleLevel(txSampler, input.Tex, 1.0f);
-    //float4 texColor = txColor.Sample(txSampler, input.Tex);
-    //texColor *= (1.0f - smoothstep(0.0f, 0.43f, length(input.Tex - 0.5f)));
-    
-    spec *= materialSpec;
-    diff *= materialDiff;
+		
+	CalculatePointLight(input.RotatedL, mat, viewDis, input.PosWorld.xyz, input.Norm.xyz, A, D, S);
+	ambient += A;
+	diffuse += D;
+	specular += S;
 	
-    float4 lightColor = materialAmb + (diff + spec) * lightCol;
+    for (int i = 0; i < 4; i++)
+    {
+         
+        CalculateSpotLights(SLights[i].Color, SLights[i].Pos.xyz, SLights[i].Dir , mat, viewDis, input.PosWorld.xyz, input.Norm.xyz, A, D, S);
+        ambient += A;
+        diffuse += D;
+        specular += S;
+ 
+    }
     
+	//CalculatePointLight(mat, viewDis, input.PosWorld, input.Norm, A, D, S);
+	//ambient += A;
+	//diffuse += D;
+	//specular += S;
+	
+    float4 lightColor = ambient + diffuse + specular;
+    lightColor.a = mat.materialDiff.a;
     
-    //return input.Color * lightColor * texColor;
-    return input.Color * lightColor;
+	//return input.Color * lightColor * texColor;
+    //return input.Color * lightColor;
     //return spec * lightCol;
 	
     //float4 texColor = txWoodColor.Sample(txWoodSampler, input.Tex);
-    //return texColor * lightColor ;
-    //return texColor;
+	//return texColor * lightColor;
+    return lightColor * input.Color;
     
+}
+
+
+void CalculateSpotLights(float4 lightcol,float3 lightpos, float3 direction,  Material mat, float3 viewDis, float3 posWorld, float3 norm, out float4 ambient, out float4 diffuse, out float4 specular)
+{
+	
+    ambient.xyzw = 0.f;
+    diffuse.xyzw = 0.f;
+    specular.xyzw = 0.f;
+	
+    float3 lightDir = normalize(lightpos - posWorld);
+    float lightDirLenght = length(lightDir);
+    lightDir /= lightDirLenght;
+    float3 refl = reflect(-lightDir, norm);
+    float diff = max(0.f, dot(lightDir, norm));
+    float spec = pow(max(0.f, dot(refl, -viewDis)), mat.materialSpec.w);
+    
+    float3 Direction = normalize(direction - lightpos);
+    float spot = pow(max(dot(-lightDir, Direction), 0.0f), 20.0f);
+    float att = spot / dot(float3(1.0f, 0.0f, 0.0f), float3(1.0f, lightDirLenght, lightDirLenght * lightDirLenght));
+    
+    ambient = mat.materialAmb * lightcol * spot;
+    diffuse = diff * mat.materialDiff * lightcol * att;
+    specular = spec * mat.materialSpec * lightcol * att;
+    
+    
+}
+
+void CalculatePointLight(float3 lightpos, Material mat, float3 viewDis, float3 posWorld, float3 norm, out float4 ambient, out float4 diffuse, out float4 specular)
+{
+	ambient.xyzw = 0.f;
+	diffuse.xyzw = 0.f;
+	specular.xyzw = 0.f;
+	
+	
+    float3 lightDir = normalize(lightpos - posWorld);
+	float3 refl = reflect(-lightDir, norm);
+	float diff = max(0.f, dot(lightDir, norm));
+	float spec = pow(max(0.f, dot(refl, -viewDis)), mat.materialSpec.w);
+	
+	ambient = mat.materialAmb * PLight.Color;
+	diffuse = diff * mat.materialDiff * PLight.Color;
+	specular = spec * mat.materialSpec * PLight.Color;
+    //ambient = mat.materialAmb ;
+	//diffuse = diff * mat.materialDiff;
+    //specular = spec * mat.materialSpec;
+	
 }
