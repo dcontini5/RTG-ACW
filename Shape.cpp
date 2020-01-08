@@ -60,60 +60,65 @@ void Shape::Draw(ID3D11DeviceContext* pImmediateContext, DirectX::XMMATRIX view,
 
 	Material shapeMat;
 	shapeMat.ambient = { 0.2f, 0.2f, 0.2f, 1.0f };
-	shapeMat.ambient = { 0.4f, 0.4f, 0.4f, 1.0f };
 	shapeMat.diffuse = { 0.5f, 0.5f, 0.5f, 1.0f };
 	//shapeMat.specular = { 0.5f, 0.5f, 0.5f, 2.0f };
-	shapeMat.specular = { 0.5f, 0.5f, 0.5f, 128.0f };
+
+	
+	//toon mat
+
+	shapeMat.ambient = { 0.4f, 0.4f, 0.4f, 1.0f };
+	shapeMat.diffuse = { 0.5f, 0.5f, 0.5f, 1.0f };
+	shapeMat.specular = { 0.9f, 0.9f, 0.9f, 128.0f };
 	
 	PointLight light;
 
-	light.Color = { 1.0f, 1.0f, 1.0f, 1.0f };
+	//light.Color = { 1.0f, 1.0f, 1.0f, 1.0f };
 	//light.Pos = { 0.0f, 5.0f, 0.f };
 	light.Pos = { 0.0f, 5.0f, 3.5f };
-	//light.Color = { 0.0f, 0.0f, 0.0f, 0.0f };
+	light.Color = { 0.0f, 0.0f, 0.0f, 0.0f };
 	//light.Pos = { 0.0f, 0.0f, 0.0f };
 
 	SpotLight sLights[4];
 
-	sLights[0].Pos = { 5.0f, 5.0f, -5.0f, 1.0f };
-	sLights[0].Color = { 0.0f, 0.0f, 0.0f, 0.0f };
-	sLights[0].Direction = { -5.0f, -5.0f, 5.0f };
-	sLights[0].Spot = 20.f;
-	
-	sLights[1].Pos = { 5.0f, 5.0f, 5.0f, 1.0f };
-	sLights[1].Color = { 0.0f, 0.0f, 0.0f, 0.0f };
-	sLights[1].Direction = { -5.0f, -5.0f, -5.0f };
-	sLights[1].Spot = 20.f;
-	
-	sLights[2].Pos = { -5.0f, 5.0f, -5.0f, 1.0f };
-	sLights[2].Color = { 0.0f, 0.0f, 0.0f, 0.0f };
-	sLights[2].Direction = { 5.0f, -5.0f, 5.0f };
-	sLights[2].Spot = 20.f;
-	
-	sLights[3].Pos = { -5.0f, 5.0f, 5.0f, 1.0f };
-	sLights[3].Color = { 0.0f, 0.0f, 0.0f, 0.0f };
-	sLights[3].Direction = { 5.0f, -5.0f, -5.0f };
-	sLights[3].Spot = 20.f;
-
 	//sLights[0].Pos = { 5.0f, 5.0f, -5.0f, 1.0f };
-	//sLights[0].Color = { 0.5f, 0.5f, 0.5f, 0.5f };
-	//sLights[0].Direction = { -1.0f, -1.0f, 1.0f };
+	//sLights[0].Color = { 0.0f, 0.0f, 0.0f, 0.0f };
+	//sLights[0].Direction = { -5.0f, -5.0f, 5.0f };
 	//sLights[0].Spot = 20.f;
 	//
 	//sLights[1].Pos = { 5.0f, 5.0f, 5.0f, 1.0f };
-	//sLights[1].Color = { 0.5f, 0.5f, 0.5f, 0.5f };
-	//sLights[1].Direction = { -1.0f, -1.0f, -1.0f };
+	//sLights[1].Color = { 0.0f, 0.0f, 0.0f, 0.0f };
+	//sLights[1].Direction = { -5.0f, -5.0f, -5.0f };
 	//sLights[1].Spot = 20.f;
 	//
 	//sLights[2].Pos = { -5.0f, 5.0f, -5.0f, 1.0f };
-	//sLights[2].Color = { 0.5f, 0.5f, 0.5f, 0.5f };
-	//sLights[2].Direction = { 1.0f, -1.0f, 1.0f };
+	//sLights[2].Color = { 0.0f, 0.0f, 0.0f, 0.0f };
+	//sLights[2].Direction = { 5.0f, -5.0f, 5.0f };
 	//sLights[2].Spot = 20.f;
 	//
 	//sLights[3].Pos = { -5.0f, 5.0f, 5.0f, 1.0f };
-	//sLights[3].Color = { 0.5f, 0.5f, 0.5f, 0.5f };
-	//sLights[3].Direction = { 1.0f, -1.0f, -1.0f };
+	//sLights[3].Color = { 0.0f, 0.0f, 0.0f, 0.0f };
+	//sLights[3].Direction = { 5.0f, -5.0f, -5.0f };
 	//sLights[3].Spot = 20.f;
+
+	sLights[0].Pos = { 5.0f, 5.0f, -5.0f, 1.0f };
+	sLights[0].Color = { 0.5f, 0.5f, 0.5f, 0.5f };
+	sLights[0].Direction = { -1.0f, -1.0f, 1.0f };
+	sLights[0].Spot = 20.f;
+	
+	sLights[1].Pos = { 5.0f, 5.0f, 5.0f, 1.0f };
+	sLights[1].Color = { 0.5f, 0.5f, 0.5f, 0.5f };
+	sLights[1].Direction = { -1.0f, -1.0f, -1.0f };
+	sLights[1].Spot = 20.f;
+	
+	sLights[2].Pos = { -5.0f, 5.0f, -5.0f, 1.0f };
+	sLights[2].Color = { 0.5f, 0.5f, 0.5f, 0.5f };
+	sLights[2].Direction = { 1.0f, -1.0f, 1.0f };
+	sLights[2].Spot = 20.f;
+	
+	sLights[3].Pos = { -5.0f, 5.0f, 5.0f, 1.0f };
+	sLights[3].Color = { 0.5f, 0.5f, 0.5f, 0.5f };
+	sLights[3].Direction = { 1.0f, -1.0f, -1.0f };
+	sLights[3].Spot = 20.f;
 
 	ConstantBuffer cb;
 	cb.World = DirectX::XMMatrixTranspose(world);
