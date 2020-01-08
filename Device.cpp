@@ -250,20 +250,21 @@ HRESULT Device::InitDevice() {
 	//hr = _pd3dDevice->CreateRasterizerState(&rasterDesc, &_rasterStateParticle);
 	
 
-	D3D11_DEPTH_STENCIL_DESC depthStencilDesc;
-	depthStencilDesc.DepthEnable = FALSE;
-	depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
-	//depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
-	depthStencilDesc.DepthFunc = D3D11_COMPARISON_LESS;
-	depthStencilDesc.StencilEnable = FALSE;
-	depthStencilDesc.StencilReadMask = 0xFF;
-	depthStencilDesc.StencilWriteMask = 0xFF;
+	D3D11_DEPTH_STENCIL_DESC depthStencilDescDisabled;
+	ZeroMemory(&depthStencilDescDisabled, sizeof(D3D11_DEPTH_STENCIL_DESC));
+	
+	depthStencilDescDisabled.DepthEnable = FALSE;
+	depthStencilDescDisabled.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+	depthStencilDescDisabled.DepthFunc = D3D11_COMPARISON_LESS;
+	depthStencilDescDisabled.StencilEnable = FALSE;
+	depthStencilDescDisabled.StencilReadMask = 0xFF;
+	depthStencilDescDisabled.StencilWriteMask = 0xFF;
 	
 	// Stencil operations if pixel is front-facing
-	depthStencilDesc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
-	depthStencilDesc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_INCR;
-	depthStencilDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
-	depthStencilDesc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+	depthStencilDescDisabled.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+	depthStencilDescDisabled.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_INCR;
+	depthStencilDescDisabled.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+	depthStencilDescDisabled.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
 	//
 	//// Stencil operations if pixel is back-facing
 	//depthStencilDesc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
@@ -272,31 +273,33 @@ HRESULT Device::InitDevice() {
 	//depthStencilDesc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
 
 
-	_pd3dDevice->CreateDepthStencilState(&depthStencilDesc, &_pDepthStencilStateParticle);
+	//_pd3dDevice->CreateDepthStencilState(&depthStencilDescDisabled, &_pDepthStencilStateParticle);
 	
 
+	D3D11_DEPTH_STENCIL_DESC depthStencilDescEnabled;
+	ZeroMemory(&depthStencilDescEnabled, sizeof(D3D11_DEPTH_STENCIL_DESC));
 
-	depthStencilDesc.DepthEnable = TRUE;
-	depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+	depthStencilDescEnabled.DepthEnable = TRUE;
+	depthStencilDescEnabled.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
 	//depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
-	depthStencilDesc.DepthFunc = D3D11_COMPARISON_LESS;
-	depthStencilDesc.StencilEnable = TRUE;
-	depthStencilDesc.StencilReadMask = 0xFF;
-	depthStencilDesc.StencilWriteMask = 0xFF;
+	depthStencilDescEnabled.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
+	depthStencilDescEnabled.StencilEnable = FALSE;
+	depthStencilDescEnabled.StencilReadMask = 0xFF;
+	depthStencilDescEnabled.StencilWriteMask = 0xFF;
 
 	// Stencil operations if pixel is front-facing
-	depthStencilDesc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
-	depthStencilDesc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_KEEP;
-	depthStencilDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_INCR;
-	depthStencilDesc.FrontFace.StencilFunc = D3D11_COMPARISON_EQUAL;
+	depthStencilDescEnabled.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+	depthStencilDescEnabled.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_KEEP;
+	depthStencilDescEnabled.FrontFace.StencilPassOp = D3D11_STENCIL_OP_INCR;
+	depthStencilDescEnabled.FrontFace.StencilFunc = D3D11_COMPARISON_EQUAL;
 	//
-	//// Stencil operations if pixel is back-facing
-	//depthStencilDesc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
-	//depthStencilDesc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_DECR;
-	//depthStencilDesc.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
-	//depthStencilDesc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+	// Stencil operations if pixel is back-facing
+	depthStencilDescEnabled.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+	depthStencilDescEnabled.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_DECR;
+	depthStencilDescEnabled.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+	depthStencilDescEnabled.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
 
-	_pd3dDevice->CreateDepthStencilState(&depthStencilDesc, &_pDepthStencilStateShape);
+	//_pd3dDevice->CreateDepthStencilState(&depthStencilDescEnabled, &_pDepthStencilStateShape);
 
 
 	D3D11_BLEND_DESC blendDesc;
@@ -336,7 +339,7 @@ HRESULT Device::InitDevice() {
 
 			D3D11_RASTERIZER_DESC rasterDesc;
 
-			rasterDesc.CullMode = D3D11_CULL_BACK;
+			rasterDesc.CullMode = D3D11_CULL_NONE;
 			rasterDesc.FillMode = D3D11_FILL_SOLID;
 			rasterDesc.ScissorEnable = false;
 			rasterDesc.DepthBias = 0;
@@ -345,20 +348,39 @@ HRESULT Device::InitDevice() {
 			rasterDesc.MultisampleEnable = false;
 			rasterDesc.SlopeScaledDepthBias = 0.0f;
 			
-			auto shape = new Shape(_settingLoader->GetVs(0), _settingLoader->GetPs(0), i);
-			hr = shape->CreateRasterState(_pd3dDevice, rasterDesc);
-			hr = shape->CreateBuffers(hr, _pd3dDevice, _settingLoader->GetVertices(0), _settingLoader->GetIndices(0));
-			_shapeList.push_back(shape);
-			
-			//auto sky = new Shape(_settingLoader->GetVs(1), _settingLoader->GetPs(1), i);
-			//hr = sky->CreateBuffers(hr, _pd3dDevice, _settingLoader->GetVertices(0), _settingLoader->GetIndices(0));
-			//hr = sky->CreateRasterState(_pd3dDevice, rasterDesc);
-			////hr = sky->CreateTextureResource(_pd3dDevice, L"skymap.dds");
+			auto sky = new Shape(_settingLoader->GetVs(1), _settingLoader->GetPs(1), i);
+			hr = sky->CreateBuffers(hr, _pd3dDevice, _settingLoader->GetVertices(0), _settingLoader->GetIndices(0));
+			hr = sky->CreateRasterState(_pd3dDevice, rasterDesc);
+			hr = sky->CreateTextureResource(_pd3dDevice, L"skymap.dds");
+			hr = sky->CreateDepthStencil(_pd3dDevice, depthStencilDescDisabled);
+
 			//_shapeList.push_back(sky);
-			//
+			
 			j++;
 			continue;
 
+		}if(j==1) {
+
+			D3D11_RASTERIZER_DESC rasterDesc;
+
+			rasterDesc.CullMode = D3D11_CULL_BACK;
+			rasterDesc.FillMode = D3D11_FILL_SOLID;
+			rasterDesc.ScissorEnable = false;
+			rasterDesc.DepthBias = 0;
+			rasterDesc.DepthBiasClamp = 0.0f;
+			rasterDesc.DepthClipEnable = true;
+			rasterDesc.MultisampleEnable = false;
+			rasterDesc.SlopeScaledDepthBias = 0.0f;
+
+			auto shape = new Shape(_settingLoader->GetVs(0), _settingLoader->GetPs(0), i);
+			hr = shape->CreateBuffers(hr, _pd3dDevice, _settingLoader->GetVertices(0), _settingLoader->GetIndices(0));
+			hr = shape->CreateRasterState(_pd3dDevice, rasterDesc);
+			hr = shape->CreateDepthStencil(_pd3dDevice, depthStencilDescEnabled);
+
+			_shapeList.push_back(shape);
+			j++;
+			continue;
+			
 		}
 		
 		D3D11_RASTERIZER_DESC rasterDesc;
@@ -372,22 +394,36 @@ HRESULT Device::InitDevice() {
 		rasterDesc.SlopeScaledDepthBias = 0.0f;
 	
 		auto shape = new Shape(_settingLoader->GetVs(3), _settingLoader->GetPs(6), i);
-		hr = shape->CreateBuffers(hr, _pd3dDevice, _settingLoader->GetVertices(j % 2), _settingLoader->GetIndices(j % 2));
+		hr = shape->CreateBuffers(hr, _pd3dDevice, _settingLoader->GetVertices((j + 1) % 2 ), _settingLoader->GetIndices((j + 1) % 2));
 		hr = shape->CreateRasterState(_pd3dDevice, rasterDesc);
+		hr = shape->CreateDepthStencil(_pd3dDevice, depthStencilDescEnabled);
 		//hr = shape->CreateTextureResource(_pd3dDevice, L"stones.dds");
 		//hr = shape->CreateBumpResource(_pd3dDevice, L"stones_NM_height.dds");
 		_shapeList.push_back(shape);
 		j++;
 	}
 
-	//for(auto i = 0; i<50; i++) {
-	//	
-	//	auto randV = static_cast<float>(fmod(rand() + i, 10.0f));
-	//	
-	//	auto particle = new Particle(_settingLoader->GetVs(3), _settingLoader->GetPs(3), _settingLoader->GetObjectsCoords()[3], {cos( DirectX::XM_PIDIV2 * randV  ) * randV, randV , sin(DirectX::XM_PIDIV2 * randV) * randV});
-	//	hr = particle->CreateBuffers(hr, _pd3dDevice, _settingLoader->GetVertices(2), _settingLoader->GetIndices(2));
-	//	_particleList.push_back(particle);
-	//}
+	for(auto i = 0; i<50; i++) {
+		
+		auto randV = static_cast<float>(fmod(rand() + i, 10.0f));
+
+		D3D11_RASTERIZER_DESC rasterDesc;
+		rasterDesc.CullMode = D3D11_CULL_NONE;
+		rasterDesc.FillMode = D3D11_FILL_SOLID;
+		rasterDesc.ScissorEnable = false;
+		rasterDesc.DepthBias = 0;
+		rasterDesc.DepthBiasClamp = 0.0f;
+		rasterDesc.DepthClipEnable = false;
+		rasterDesc.MultisampleEnable = false;
+		rasterDesc.SlopeScaledDepthBias = 0.0f;
+		
+		auto particle = new Particle(_settingLoader->GetVs(5), _settingLoader->GetPs(7), _settingLoader->GetObjectsCoords()[4], {cos( DirectX::XM_PIDIV2 * randV  ) * randV, randV , sin(DirectX::XM_PIDIV2 * randV) * randV});
+		hr = particle->CreateBuffers(hr, _pd3dDevice, _settingLoader->GetVertices(2), _settingLoader->GetIndices(2));
+		hr = particle->CreateRasterState(_pd3dDevice, rasterDesc);
+		hr = particle->CreateDepthStencil(_pd3dDevice, depthStencilDescDisabled);
+		hr = particle->CreateTextureResource(_pd3dDevice, L"sand.dds");
+		_particleList.push_back(particle);
+	}
 
 	//todo unroll loops in shaders
 	
@@ -495,7 +531,7 @@ void Device::Render() {
 	_pImmediateContext->ClearDepthStencilView(_pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
 
 	
-	_pImmediateContext->OMSetDepthStencilState(_pDepthStencilStateShape, 0);
+	
 	_pImmediateContext->OMSetBlendState(_pBlendStateNoBlend, nullptr, 1);
 
 
@@ -508,7 +544,7 @@ void Device::Render() {
 
 
 	
-	_pImmediateContext->OMSetDepthStencilState(_pDepthStencilStateParticle, 0);
+	
 	_pImmediateContext->OMSetBlendState(_pBlendStateBlend, nullptr, 1);
 	
 	for (auto i : _particleList) {

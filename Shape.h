@@ -20,9 +20,10 @@ public:
 
 	~Shape() = default;
 	HRESULT CreateBuffers(HRESULT&, ID3D11Device*, std::vector<SimpleVertex>, std::vector<UINT16>);
-	HRESULT CreateRasterState(ID3D11Device* pd3dDevice, D3D11_RASTERIZER_DESC rasterDesc) { return  pd3dDevice->CreateRasterizerState(&rasterDesc, &_rasterState); };
+	HRESULT CreateRasterState(ID3D11Device* pd3dDevice, const D3D11_RASTERIZER_DESC& rasterDesc) { return  pd3dDevice->CreateRasterizerState(&rasterDesc, &_rasterState); };
 	HRESULT CreateTextureResource(ID3D11Device* pd3dDevice, const wchar_t* filename) { return DirectX::CreateDDSTextureFromFile(pd3dDevice, filename, nullptr, &_textureRV); };
 	HRESULT CreateBumpResource(ID3D11Device* pd3dDevice, const wchar_t* filename) { return DirectX::CreateDDSTextureFromFile(pd3dDevice, filename, nullptr, &_bumpRV); };
+	HRESULT CreateDepthStencil(ID3D11Device* pd3dDevice, const D3D11_DEPTH_STENCIL_DESC& depthStencilDesc) { return pd3dDevice->CreateDepthStencilState(&depthStencilDesc, &_pDepthStencilState); };
 		
 
 	void Draw();
@@ -45,7 +46,8 @@ private:
 	ID3D11RasterizerState* _rasterState = nullptr;
 	ID3D11ShaderResourceView* _textureRV = nullptr;
 	ID3D11ShaderResourceView* _bumpRV = nullptr;
-	
+	ID3D11DepthStencilState* _pDepthStencilState = nullptr;
+
 
 };
 

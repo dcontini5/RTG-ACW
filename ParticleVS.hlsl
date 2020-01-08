@@ -1,19 +1,62 @@
 //#include "Tutorial04.fx"
 
+struct PointLight
+{
+    
+    float4 Color;
+    float3 Pos;
+	
+};
+
+struct SpotLight
+{
+	
+    float4 Pos;
+    float4 Color;
+    float3 Dir;
+    float Spot;
+	
+};
+
+struct Material
+{
+
+    float4 materialAmb;
+    float4 materialDiff;
+    float4 materialSpec;
+
+
+};
+
 cbuffer ConstantBuffer : register(b0)
 {
     matrix World;
     matrix View;
     matrix Projection;
-    float4 LightPos;
     float4 Eye;
+    PointLight PLight;
     float Time;
+    SpotLight SLights[4];
+    Material mat;
+    
 }
 
 Texture2D txWoodColor : register(t0);
 SamplerState txWoodSampler : register(s0);
 
 //--------------------------------------------------------------------------------------
+
+struct VS_INPUT
+{
+    float4 Pos : POSITION;
+    float4 Color : COLOR;
+    float3 N : NORMAL;
+    float2 Tex : TEXCOORD;
+    float3 T : TANGENT;
+    float3 B : BINORMAL;
+    
+};
+
 struct VS_OUTPUT
 {
     float4 Pos : SV_POSITION;
@@ -26,7 +69,7 @@ struct VS_OUTPUT
 };
 
 
-VS_OUTPUT VS(float4 Pos : POSITION, float4 Color : COLOR, float3 N : NORMAL, float2 Tex : TEXCOORD)
+VS_OUTPUT VS(VS_INPUT input)
 {
     VS_OUTPUT output = (VS_OUTPUT) 0;
     
@@ -53,12 +96,12 @@ VS_OUTPUT VS(float4 Pos : POSITION, float4 Color : COLOR, float3 N : NORMAL, flo
 
     float3 viewLeft = View._11_21_31;
     float3 viewUp = View._12_22_32;
-    float4 inPos = Pos;
+    float4 inPos = input.Pos;
     
     
     inPos.xyz = inPos.x * viewLeft + inPos.y * viewUp;
     
-    inPos += float4(0.0f, 0.0f, Pos.z, 0.0f);
+    inPos += float4(0.0f, 0.0f, input.Pos.z, 0.0f);
     
     
     
@@ -84,19 +127,19 @@ VS_OUTPUT VS(float4 Pos : POSITION, float4 Color : COLOR, float3 N : NORMAL, flo
 	//output.Pos.xyz += translation;
     
     //output.RotatedL = LightPos.xyz;
-    output.RotatedL = LightPos.xyz + translation;
+    output.RotatedL = PLight.Pos + translation;
     output.RotatedL = mul(output.RotatedL, (float3x3) rotationY);
     
     
     output.Pos = mul(output.Pos, View);
     output.Pos = mul(output.Pos, Projection);
-    output.Norm = mul(N, (float3x3) World);
+    output.Norm = mul(input.N, (float3x3) World);
     
     output.Norm = normalize(output.Norm);
-    output.PosWorld = mul(Pos, World).xyz;
+    output.PosWorld = mul(input.Pos, World).xyz;
     
-    output.Color = Color;
-    output.Tex = Tex;
+    output.Color = input.Color;
+    output.Tex = input.Tex;
 
 	
     return output;

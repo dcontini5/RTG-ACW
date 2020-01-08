@@ -47,11 +47,7 @@ SamplerState txSampler : register(s0);
 struct VS_OUTPUT
 {
     float4 Pos : SV_POSITION;
-    float4 Color : COLOR0;
-    float4 Norm : NORMAL;
-    float4 PosWorld : TEXCOORD0;
-    float2 Tex : TEXCOORD1;
-    float3 viewDir : TEXCOORD2;
+    float3 viewDir : TEXCOORD0;
 
 };
 

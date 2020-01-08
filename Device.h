@@ -47,8 +47,8 @@ private:
 	//ID3D11SamplerState* _boxSampler;
 	ID3D11BlendState* _pBlendStateNoBlend = nullptr;
 	ID3D11BlendState* _pBlendStateBlend = nullptr;
-	ID3D11DepthStencilState* _pDepthStencilStateParticle = nullptr;
-	ID3D11DepthStencilState* _pDepthStencilStateShape = nullptr;
+	//ID3D11DepthStencilState* _pDepthStencilStateParticle = nullptr;
+	//ID3D11DepthStencilState* _pDepthStencilStateShape = nullptr;
 	
 	DirectX::XMMATRIX _projection;
 

@@ -56,23 +56,19 @@ struct VS_INPUT
 struct VS_OUTPUT
 {
     float4 Pos : SV_POSITION;
-    float4 Color : COLOR0;
-    float4 Norm : NORMAL;
-    float4 PosWorld : TEXCOORD0;
-    float2 Tex : TEXCOORD1;
-    float3 viewDir : TEXCOORD2;
+    float3 viewDir : TEXCOORD0;
 
 };
 
 VS_OUTPUT VS(VS_INPUT input)
 {
     VS_OUTPUT output = (VS_OUTPUT) 0;
+       
+
+    output.viewDir = input.Pos;
     
-    float4 inPos = input.Pos;
-    inPos.xyz *= 20.f;
-    output.viewDir = inPos.xyz;
-    float4 skyPos = inPos;
-    skyPos.xyz += Eye.xyz;
+    float4 skyPos = float4(Eye.xyz, 0.f) + input.Pos;
+   
     
     output.Pos = mul(skyPos, World);
     output.Pos = mul(output.Pos, View);
