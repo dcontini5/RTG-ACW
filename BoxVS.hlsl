@@ -94,7 +94,6 @@ VS_OUTPUT VS(VS_INPUT input)
     //output.Pos.xyz -= PLight.Pos;
     //float3 translation = float3(0.0, 0.0, 3.5);
     //output.Pos = mul(output.Pos, rotationY);
-	//output.Pos.xyz *= scaling;
 	//output.Pos.xyz += translation;
     
     

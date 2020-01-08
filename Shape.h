@@ -3,6 +3,7 @@
 #include <vector>
 #include <d3d11_1.h>
 #include "SettingLoader.h"
+#include "DDSTextureLoader.h"
 
 class Shape {
 
@@ -19,6 +20,11 @@ public:
 
 	~Shape() = default;
 	HRESULT CreateBuffers(HRESULT&, ID3D11Device*, std::vector<SimpleVertex>, std::vector<UINT16>);
+	HRESULT CreateRasterState(ID3D11Device* pd3dDevice, D3D11_RASTERIZER_DESC rasterDesc) { return  pd3dDevice->CreateRasterizerState(&rasterDesc, &_rasterState); };
+	HRESULT CreateTextureResource(ID3D11Device* pd3dDevice, const wchar_t* filename) { return DirectX::CreateDDSTextureFromFile(pd3dDevice, filename, nullptr, &_textureRV); };
+	HRESULT CreateBumpResource(ID3D11Device* pd3dDevice, const wchar_t* filename) { return DirectX::CreateDDSTextureFromFile(pd3dDevice, filename, nullptr, &_bumpRV); };
+		
+
 	void Draw();
 	void Draw(ID3D11DeviceContext* pImmediateContext, DirectX::XMMATRIX world, DirectX::XMMATRIX view, DirectX::XMMATRIX projection, float t) const;
 	void Draw(ID3D11DeviceContext* pImmediateContext, DirectX::XMMATRIX view, DirectX::XMVECTOR eye, DirectX::XMMATRIX projection, float t) const;
@@ -36,6 +42,10 @@ private:
 	ID3D11PixelShader* _pixelShader = nullptr;
 	ID3D11Buffer* _pConstantBuffer = nullptr;
 	ShapeCoordinates _coordinates;
+	ID3D11RasterizerState* _rasterState = nullptr;
+	ID3D11ShaderResourceView* _textureRV = nullptr;
+	ID3D11ShaderResourceView* _bumpRV = nullptr;
+	
 
 };
 

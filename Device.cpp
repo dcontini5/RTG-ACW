@@ -236,43 +236,18 @@ HRESULT Device::InitDevice() {
 
 	//Define the Rasterization State
 
-	D3D11_RASTERIZER_DESC rasterDesc;
-
-	rasterDesc.CullMode = D3D11_CULL_BACK;
-	rasterDesc.FillMode = D3D11_FILL_SOLID;
-	rasterDesc.ScissorEnable = false;
-	rasterDesc.DepthBias = 0;
-	rasterDesc.DepthBiasClamp = 0.0f;
-	rasterDesc.DepthClipEnable = true;
-	rasterDesc.MultisampleEnable = false;
-	rasterDesc.SlopeScaledDepthBias = 0.0f;
 
 
-	hr = _pd3dDevice->CreateRasterizerState(&rasterDesc, &_rasterStateBox);
-
-
-	rasterDesc.CullMode = D3D11_CULL_FRONT;
-	rasterDesc.FillMode = D3D11_FILL_SOLID;
-	rasterDesc.ScissorEnable = false;
-	rasterDesc.DepthBias = 0;
-	rasterDesc.DepthBiasClamp = 0.0f;
-	rasterDesc.DepthClipEnable = false;
-	rasterDesc.MultisampleEnable = false;
-	rasterDesc.SlopeScaledDepthBias = 0.0f;
-
-
-	hr = _pd3dDevice->CreateRasterizerState(&rasterDesc, &_rasterStateShape);
-
-	rasterDesc.CullMode = D3D11_CULL_NONE;
-	rasterDesc.FillMode = D3D11_FILL_SOLID;
-	rasterDesc.ScissorEnable = false;
-	rasterDesc.DepthBias = 0;
-	rasterDesc.DepthBiasClamp = 0.0f;
-	rasterDesc.DepthClipEnable = false;
-	rasterDesc.MultisampleEnable = false;
-	rasterDesc.SlopeScaledDepthBias = 0.0f;
-
-	hr = _pd3dDevice->CreateRasterizerState(&rasterDesc, &_rasterStateParticle);
+	//rasterDesc.CullMode = D3D11_CULL_NONE;
+	//rasterDesc.FillMode = D3D11_FILL_SOLID;
+	//rasterDesc.ScissorEnable = false;
+	//rasterDesc.DepthBias = 0;
+	//rasterDesc.DepthBiasClamp = 0.0f;
+	//rasterDesc.DepthClipEnable = false;
+	//rasterDesc.MultisampleEnable = false;
+	//rasterDesc.SlopeScaledDepthBias = 0.0f;
+	//
+	//hr = _pd3dDevice->CreateRasterizerState(&rasterDesc, &_rasterStateParticle);
 	
 
 	D3D11_DEPTH_STENCIL_DESC depthStencilDesc;
@@ -359,17 +334,48 @@ HRESULT Device::InitDevice() {
 
 		if (!j) {
 
+			D3D11_RASTERIZER_DESC rasterDesc;
+
+			rasterDesc.CullMode = D3D11_CULL_BACK;
+			rasterDesc.FillMode = D3D11_FILL_SOLID;
+			rasterDesc.ScissorEnable = false;
+			rasterDesc.DepthBias = 0;
+			rasterDesc.DepthBiasClamp = 0.0f;
+			rasterDesc.DepthClipEnable = true;
+			rasterDesc.MultisampleEnable = false;
+			rasterDesc.SlopeScaledDepthBias = 0.0f;
+			
 			auto shape = new Shape(_settingLoader->GetVs(0), _settingLoader->GetPs(0), i);
+			hr = shape->CreateRasterState(_pd3dDevice, rasterDesc);
 			hr = shape->CreateBuffers(hr, _pd3dDevice, _settingLoader->GetVertices(0), _settingLoader->GetIndices(0));
 			_shapeList.push_back(shape);
+			
+			//auto sky = new Shape(_settingLoader->GetVs(1), _settingLoader->GetPs(1), i);
+			//hr = sky->CreateBuffers(hr, _pd3dDevice, _settingLoader->GetVertices(0), _settingLoader->GetIndices(0));
+			//hr = sky->CreateRasterState(_pd3dDevice, rasterDesc);
+			////hr = sky->CreateTextureResource(_pd3dDevice, L"skymap.dds");
+			//_shapeList.push_back(sky);
+			//
 			j++;
 			continue;
 
 		}
-
+		
+		D3D11_RASTERIZER_DESC rasterDesc;
+		rasterDesc.CullMode = D3D11_CULL_NONE;
+		rasterDesc.FillMode = D3D11_FILL_SOLID;
+		rasterDesc.ScissorEnable = false;
+		rasterDesc.DepthBias = 0;
+		rasterDesc.DepthBiasClamp = 0.0f;
+		rasterDesc.DepthClipEnable = false;
+		rasterDesc.MultisampleEnable = false;
+		rasterDesc.SlopeScaledDepthBias = 0.0f;
 	
-		auto shape = new Shape(_settingLoader->GetVs(3), _settingLoader->GetPs(4), i);
+		auto shape = new Shape(_settingLoader->GetVs(3), _settingLoader->GetPs(6), i);
 		hr = shape->CreateBuffers(hr, _pd3dDevice, _settingLoader->GetVertices(j % 2), _settingLoader->GetIndices(j % 2));
+		hr = shape->CreateRasterState(_pd3dDevice, rasterDesc);
+		//hr = shape->CreateTextureResource(_pd3dDevice, L"stones.dds");
+		//hr = shape->CreateBumpResource(_pd3dDevice, L"stones_NM_height.dds");
 		_shapeList.push_back(shape);
 		j++;
 	}
@@ -386,12 +392,12 @@ HRESULT Device::InitDevice() {
 	//todo unroll loops in shaders
 	
 
-	_projection = DirectX::XMMatrixPerspectiveFovLH(DirectX::XM_PIDIV4, width / (FLOAT)height, 0.01f, 100.0f);
+	_projection = DirectX::XMMatrixPerspectiveFovLH(DirectX::XM_PIDIV4, width / (FLOAT)height, 0.01f, 200.0f);
 	
-	hr = DirectX::CreateDDSTextureFromFile(_pd3dDevice, L"sand.dds", nullptr, &_particleTextureRV);
-	hr = DirectX::CreateDDSTextureFromFile(_pd3dDevice, L"stones.dds", nullptr, &_shapeTextureRV);
-	hr = DirectX::CreateDDSTextureFromFile(_pd3dDevice, L"stones_NM_height.dds", nullptr, &_shapeBumpRV);
-	
+	//hr = DirectX::CreateDDSTextureFromFile(_pd3dDevice, L"sand.dds", nullptr, &_particleTextureRV);
+	//hr = DirectX::CreateDDSTextureFromFile(_pd3dDevice, L"stones.dds", nullptr, &_shapeTextureRV);
+	//hr = DirectX::CreateDDSTextureFromFile(_pd3dDevice, L"stones_NM_height.dds", nullptr, &_shapeBumpRV);
+	//hr = DirectX::CreateDDSTextureFromFile(_pd3dDevice, L"Skymap.dds", nullptr, &_skyBoxBumpRV);
 	
 
 	D3D11_SAMPLER_DESC sampDesc;
@@ -493,30 +499,15 @@ void Device::Render() {
 	_pImmediateContext->OMSetBlendState(_pBlendStateNoBlend, nullptr, 1);
 
 
-	auto c = 0;
 	for (auto i : _shapeList) {
 
-		if(!c) {
-			
-			_pImmediateContext->RSSetState(_rasterStateBox);
-			i->Draw(_pImmediateContext, _cameraManager->GetView(), _cameraManager->GetEye(), _projection, t);
-			_pImmediateContext->RSSetState(_rasterStateShape);
-			c++;
-			continue;
-		}
-		
-		_pImmediateContext->PSSetShaderResources(0, 1, &_shapeTextureRV);
-		_pImmediateContext->PSSetShaderResources(1, 1, &_shapeBumpRV);
 		i->Draw(_pImmediateContext, _cameraManager->GetView(), _cameraManager->GetEye(), _projection, t);
 		//i->DrawShadow(_pImmediateContext, _cameraManager->GetView(), _cameraManager->GetEye(), _projection, t);
-		c++;
-	
-		
+
 	}
 
+
 	
-	_pImmediateContext->PSSetShaderResources(0, 1, &_particleTextureRV);
-	_pImmediateContext->RSSetState(_rasterStateParticle);
 	_pImmediateContext->OMSetDepthStencilState(_pDepthStencilStateParticle, 0);
 	_pImmediateContext->OMSetBlendState(_pBlendStateBlend, nullptr, 1);
 	

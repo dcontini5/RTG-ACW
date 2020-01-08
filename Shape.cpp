@@ -60,13 +60,10 @@ void Shape::Draw(ID3D11DeviceContext* pImmediateContext, DirectX::XMMATRIX view,
 
 	Material shapeMat;
 	shapeMat.ambient = { 0.2f, 0.2f, 0.2f, 1.0f };
+	shapeMat.ambient = { 0.4f, 0.4f, 0.4f, 1.0f };
 	shapeMat.diffuse = { 0.5f, 0.5f, 0.5f, 1.0f };
-	shapeMat.specular = { 0.5f, 0.5f, 0.5f, 2.0f };
-	//Material shapeMat;
-	//shapeMat.ambient = { 0.1f, 0.2f, 0.2f, 1.0f };
-	//shapeMat.diffuse = { 0.5f, 0.3f, 0.6f, 1.0f };
-	//shapeMat.specular = { 0.4f, 0.2f, 0.5f, 2.0f };
-	//shapeMat.specular = { 0.4f, 0.2f, 0.5f, 128.0f };
+	//shapeMat.specular = { 0.5f, 0.5f, 0.5f, 2.0f };
+	shapeMat.specular = { 0.5f, 0.5f, 0.5f, 128.0f };
 	
 	PointLight light;
 
@@ -136,7 +133,9 @@ void Shape::Draw(ID3D11DeviceContext* pImmediateContext, DirectX::XMMATRIX view,
 	//
 	// Renders shape
 	//
-
+	if(_textureRV) pImmediateContext->PSSetShaderResources(0, 1, &_textureRV);
+	if(_bumpRV) pImmediateContext->PSSetShaderResources(1, 1, &_bumpRV);
+	pImmediateContext->RSSetState(_rasterState);
 	pImmediateContext->VSSetShader(_vertexShader, nullptr, 0);
 	pImmediateContext->VSSetConstantBuffers(0, 1, &_pConstantBuffer);
 	pImmediateContext->PSSetShader(_pixelShader, nullptr, 0);
