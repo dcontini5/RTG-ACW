@@ -167,36 +167,94 @@ void SettingLoader::FileLoader(HRESULT hr, ID3D11Device* pd3Device, ID3D11Device
 
 		}
 
-		//if (field == "Lights") {
+		if (field == "Lights") {
 
-		//	auto i = str.find('=');
+			static std::string type;
+			
+			
 
-		//	cout << str.substr(0, i - 1) << " = ";
-		//	cout << str.substr(i + 2, str.size() - i + 1) << endl;
-		//	getline(fin, str);
+			auto i = str.find('=');
+			
+			if (str.substr(0, i - 1) == "Type") {
+				type = str.substr(i + 2, str.length() - i + 2);
+				continue;
+			}
 
-		//	i = str.find('=');
+			if(type == "Point") {
 
-		//	cout << stof(str.substr(i + 2, str.find(',') - i)) << " ";
-		//	i = str.find(',');
-		//	cout << stof(str.substr(i + 2, str.find(',') - i + 1)) << " ";
-		//	i = str.find(',', i);
-		//	cout << stof(str.substr(i + 2, str.size() - i + 1)) << endl;
-		//	getline(fin, str);
+				PointLight light;
+				
+				auto x = stof(str.substr(i + 2, str.find(',') - i));
+				i = str.find(',');
+				auto y = stof(str.substr(i + 2, str.find(',', i + 1) - i + 1));
+				i = str.find(',', i + 1);
+				auto z = stof(str.substr(i + 2, str.size() - i + 1));
 
-		//	i = str.find('=');
+				light.Pos = {x, y, z};
 
-		//	cout << stof(str.substr(i + 2, str.find(',') - i)) << " ";
-		//	i = str.find(',');
-		//	cout << stof(str.substr(i + 2, str.find(',') - i + 1)) << " ";
-		//	i = str.find(',', i);
-		//	cout << stof(str.substr(i + 2, str.size() - i + 1)) << endl;
-		//	getline(fin, str);
+				getline(fin, str);
+				i = str.find('=');
 
+				x = stof(str.substr(i + 2, str.find(',') - i));
+				i = str.find(',');
+				y = stof(str.substr(i + 2, str.find(',', i + 1) - i + 1));
+				i = str.find(',');
+				z = stof(str.substr(i + 2, str.find(',', i + 1) - i + 1));
+				i = str.find(',', i + 1);
+				auto w = stof(str.substr(i + 2, str.size() - i + 1));
 
-		//	continue;
+				light.Color = { x, y, z, w };
 
-		//}
+				_pointLightsCoordinates.push_back(light);
+				
+				continue;
+				
+			}
+
+			SpotLight light;
+			
+			auto x = stof(str.substr(i + 2, str.find(',') - i));
+			i = str.find(',');
+			auto y = stof(str.substr(i + 2, str.find(',', i + 1) - i + 1));
+			i = str.find(',', i + 1);
+			auto z = stof(str.substr(i + 2, str.size() - i + 1));
+
+			light.Pos = { x, y, z, 1.f };
+
+			getline(fin, str);
+			i = str.find('=');
+
+			x = stof(str.substr(i + 2, str.find(',') - i));
+			i = str.find(',');
+			y = stof(str.substr(i + 2, str.find(',', i + 1) - i + 1));
+			i = str.find(',');
+			z = stof(str.substr(i + 2, str.find(',', i + 1) - i + 1));
+			i = str.find(',', i + 1);
+			auto w = stof(str.substr(i + 2, str.size() - i + 1));
+
+			light.Color = { x, y, z, w };
+
+			getline(fin, str);
+			i = str.find('=');
+
+			x = stof(str.substr(i + 2, str.find(',') - i));
+			i = str.find(',');
+			y = stof(str.substr(i + 2, str.find(',', i + 1) - i + 1));
+			i = str.find(',', i + 1);
+			z = stof(str.substr(i + 2, str.size() - i + 1));
+
+			getline(fin, str);
+			i = str.find('=');
+
+			light.Spot = stof(str.substr(i + 2, str.size() - i + 1));
+
+			light.Direction = { x, y, z };
+
+			_spotLightsCoordinates.push_back(light);
+
+			continue;
+
+		}
 
 		if (field == "Cameras") {
 
@@ -237,6 +295,8 @@ void SettingLoader::FileLoader(HRESULT hr, ID3D11Device* pd3Device, ID3D11Device
 
 			_cameraCoordinates.push_back(camera);
 
+			auto aaaw = _cameraCoordinates.data();
+			
 			continue;
 
 		}
@@ -374,6 +434,8 @@ void SettingLoader::CreateParticleGeometry() {
 	particle.vertices.push_back({ DirectX::XMFLOAT3(1.0f, 1.0f, 0.0f), DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), DirectX::XMFLOAT3(0.0f, 0.0f, -1.0f), DirectX::XMFLOAT2(0.0f, 0.0f) });
 	particle.vertices.push_back({ DirectX::XMFLOAT3(-1.0f, 1.0f, 0.0f), DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), DirectX::XMFLOAT3(0.0f, 0.0f, -1.0f), DirectX::XMFLOAT2(1.0f, 0.0f) });
 
+
+	
 	particle.indices.push_back(3);
 	particle.indices.push_back(1);
 	particle.indices.push_back(0);

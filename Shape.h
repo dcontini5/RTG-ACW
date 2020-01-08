@@ -29,7 +29,8 @@ public:
 	void Draw();
 	void Draw(ID3D11DeviceContext* pImmediateContext, DirectX::XMMATRIX world, DirectX::XMMATRIX view, DirectX::XMMATRIX projection, float t) const;
 	void Draw(ID3D11DeviceContext* pImmediateContext, DirectX::XMMATRIX view, DirectX::XMVECTOR eye, DirectX::XMMATRIX projection, float t) const;
-	void DrawShadow(ID3D11DeviceContext* pImmediateContext, DirectX::XMMATRIX view, DirectX::XMVECTOR eye, DirectX::XMMATRIX projection, float t) const;
+	void Draw(ID3D11DeviceContext* pImmediateContext, Light* lightManager, DirectX::XMMATRIX view, DirectX::XMVECTOR eye, DirectX::XMMATRIX projection, float t) const;
+	void DrawShadow(ID3D11DeviceContext* pImmediateContext, Light* lightManager, DirectX::XMMATRIX view, DirectX::XMVECTOR eye, DirectX::XMMATRIX projection, float t) const;
 	UINT16 GetNumberOfIndices() const { return _noOfIndices; }
 	ShapeCoordinates GetCoords() const { return _coordinates; }
 	void SetPos(const DirectX::XMFLOAT3 newPos) { _coordinates.Pos = newPos; }

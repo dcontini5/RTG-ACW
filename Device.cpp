@@ -331,6 +331,7 @@ HRESULT Device::InitDevice() {
 	_settingLoader->CreateParticleGeometry();
 	
 	_cameraManager = new Camera(_settingLoader->GetCameraCoords());
+	_lightManager = new Light(_settingLoader->GetPointCoords(), _settingLoader->GetSpotCoords());
 
 	auto j = 0;
 	for (auto i : _settingLoader->GetObjectsCoords()) {
@@ -393,7 +394,7 @@ HRESULT Device::InitDevice() {
 		rasterDesc.MultisampleEnable = false;
 		rasterDesc.SlopeScaledDepthBias = 0.0f;
 	
-		auto shape = new Shape(_settingLoader->GetVs(3), _settingLoader->GetPs(6), i);
+		auto shape = new Shape(_settingLoader->GetVs(3), _settingLoader->GetPs(4), i);
 		hr = shape->CreateBuffers(hr, _pd3dDevice, _settingLoader->GetVertices((j + 1) % 2 ), _settingLoader->GetIndices((j + 1) % 2));
 		hr = shape->CreateRasterState(_pd3dDevice, rasterDesc);
 		hr = shape->CreateDepthStencil(_pd3dDevice, depthStencilDescEnabled);
@@ -403,10 +404,10 @@ HRESULT Device::InitDevice() {
 		j++;
 	}
 
-	for(auto i = 0; i<50; i++) {
+	for(auto i = 0; i<100; i++) {
 		
-		auto randV = static_cast<float>(fmod(rand() + i, 10.0f));
-
+		auto randV = static_cast<float>(fmod(rand() + i, 7.5f));
+	
 		D3D11_RASTERIZER_DESC rasterDesc;
 		rasterDesc.CullMode = D3D11_CULL_NONE;
 		rasterDesc.FillMode = D3D11_FILL_SOLID;
@@ -417,12 +418,12 @@ HRESULT Device::InitDevice() {
 		rasterDesc.MultisampleEnable = false;
 		rasterDesc.SlopeScaledDepthBias = 0.0f;
 		
-		auto particle = new Particle(_settingLoader->GetVs(5), _settingLoader->GetPs(7), _settingLoader->GetObjectsCoords()[4], {cos( DirectX::XM_PIDIV2 * randV  ) * randV, randV , sin(DirectX::XM_PIDIV2 * randV) * randV});
+		auto particle = new Particle(_settingLoader->GetVs(5), _settingLoader->GetPs(7), _settingLoader->GetObjectsCoords()[4], {cos( DirectX::XM_2PI / 100 * i  ) * randV, randV , sin(DirectX::XM_2PI / 100 * i) * randV});
 		hr = particle->CreateBuffers(hr, _pd3dDevice, _settingLoader->GetVertices(2), _settingLoader->GetIndices(2));
 		hr = particle->CreateRasterState(_pd3dDevice, rasterDesc);
 		hr = particle->CreateDepthStencil(_pd3dDevice, depthStencilDescDisabled);
 		hr = particle->CreateTextureResource(_pd3dDevice, L"sand.dds");
-		_particleList.push_back(particle);
+		//_particleList.push_back(particle);
 	}
 
 	//todo unroll loops in shaders
@@ -534,11 +535,18 @@ void Device::Render() {
 	
 	_pImmediateContext->OMSetBlendState(_pBlendStateNoBlend, nullptr, 1);
 
-
+	auto x = true;
 	for (auto i : _shapeList) {
 
-		i->Draw(_pImmediateContext, _cameraManager->GetView(), _cameraManager->GetEye(), _projection, t);
-		//i->DrawShadow(_pImmediateContext, _cameraManager->GetView(), _cameraManager->GetEye(), _projection, t);
+		//i->Draw(_pImmediateContext, _cameraManager->GetView(), _cameraManager->GetEye(), _projection, t);
+		i->Draw(_pImmediateContext, _lightManager, _cameraManager->GetView(), _cameraManager->GetEye(), _projection, t);
+		if(x) {
+						
+			x = false;
+			continue;
+		}
+
+		i->DrawShadow(_pImmediateContext, _lightManager, _cameraManager->GetView(), _cameraManager->GetEye(), _projection, t);
 
 	}
 

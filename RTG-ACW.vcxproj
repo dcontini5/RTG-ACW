@@ -352,6 +352,7 @@
     <ClCompile Include="Cube.cpp" />
     <ClCompile Include="DDSTextureLoader.cpp" />
     <ClCompile Include="Device.cpp" />
+    <ClCompile Include="Light.cpp" />
     <ClCompile Include="Particle.cpp" />
     <ClCompile Include="RTG-ACW.cpp" />
     <ClCompile Include="SettingLoader.cpp" />
@@ -363,6 +364,7 @@
     <ClInclude Include="Cube.h" />
     <ClInclude Include="DDSTextureLoader.h" />
     <ClInclude Include="Device.h" />
+    <ClInclude Include="Light.h" />
     <ClInclude Include="Particle.h" />
     <CLInclude Include="resource.h" />
     <ClInclude Include="SettingLoader.h" />

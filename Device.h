@@ -8,6 +8,7 @@
 #include "DDSTextureLoader.h"
 #include "Shape.h"
 #include "Particle.h"
+#include "Light.h"
 
 class Device
 {
@@ -57,6 +58,7 @@ private:
 	//std::vector<Shape*> _particleList;
 	std::vector<Particle*> _particleList;
 	Camera* _cameraManager;
+	Light* _lightManager;
 	
 };
 

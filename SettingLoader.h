@@ -12,6 +12,7 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 #include "Camera.h"
+#include "Light.h"
 
 
 struct ShapeCoordinates {
@@ -34,21 +35,6 @@ struct SimpleVertex {
 
 };
 
-struct PointLight {
-	
-	DirectX::XMFLOAT4 Color;
-	DirectX::XMFLOAT3 Pos;
-	
-};
-
-struct SpotLight {
-
-	DirectX::XMFLOAT4 Pos;
-	DirectX::XMFLOAT4 Color;
-	DirectX::XMFLOAT3 Direction;
-	float Spot;
-	
-};
 
 struct Material {
 
@@ -107,7 +93,8 @@ public:
 	std::vector<CameraCoordinates> GetCameraCoords() const { return _cameraCoordinates; };
 	std::vector<ShapeCoordinates> GetObjectsCoords() const { return _objectCoordinates; }
 	void CreateParticleGeometry();
-
+	std::vector<SpotLight> GetSpotCoords() const { return _spotLightsCoordinates; }
+	std::vector<PointLight> GetPointCoords() const { return _pointLightsCoordinates; }
 	
 
 private:
@@ -118,7 +105,8 @@ private:
 	std::vector<ShapeCoordinates> _objectCoordinates;
 	std::vector<CameraCoordinates> _cameraCoordinates;
 	std::vector<ShapeGeometry> _shapeGeometries;
-
+	std::vector<SpotLight> _spotLightsCoordinates;
+	std::vector<PointLight> _pointLightsCoordinates;
 	
 	static HRESULT CompileShaderFromFile(const WCHAR* szFileName, LPCSTR szEntryPoint, LPCSTR szShaderModel, ID3DBlob** ppBlobOut);
 
