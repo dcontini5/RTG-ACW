@@ -9,7 +9,7 @@ SettingLoader::SettingLoader()
 SettingLoader::~SettingLoader()
 = default;
 
-HRESULT SettingLoader::CreateVertexShaders(HRESULT hr, ID3D11Device* pd3dDevice, ID3D11DeviceContext* pImmediateContext, std::string fileName ) {
+HRESULT SettingLoader::CreateVertexShaders(HRESULT hr, ID3D11Device* const pd3dDevice, ID3D11DeviceContext* pImmediateContext,const std::string fileName ) {
 
 	static bool createLayout = true;
 	ID3DBlob* pVSBlob = nullptr;
@@ -295,7 +295,6 @@ void SettingLoader::FileLoader(HRESULT hr, ID3D11Device* pd3Device, ID3D11Device
 
 			_cameraCoordinates.push_back(camera);
 
-			auto aaaw = _cameraCoordinates.data();
 			
 			continue;
 

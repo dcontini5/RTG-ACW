@@ -26,7 +26,7 @@ class Light {
 public:
 
 	Light(std::vector<PointLight> pointLights, std::vector<SpotLight> spotLights) : _pointLights(std::move(pointLights)), _spotlights(
-		                                                                                std::move(spotLights)), _activeLight(1){};
+		                                                                                std::move(spotLights)), _activeLight(0){};
 	~Light() = default;
  	void SetLight(PointLight& pLight, std::vector<SpotLight>& sLight) { if (!_activeLight) sLight = _spotlights; else pLight = _pointLights[_activeLight - 1]; };
 	void SwapLight() { _activeLight = ++_activeLight % 3; }

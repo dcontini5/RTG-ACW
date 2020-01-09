@@ -21,7 +21,7 @@ using namespace DirectX;
 // Entry point to the program. Initializes everything and goes into a message processing 
 // loop. Idle time is used to render the scene.
 //--------------------------------------------------------------------------------------
-int WINAPI wWinMain( const _In_ HINSTANCE hInstance, const _In_opt_ HINSTANCE hPrevInstance,const _In_ LPWSTR lpCmdLine,const _In_ int nCmdShow ) {
+int WINAPI wWinMain( const _In_ HINSTANCE hInstance, const _In_opt_ HINSTANCE hPrevInstance, const _In_ LPWSTR lpCmdLine, const _In_ int nCmdShow ) {
 
 	const auto device = new Device();
 

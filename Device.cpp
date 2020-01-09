@@ -30,12 +30,12 @@ HRESULT Device::InitWindow(const HINSTANCE hInstance, const int nCmdShow) {
 	wcex.hInstance = hInstance;
 	wcex.hIcon = LoadIcon(hInstance, (LPCTSTR)IDI_TUTORIAL1);
 	wcex.hCursor = LoadCursor(nullptr, IDC_ARROW);
-	wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
+	wcex.hbrBackground = reinterpret_cast<HBRUSH>(COLOR_WINDOW + 1);
 	wcex.lpszMenuName = nullptr;
 	wcex.lpszClassName = L"TutorialWindowClass";
 	wcex.hIconSm = LoadIcon(wcex.hInstance, (LPCTSTR)IDI_TUTORIAL1);
 	if (!RegisterClassEx(&wcex))
-		return E_FAIL;
+		E_FAIL;
 
 	// Create window
 	_hInst = hInstance;

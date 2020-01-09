@@ -81,7 +81,7 @@ class SettingLoader
 public:
 	SettingLoader();
 	~SettingLoader();
-	HRESULT CreateVertexShaders(HRESULT hr, ID3D11Device* pd3dDevice, ID3D11DeviceContext* pImmediateContext, std::string fileName);
+	HRESULT CreateVertexShaders( HRESULT hr,  ID3D11Device* const pd3dDevice, ID3D11DeviceContext* pImmediateContext, const std::string fileName);
 	HRESULT CreatePixelShaders(HRESULT hr, ID3D11Device* pd3dDevice, std::string fileName);
 	ID3D11PixelShader* GetPs(const int i) const { return _pixelShaderList[i]; };
 	ID3D11VertexShader* GetVs(const int i) const { return _vertexShaderList[i]; };
