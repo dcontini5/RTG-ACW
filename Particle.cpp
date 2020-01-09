@@ -1,6 +1,6 @@
 #include "Particle.h"
 
-void Particle::Integrate(const float& t, const float& dt) {
+void Particle::Integrate(const float& t) {
 
 
 	const auto vel = XMVectorSet(_velocity0.x, _velocity0.y, _velocity0.z, 0.f);
@@ -21,7 +21,6 @@ void Particle::CollisionWithBox(const OBB cube) {
 	const auto pPos = XMVectorSet(this->GetCoords().Pos.x, this->GetCoords().Pos.y, this->GetCoords().Pos.z, 0.f);
 
 	const auto v = pPos - cube.Center;
-	auto sqDist = 0.f;
 
 	for(auto i = 0; i < 3; i++) {
 		
@@ -31,7 +30,6 @@ void Particle::CollisionWithBox(const OBB cube) {
 		if (vProj - _radius <= -cube.BoxHalfwidth[i] || vProj + _radius >= cube.BoxHalfwidth[i]) {
 
 			
-
 			_velocity0 = { 0.f, 0.f, 0.f };
 			_acceleration = { 0.f, 0.f, 0.f };
 			_position0 = { this->GetCoords().Pos.x, this->GetCoords().Pos.y, this->GetCoords().Pos.z };

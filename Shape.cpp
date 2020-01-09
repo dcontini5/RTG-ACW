@@ -1,5 +1,7 @@
 ﻿#include "Shape.h"
 
+
+
 HRESULT Shape::CreateBuffers(HRESULT& hr, ID3D11Device* pd3dDevice, std::vector<SimpleVertex> vertices, std::vector<UINT16> indices) {
 
 	D3D11_BUFFER_DESC bd;

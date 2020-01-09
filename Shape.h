@@ -18,7 +18,7 @@ public:
 		                                                                                                    coords) {
 	}
 
-	~Shape() = default;
+	virtual ~Shape() {}
 	HRESULT CreateBuffers(HRESULT&, ID3D11Device*, std::vector<SimpleVertex>, std::vector<UINT16>);
 	HRESULT CreateRasterState(ID3D11Device* pd3dDevice, const D3D11_RASTERIZER_DESC& rasterDesc) { return  pd3dDevice->CreateRasterizerState(&rasterDesc, &_rasterState); };
 	HRESULT CreateTextureResource(ID3D11Device* pd3dDevice, const wchar_t* filename) { return DirectX::CreateDDSTextureFromFile(pd3dDevice, filename, nullptr, &_textureRV); };
@@ -26,8 +26,6 @@ public:
 	HRESULT CreateDepthStencil(ID3D11Device* pd3dDevice, const D3D11_DEPTH_STENCIL_DESC& depthStencilDesc) { return pd3dDevice->CreateDepthStencilState(&depthStencilDesc, &_pDepthStencilState); };
 		
 
-	void Draw();
-	void Draw(ID3D11DeviceContext* pImmediateContext, DirectX::XMMATRIX world, DirectX::XMMATRIX view, DirectX::XMMATRIX projection, float t) const;
 	void Draw(ID3D11DeviceContext* pImmediateContext, DirectX::XMMATRIX view, DirectX::XMVECTOR eye, DirectX::XMMATRIX projection, float t) const;
 	void Draw(ID3D11DeviceContext* pImmediateContext, Light* lightManager, DirectX::XMMATRIX view, DirectX::XMVECTOR eye, DirectX::XMMATRIX projection, float t) const;
 	void DrawShadow(ID3D11DeviceContext* pImmediateContext, Light* lightManager, DirectX::XMMATRIX view, DirectX::XMVECTOR eye, DirectX::XMMATRIX projection, float t) const;

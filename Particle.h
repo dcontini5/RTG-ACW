@@ -18,7 +18,7 @@ public:
 
 	void Update();
 	//void Draw();
-	void Integrate(const float& t, const float& dt);
+	void Integrate(const float& t);
 	void CollisionWithBox(const OBB cube);
 	void CollisionWithCube(const OBB cube);
 	void CollisionWithSphere(const XMVECTOR sPos, const float sRadius);

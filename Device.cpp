@@ -8,12 +8,17 @@ Device::Device(){
 
 
 Device::~Device(){
+
+	delete _cameraManager;
+	delete _lightManager;
+	delete _settingLoader;
+	
 }
 
 //--------------------------------------------------------------------------------------
 // Register class and create window
 //--------------------------------------------------------------------------------------
-HRESULT Device::InitWindow(HINSTANCE hInstance, int nCmdShow) {
+HRESULT Device::InitWindow(const HINSTANCE hInstance, const int nCmdShow) {
 
 	// Register class
 	WNDCLASSEX wcex;
@@ -60,12 +65,18 @@ HRESULT Device::InitDevice() {
 	GetClientRect(_hWnd, &rc);
 	const UINT width = rc.right - rc.left;
 	const UINT height = rc.bottom - rc.top;
-
-	UINT createDeviceFlags = 0;
+	
 #ifdef _DEBUG
+	
+	UINT createDeviceFlags = 0;
 	createDeviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
+#else
+	const UINT createDeviceFlags = 0;
+	
 #endif
 
+	
+	
 	D3D_DRIVER_TYPE driverTypes[] =
 	{
 		D3D_DRIVER_TYPE_HARDWARE,
@@ -213,7 +224,7 @@ HRESULT Device::InitDevice() {
 	
 	// Create the depth stencil view
 	D3D11_DEPTH_STENCIL_VIEW_DESC descDSV;
-	ZeroMemory(&descDSV, sizeof(descDSV));
+	ZeroMemory(&descDSV, sizeof (descDSV));
 	descDSV.Format = descDepth.Format;
 	descDSV.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
 	descDSV.Texture2D.MipSlice = 0;
@@ -334,12 +345,15 @@ HRESULT Device::InitDevice() {
 	_lightManager = new Light(_settingLoader->GetPointCoords(), _settingLoader->GetSpotCoords());
 
 	auto j = 0;
-	for (auto i : _settingLoader->GetObjectsCoords()) {
+	auto coordList = _settingLoader->GetObjectsCoords();
+	
+	for (auto i : coordList) {
 
 		if (!j) {
 
 			D3D11_RASTERIZER_DESC rasterDesc;
-
+			ZeroMemory(&rasterDesc, sizeof(rasterDesc));
+			
 			rasterDesc.CullMode = D3D11_CULL_NONE;
 			rasterDesc.FillMode = D3D11_FILL_SOLID;
 			rasterDesc.ScissorEnable = false;
@@ -349,12 +363,12 @@ HRESULT Device::InitDevice() {
 			rasterDesc.MultisampleEnable = false;
 			rasterDesc.SlopeScaledDepthBias = 0.0f;
 			
-			auto sky = new Shape(_settingLoader->GetVs(1), _settingLoader->GetPs(1), i);
+			const auto sky = new Shape(_settingLoader->GetVs(1), _settingLoader->GetPs(1), i);
 			hr = sky->CreateBuffers(hr, _pd3dDevice, _settingLoader->GetVertices(0), _settingLoader->GetIndices(0));
 			hr = sky->CreateRasterState(_pd3dDevice, rasterDesc);
 			hr = sky->CreateTextureResource(_pd3dDevice, L"skymap.dds");
 			hr = sky->CreateDepthStencil(_pd3dDevice, depthStencilDescDisabled);
-
+			
 			//_shapeList.push_back(sky);
 			
 			j++;
@@ -363,17 +377,18 @@ HRESULT Device::InitDevice() {
 		}if(j==1) {
 
 			D3D11_RASTERIZER_DESC rasterDesc;
+			ZeroMemory(&rasterDesc, sizeof(rasterDesc));
 
-			rasterDesc.CullMode = D3D11_CULL_BACK;
+			rasterDesc.CullMode = D3D11_CULL_FRONT;
 			rasterDesc.FillMode = D3D11_FILL_SOLID;
 			rasterDesc.ScissorEnable = false;
 			rasterDesc.DepthBias = 0;
 			rasterDesc.DepthBiasClamp = 0.0f;
-			rasterDesc.DepthClipEnable = true;
+			rasterDesc.DepthClipEnable = false;
 			rasterDesc.MultisampleEnable = false;
 			rasterDesc.SlopeScaledDepthBias = 0.0f;
 
-			auto shape = new Shape(_settingLoader->GetVs(0), _settingLoader->GetPs(0), i);
+			const auto shape = new Shape(_settingLoader->GetVs(0), _settingLoader->GetPs(0), i);
 			hr = shape->CreateBuffers(hr, _pd3dDevice, _settingLoader->GetVertices(0), _settingLoader->GetIndices(0));
 			hr = shape->CreateRasterState(_pd3dDevice, rasterDesc);
 			hr = shape->CreateDepthStencil(_pd3dDevice, depthStencilDescEnabled);
@@ -385,6 +400,7 @@ HRESULT Device::InitDevice() {
 		}
 		
 		D3D11_RASTERIZER_DESC rasterDesc;
+		ZeroMemory(&rasterDesc, sizeof(rasterDesc));
 		rasterDesc.CullMode = D3D11_CULL_NONE;
 		rasterDesc.FillMode = D3D11_FILL_SOLID;
 		rasterDesc.ScissorEnable = false;
@@ -394,7 +410,7 @@ HRESULT Device::InitDevice() {
 		rasterDesc.MultisampleEnable = false;
 		rasterDesc.SlopeScaledDepthBias = 0.0f;
 	
-		auto shape = new Shape(_settingLoader->GetVs(3), _settingLoader->GetPs(4), i);
+		const auto shape = new Shape(_settingLoader->GetVs(3), _settingLoader->GetPs(4), i);
 		hr = shape->CreateBuffers(hr, _pd3dDevice, _settingLoader->GetVertices((j + 1) % 2 ), _settingLoader->GetIndices((j + 1) % 2));
 		hr = shape->CreateRasterState(_pd3dDevice, rasterDesc);
 		hr = shape->CreateDepthStencil(_pd3dDevice, depthStencilDescEnabled);
@@ -404,6 +420,8 @@ HRESULT Device::InitDevice() {
 		j++;
 	}
 
+
+	//PARTICLES
 	for(auto i = 0; i<100; i++) {
 		
 		auto randV = static_cast<float>(fmod(rand() + i, 7.5f));
@@ -418,7 +436,7 @@ HRESULT Device::InitDevice() {
 		rasterDesc.MultisampleEnable = false;
 		rasterDesc.SlopeScaledDepthBias = 0.0f;
 		
-		auto particle = new Particle(_settingLoader->GetVs(5), _settingLoader->GetPs(7), _settingLoader->GetObjectsCoords()[4], {cos( DirectX::XM_2PI / 100 * i  ) * randV, randV , sin(DirectX::XM_2PI / 100 * i) * randV});
+		const auto particle = new Particle(_settingLoader->GetVs(5), _settingLoader->GetPs(7), _settingLoader->GetObjectsCoords()[4], {cos( DirectX::XM_2PI / 100 * i  ) * randV, randV , sin(DirectX::XM_2PI / 100 * i) * randV});
 		hr = particle->CreateBuffers(hr, _pd3dDevice, _settingLoader->GetVertices(2), _settingLoader->GetIndices(2));
 		hr = particle->CreateRasterState(_pd3dDevice, rasterDesc);
 		hr = particle->CreateDepthStencil(_pd3dDevice, depthStencilDescDisabled);
@@ -438,7 +456,7 @@ HRESULT Device::InitDevice() {
 	
 
 	D3D11_SAMPLER_DESC sampDesc;
-	ZeroMemory(&sampDesc, sizeof(sampDesc));
+	ZeroMemory(&sampDesc, sizeof (sampDesc));
 	sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
 	sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
 	sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
@@ -478,7 +496,7 @@ void Device::CleanupDevice() {
 //--------------------------------------------------------------------------------------
 // Called every time the application receives a message
 //--------------------------------------------------------------------------------------
-LRESULT Device::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+LRESULT Device::WndProc(const HWND hWnd, const UINT message, const WPARAM wParam, const LPARAM lParam)
 {
 	PAINTSTRUCT ps;
 	HDC hdc;
@@ -518,7 +536,7 @@ void Device::Render() {
 	else
 	{
 		static ULONGLONG timeStart = 0;
-		ULONGLONG timeCur = GetTickCount64();
+		const ULONGLONG timeCur = GetTickCount64();
 		if (timeStart == 0)
 			timeStart = timeCur;
 		t = (timeCur - timeStart) / 1000.0f;
@@ -536,7 +554,7 @@ void Device::Render() {
 	_pImmediateContext->OMSetBlendState(_pBlendStateNoBlend, nullptr, 1);
 
 	auto x = true;
-	for (auto i : _shapeList) {
+	for (const auto i : _shapeList) {
 
 		//i->Draw(_pImmediateContext, _cameraManager->GetView(), _cameraManager->GetEye(), _projection, t);
 		i->Draw(_pImmediateContext, _lightManager, _cameraManager->GetView(), _cameraManager->GetEye(), _projection, t);
@@ -555,9 +573,9 @@ void Device::Render() {
 	
 	_pImmediateContext->OMSetBlendState(_pBlendStateBlend, nullptr, 1);
 	
-	for (auto i : _particleList) {
+	for (const auto i : _particleList) {
 
-		i->Integrate(t, t);
+		i->Integrate(t);
 		OBB box;
 		box.AxisOrientation[0] = { 1.f, 0.f, 0.f, 0.f };
 		box.AxisOrientation[1] = { 0.f, 1.f, 0.f, 0.f };
@@ -578,6 +596,35 @@ void Device::Render() {
 	
 	
 	_pSwapChain->Present(0, 0);
+}
+
+Device & Device::operator=(const Device & d)
+{
+	_hInst = d._hInst;
+	_hInst = d._hInst;
+	_driverType = d._driverType;
+	_featureLevel = d._featureLevel;
+	_hWnd = d._hWnd;
+	_pd3dDevice = d._pd3dDevice;
+	_pd3dDevice1 = d._pd3dDevice1;
+	_pImmediateContext = d._pImmediateContext;
+	_pImmediateContext1 = d._pImmediateContext1;
+	_pSwapChain = d._pSwapChain;
+	_pSwapChain1 = d._pSwapChain1;
+	_pRenderTargetView = d._pRenderTargetView;
+	_pDepthStencil = d._pDepthStencil;
+	_pDepthStencilView = d._pDepthStencilView;
+	_sampler = d._sampler;
+	_pBlendStateNoBlend = d._pBlendStateNoBlend;
+	_pBlendStateBlend = d._pBlendStateBlend;
+	_projection = d._projection;
+	_cameraManager = d._cameraManager;
+	_lightManager = d._lightManager;
+	_settingLoader = d._settingLoader;
+	_shapeList = d._shapeList;
+	_particleList = d._particleList;
+
+	return *this;
 }
 
 

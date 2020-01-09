@@ -101,7 +101,7 @@ private:
 
 	std::vector<ID3D11VertexShader*> _vertexShaderList;
 	std::vector<ID3D11PixelShader*> _pixelShaderList;
-	ID3D11InputLayout* _pVertexLayout;
+	ID3D11InputLayout* _pVertexLayout = nullptr;
 	std::vector<ShapeCoordinates> _objectCoordinates;
 	std::vector<CameraCoordinates> _cameraCoordinates;
 	std::vector<ShapeGeometry> _shapeGeometries;
@@ -111,9 +111,6 @@ private:
 	static HRESULT CompileShaderFromFile(const WCHAR* szFileName, LPCSTR szEntryPoint, LPCSTR szShaderModel, ID3DBlob** ppBlobOut);
 
 
-
-	//std::vector<WCHAR*> _vertexShaderFileList = { L"vertex_shader.hlsl" };
-	//std::vector<WCHAR*> _pixelShaderFileList = {  L"pixel_shader.hlsl" };
 
 };
 

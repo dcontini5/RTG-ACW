@@ -34,6 +34,13 @@
 Debug/*
 x64/*
 
+#Release Code
+Release/*
+
+#Parasoft Stuff
+.parasoft.dat/*
+.cpptest/*
+
 #VisualStudioStuff
 .vs/*
 *.psess

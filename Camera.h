@@ -15,8 +15,7 @@ struct CameraCoordinates {
 class Camera
 {
 public:
-	Camera() {}
-
+	
 	explicit Camera(const std::vector<CameraCoordinates>& cameras): _camera1(cameras[0]), _camera2(cameras[1]),
 	                                                              _view(DirectX::XMMatrixLookAtLH(cameras[0].Eye, cameras[0].At, cameras[0].Up)), _activeCamera(true) {};
 	~Camera();
