@@ -15,6 +15,16 @@
 #include "Light.h"
 
 
+struct State {
+
+	DirectX::XMFLOAT3 Velocity;
+	DirectX::XMFLOAT3 Acceleration = { 0.f, -9.8f, 0.f };
+	DirectX::XMFLOAT3 Position;
+
+	State(DirectX::XMFLOAT3 velocity, DirectX::XMFLOAT3 Position): Velocity(velocity), Position(Position) {}
+	
+};
+
 struct ShapeCoordinates {
 
 	DirectX::XMFLOAT3 Pos;
@@ -33,6 +43,14 @@ struct SimpleVertex {
 	DirectX::XMFLOAT3 Tangent;
 	DirectX::XMFLOAT3 Binormal;
 
+};
+
+enum Type {
+
+	box,
+	cube,
+	sphere,
+	
 };
 
 

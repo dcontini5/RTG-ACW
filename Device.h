@@ -9,6 +9,7 @@
 #include "Shape.h"
 #include "Particle.h"
 #include "Light.h"
+#include "Cube.h"
 
 class Device
 {
@@ -21,6 +22,9 @@ public:
 		_shapeList(device._shapeList), _particleList(device._particleList) {}
 
 	~Device();
+
+	void Integrate() { for (auto i : _particleList) i->Integrate(dt); }
+	void CollisionDetection();
 	HRESULT InitWindow(HINSTANCE hInstance, int nCmdShow);
 	HRESULT InitDevice();
 	void CleanupDevice();
@@ -55,6 +59,7 @@ private:
 	std::vector<Shape*> _shapeList;
 	std::vector<Particle*> _particleList;
 
+	float dt = 0.f;
 	
 	
 	

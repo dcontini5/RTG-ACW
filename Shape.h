@@ -32,6 +32,7 @@ public:
 	UINT16 GetNumberOfIndices() const { return _noOfIndices; }
 	ShapeCoordinates GetCoords() const { return _coordinates; }
 	void SetPos(const DirectX::XMFLOAT3 newPos) { _coordinates.Pos = newPos; }
+	virtual void Collide(State& state, float& radius) {return;};
 
 private:
 

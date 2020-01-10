@@ -1,4 +1,5 @@
 #include "Device.h"
+#include "Sphere.h"
 
 
 Device::Device(){
@@ -12,6 +13,19 @@ Device::~Device(){
 	delete _cameraManager;
 	delete _lightManager;
 	delete _settingLoader;
+	
+}
+
+void Device::CollisionDetection() {
+
+	for (auto shape : _shapeList)
+		for (auto particle : _particleList) {
+			auto radius = particle->GetRadius();
+			auto state = particle->GetState();
+			shape->Collide(state, radius);
+			particle->SetState(state);
+		}
+
 	
 }
 
@@ -363,7 +377,7 @@ HRESULT Device::InitDevice() {
 			rasterDesc.MultisampleEnable = false;
 			rasterDesc.SlopeScaledDepthBias = 0.0f;
 			
-			const auto sky = new Shape(_settingLoader->GetVs(1), _settingLoader->GetPs(1), i);
+			const auto sky = new Cube(_settingLoader->GetVs(1), _settingLoader->GetPs(1), i, Type::box);
 			hr = sky->CreateBuffers(hr, _pd3dDevice, _settingLoader->GetVertices(0), _settingLoader->GetIndices(0));
 			hr = sky->CreateRasterState(_pd3dDevice, rasterDesc);
 			hr = sky->CreateTextureResource(_pd3dDevice, L"skymap.dds");
@@ -388,12 +402,13 @@ HRESULT Device::InitDevice() {
 			rasterDesc.MultisampleEnable = false;
 			rasterDesc.SlopeScaledDepthBias = 0.0f;
 
-			const auto shape = new Shape(_settingLoader->GetVs(0), _settingLoader->GetPs(0), i);
-			hr = shape->CreateBuffers(hr, _pd3dDevice, _settingLoader->GetVertices(0), _settingLoader->GetIndices(0));
-			hr = shape->CreateRasterState(_pd3dDevice, rasterDesc);
-			hr = shape->CreateDepthStencil(_pd3dDevice, depthStencilDescEnabled);
+			const auto box = new Cube(_settingLoader->GetVs(0), _settingLoader->GetPs(0), i, Type::box);
+			box->CreateOBB();
+			hr = box->CreateBuffers(hr, _pd3dDevice, _settingLoader->GetVertices(0), _settingLoader->GetIndices(0));
+			hr = box->CreateRasterState(_pd3dDevice, rasterDesc);
+			hr = box->CreateDepthStencil(_pd3dDevice, depthStencilDescEnabled);
 
-			_shapeList.push_back(shape);
+			_shapeList.push_back(box);
 			j++;
 			continue;
 			
@@ -409,14 +424,25 @@ HRESULT Device::InitDevice() {
 		rasterDesc.DepthClipEnable = false;
 		rasterDesc.MultisampleEnable = false;
 		rasterDesc.SlopeScaledDepthBias = 0.0f;
+
 	
-		const auto shape = new Shape(_settingLoader->GetVs(3), _settingLoader->GetPs(4), i);
-		hr = shape->CreateBuffers(hr, _pd3dDevice, _settingLoader->GetVertices((j + 1) % 2 ), _settingLoader->GetIndices((j + 1) % 2));
-		hr = shape->CreateRasterState(_pd3dDevice, rasterDesc);
-		hr = shape->CreateDepthStencil(_pd3dDevice, depthStencilDescEnabled);
+		
+		if(!(j + 1) % 2) {
+			
+			const auto randshape = new Cube(_settingLoader->GetVs(3), _settingLoader->GetPs(4), i, Type::cube);
+			randshape->CreateOBB();
+			
+		}else {
+			
+		}
+		
+		const auto randshape = new Sphere(_settingLoader->GetVs(3), _settingLoader->GetPs(4), i);
+		hr = randshape->CreateBuffers(hr, _pd3dDevice, _settingLoader->GetVertices((j + 1) % 2 ), _settingLoader->GetIndices((j + 1) % 2));
+		hr = randshape->CreateRasterState(_pd3dDevice, rasterDesc);
+		hr = randshape->CreateDepthStencil(_pd3dDevice, depthStencilDescEnabled);
 		//hr = shape->CreateTextureResource(_pd3dDevice, L"stones.dds");
 		//hr = shape->CreateBumpResource(_pd3dDevice, L"stones_NM_height.dds");
-		_shapeList.push_back(shape);
+		_shapeList.push_back(randshape);
 		j++;
 	}
 
@@ -436,23 +462,19 @@ HRESULT Device::InitDevice() {
 		rasterDesc.MultisampleEnable = false;
 		rasterDesc.SlopeScaledDepthBias = 0.0f;
 		
-		const auto particle = new Particle(_settingLoader->GetVs(5), _settingLoader->GetPs(7), _settingLoader->GetObjectsCoords()[4], {cos( DirectX::XM_2PI / 100 * i  ) * randV, randV , sin(DirectX::XM_2PI / 100 * i) * randV});
+		const auto particle = new Particle(_settingLoader->GetVs(5), _settingLoader->GetPs(7), _settingLoader->GetObjectsCoords()[0], {cos( DirectX::XM_2PI / 100 * i  ) * randV, randV , sin(DirectX::XM_2PI / 100 * i) * randV});
 		hr = particle->CreateBuffers(hr, _pd3dDevice, _settingLoader->GetVertices(2), _settingLoader->GetIndices(2));
 		hr = particle->CreateRasterState(_pd3dDevice, rasterDesc);
 		hr = particle->CreateDepthStencil(_pd3dDevice, depthStencilDescDisabled);
 		hr = particle->CreateTextureResource(_pd3dDevice, L"sand.dds");
-		//_particleList.push_back(particle);
+		_particleList.push_back(particle);
+		
 	}
 
 	//todo unroll loops in shaders
 	
 
 	_projection = DirectX::XMMatrixPerspectiveFovLH(DirectX::XM_PIDIV4, width / (FLOAT)height, 0.01f, 200.0f);
-	
-	//hr = DirectX::CreateDDSTextureFromFile(_pd3dDevice, L"sand.dds", nullptr, &_particleTextureRV);
-	//hr = DirectX::CreateDDSTextureFromFile(_pd3dDevice, L"stones.dds", nullptr, &_shapeTextureRV);
-	//hr = DirectX::CreateDDSTextureFromFile(_pd3dDevice, L"stones_NM_height.dds", nullptr, &_shapeBumpRV);
-	//hr = DirectX::CreateDDSTextureFromFile(_pd3dDevice, L"Skymap.dds", nullptr, &_skyBoxBumpRV);
 	
 
 	D3D11_SAMPLER_DESC sampDesc;
@@ -529,6 +551,7 @@ void Device::Render() {
 
 	// Update our time
 	static float t = 0.0f;
+	static float lastTime = 0.0f;
 	if (_driverType == D3D_DRIVER_TYPE_REFERENCE)
 	{
 		t += (float)DirectX::XM_PI * 0.0125f * 2;
@@ -539,8 +562,11 @@ void Device::Render() {
 		const ULONGLONG timeCur = GetTickCount64();
 		if (timeStart == 0)
 			timeStart = timeCur;
+		lastTime = t;
 		t = (timeCur - timeStart) / 1000.0f;
+		dt = t - lastTime;
 	}
+
 
 
 
@@ -548,8 +574,6 @@ void Device::Render() {
 	// Just clear the backbuffer
 	_pImmediateContext->ClearRenderTargetView(_pRenderTargetView, DirectX::Colors::DarkSlateBlue);
 	_pImmediateContext->ClearDepthStencilView(_pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
-
-	
 	
 	_pImmediateContext->OMSetBlendState(_pBlendStateNoBlend, nullptr, 1);
 
@@ -575,19 +599,6 @@ void Device::Render() {
 	
 	for (const auto i : _particleList) {
 
-		i->Integrate(t);
-		OBB box;
-		box.AxisOrientation[0] = { 1.f, 0.f, 0.f, 0.f };
-		box.AxisOrientation[1] = { 0.f, 1.f, 0.f, 0.f };
-		box.AxisOrientation[2] = { 0.f, 0.f, 1.f, 0.f };
-		box.Center = { 0.f, 0.f, 0.f, 0.f };
-		box.BoxHalfwidth[0] = 5.f;
-		box.BoxHalfwidth[1] = 5.f;
-		box.BoxHalfwidth[2] = 5.f;
-		i->CollisionWithBox(box);
-
-
-		
 		i->Draw(_pImmediateContext, _cameraManager->GetView(), _cameraManager->GetEye(), _projection, t);
 		
 	}

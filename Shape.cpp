@@ -258,6 +258,7 @@ void Shape::DrawShadow(ID3D11DeviceContext* pImmediateContext, Light* lightManag
 
 		auto world = DirectX::XMMatrixIdentity();
 
+		
 		world *= DirectX::XMMatrixScaling(_coordinates.Scal.x, _coordinates.Scal.y, _coordinates.Scal.z);
 		world *= DirectX::XMMatrixRotationRollPitchYaw(_coordinates.Rot.x, _coordinates.Rot.y, _coordinates.Rot.z);
 		world *= DirectX::XMMatrixTranslation(_coordinates.Pos.x, _coordinates.Pos.y, _coordinates.Pos.z);
@@ -306,7 +307,7 @@ void Shape::DrawShadow(ID3D11DeviceContext* pImmediateContext, Light* lightManag
 	for (auto& sLight : sLights) {
 	
 		auto world = DirectX::XMMatrixIdentity();
-	
+		
 		world *= DirectX::XMMatrixScaling(_coordinates.Scal.x, _coordinates.Scal.y, _coordinates.Scal.z);
 		world *= DirectX::XMMatrixRotationRollPitchYaw(_coordinates.Rot.x, _coordinates.Rot.y, _coordinates.Rot.z);
 		world *= DirectX::XMMatrixTranslation(_coordinates.Pos.x, _coordinates.Pos.y, _coordinates.Pos.z);

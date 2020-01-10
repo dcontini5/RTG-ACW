@@ -49,6 +49,8 @@ int WINAPI wWinMain( const _In_ HINSTANCE hInstance, const _In_opt_ HINSTANCE hP
         }
         else
         {
+			device->Integrate();
+			device->CollisionDetection();
 			device->Render();
         }
     }
