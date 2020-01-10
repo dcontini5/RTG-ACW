@@ -23,7 +23,7 @@ public:
 
 	~Device();
 
-	void Integrate() { for (auto i : _particleList) i->Integrate(dt); }
+	void Integrate();
 	void CollisionDetection();
 	HRESULT InitWindow(HINSTANCE hInstance, int nCmdShow);
 	HRESULT InitDevice();
@@ -59,7 +59,7 @@ private:
 	std::vector<Shape*> _shapeList;
 	std::vector<Particle*> _particleList;
 
-	float dt = 0.f;
+	float _dt = 0.f;
 	
 	
 	

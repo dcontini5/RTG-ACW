@@ -1,5 +1,8 @@
 #include "Cube.h"
 
+Cube::~Cube() {
+}
+
 void Cube::CreateOBB() {
 
  this->GetCoords();
@@ -10,7 +13,7 @@ void Cube::CreateOBB() {
 
 	_obb.Center = XMVectorSet(this->GetCoords().Pos.x, this->GetCoords().Pos.y, this->GetCoords().Pos.z, 0.f);
 
-	auto rot = XMQuaternionRotationRollPitchYaw(0.f, this->GetCoords().Rot.y, 0.f);
+	const auto rot = XMQuaternionRotationRollPitchYaw(0.f, this->GetCoords().Rot.y, 0.f);
 	
 	_obb.AxisOrientation[0] = XMVector3Rotate({1.f, 0.f, 0.f, 0.f}, rot);
 	_obb.AxisOrientation[1] = XMVector3Rotate({0.f, 1.f, 0.f, 0.f}, rot);
@@ -19,9 +22,9 @@ void Cube::CreateOBB() {
 	
 }
 
-void Cube::Collide(State& state, float& radius) {
+void Cube::Collide(State& state,const float& radius) {
 
-	if (_type == cube) {
+	if (_type == Type::cube) {
 
 		CollisionWithCube(state, radius);
 		
@@ -34,7 +37,7 @@ void Cube::Collide(State& state, float& radius) {
 }
 
 
-void Cube::CollisionWithBox(State& state, float& radius) {
+void Cube::CollisionWithBox(State& state, const float& radius)const {
 
 	const auto pPos = XMLoadFloat3(&state.Position);
 
@@ -42,14 +45,14 @@ void Cube::CollisionWithBox(State& state, float& radius) {
 
 	for (auto i = 1; i < 4; i++) {
 
-		auto j = i % 3;
+		const auto j = i % 3;
 		
 		const auto vProj = XMVector3Dot(v, _obb.AxisOrientation[j]).m128_f32[0];
 
 
 		if (vProj - radius <= -_obb.BoxHalfwidth[j] || vProj + radius >= _obb.BoxHalfwidth[j]) {
 
-			if (_obb.AxisOrientation[j].m128_f32[1] == 1.f) {
+			if (_obb.AxisOrientation[j].m128_f32[1] >= 1.f) {
 
 				state.Velocity = { 0.f, 0.f, 0.f };
 				state.Acceleration = { 0.f, 0.f, 0.f };
@@ -71,7 +74,7 @@ void Cube::CollisionWithBox(State& state, float& radius) {
 
 }
 
-void Cube::CollisionWithCube(State& state, float& radius) {
+void Cube::CollisionWithCube(State& state,const float& radius) const{
 
 	const auto pPos = XMLoadFloat3(&state.Position);
 	

@@ -1,6 +1,6 @@
 #include "Sphere.h"
 
-void Sphere::CollisionWithSphere(State& state, float& radius) {
+void Sphere::CollisionWithSphere (State& state,const float& radius) const{
 
 	const auto sPos = XMVectorSet(this->GetCoords().Pos.x, this->GetCoords().Pos.y, this->GetCoords().Pos.z, 0.f);
 	const auto pPos = XMLoadFloat3(&state.Position);
@@ -19,4 +19,11 @@ void Sphere::CollisionWithSphere(State& state, float& radius) {
 
 
 
+}Sphere::~Sphere() {
+}
+
+void Sphere::Collide(State& state, const float& radius) {
+
+	CollisionWithSphere(state, radius);
+	
 }

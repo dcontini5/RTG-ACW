@@ -2,7 +2,7 @@
 
 
 
-HRESULT Shape::CreateBuffers(HRESULT& hr, ID3D11Device* pd3dDevice, std::vector<SimpleVertex> vertices, std::vector<UINT16> indices) {
+HRESULT Shape::CreateBuffers(HRESULT& hr, ID3D11Device* const pd3dDevice,const std::vector<SimpleVertex>& vertices,const std::vector<UINT16>& indices) {
 
 	D3D11_BUFFER_DESC bd;
 	ZeroMemory(&bd, sizeof(bd));
@@ -40,11 +40,11 @@ HRESULT Shape::CreateBuffers(HRESULT& hr, ID3D11Device* pd3dDevice, std::vector<
 }
 
 
-void Shape::Draw(ID3D11DeviceContext* pImmediateContext, DirectX::XMMATRIX view, DirectX::XMVECTOR eye, DirectX::XMMATRIX Projection, float t) const {
+void Shape::Draw(ID3D11DeviceContext* const pImmediateContext,const DirectX::XMMATRIX& view,const DirectX::XMVECTOR& eye,const DirectX::XMMATRIX& Projection,const float t) const {
 
 	// Set vertex buffer
-	UINT stride = sizeof(SimpleVertex);
-	UINT offset = 0;
+	const UINT stride = sizeof(SimpleVertex);
+	const UINT offset = 0;
 	pImmediateContext->IASetVertexBuffers(0, 1, &_pVertexBuffer, &stride, &offset);
 	pImmediateContext->IASetIndexBuffer(_pIndexBuffer, DXGI_FORMAT_R16_UINT, 0);
 
@@ -150,12 +150,12 @@ void Shape::Draw(ID3D11DeviceContext* pImmediateContext, DirectX::XMMATRIX view,
 
 }
 
-void Shape::Draw(ID3D11DeviceContext* pImmediateContext, Light* lightManager, DirectX::XMMATRIX view,
-	DirectX::XMVECTOR eye, DirectX::XMMATRIX Projection, float t) const {
+void Shape::Draw(ID3D11DeviceContext* const pImmediateContext, Light* const lightManager,const DirectX::XMMATRIX& view,
+	const DirectX::XMVECTOR& eye,const DirectX::XMMATRIX& Projection,const float& t) const {
 
 	// Set vertex buffer
-	UINT stride = sizeof(SimpleVertex);
-	UINT offset = 0;
+	const UINT stride = sizeof(SimpleVertex);
+	const UINT offset = 0;
 	pImmediateContext->IASetVertexBuffers(0, 1, &_pVertexBuffer, &stride, &offset);
 	pImmediateContext->IASetIndexBuffer(_pIndexBuffer, DXGI_FORMAT_R16_UINT, 0);
 
@@ -228,12 +228,12 @@ void Shape::Draw(ID3D11DeviceContext* pImmediateContext, Light* lightManager, Di
 	
 }
 
-void Shape::DrawShadow(ID3D11DeviceContext* pImmediateContext, Light* lightManager, DirectX::XMMATRIX view, DirectX::XMVECTOR eye, DirectX::XMMATRIX Projection, float t) const {
+void Shape::DrawShadow(ID3D11DeviceContext* const pImmediateContext, Light* const lightManager,const DirectX::XMMATRIX& view,const DirectX::XMVECTOR& eye,const DirectX::XMMATRIX& Projection,const float& t) const {
 
 
 	// Set vertex buffer
-	UINT stride = sizeof(SimpleVertex);
-	UINT offset = 0;
+	const UINT stride = sizeof(SimpleVertex);
+	const UINT offset = 0;
 	pImmediateContext->IASetVertexBuffers(0, 1, &_pVertexBuffer, &stride, &offset);
 	pImmediateContext->IASetIndexBuffer(_pIndexBuffer, DXGI_FORMAT_R16_UINT, 0);
 
@@ -264,12 +264,12 @@ void Shape::DrawShadow(ID3D11DeviceContext* pImmediateContext, Light* lightManag
 		world *= DirectX::XMMatrixTranslation(_coordinates.Pos.x, _coordinates.Pos.y, _coordinates.Pos.z);
 
 
-		DirectX::XMVECTOR shadowPlane = DirectX::XMVectorSet(0.f, 1.f, 0.f, 5.f);
-		DirectX::XMVECTOR mainLight = DirectX::XMLoadFloat3(&light.Pos);
-		DirectX::XMVECTOR pos = DirectX::XMVectorSet(_coordinates.Pos.x, _coordinates.Pos.y, _coordinates.Pos.z, 0.f);
-		DirectX::XMVECTOR toMainLight = DirectX::XMVectorSubtract(mainLight, pos);
-		DirectX::XMMATRIX S = DirectX::XMMatrixShadow(shadowPlane, toMainLight);
-		DirectX::XMMATRIX shadowOffsetY = DirectX::XMMatrixTranslation(0.0f, 0.004f, 0.0f);
+		const DirectX::XMVECTOR shadowPlane = DirectX::XMVectorSet(0.f, 1.f, 0.f, 5.f);
+		const DirectX::XMVECTOR mainLight = DirectX::XMLoadFloat3(&light.Pos);
+		const DirectX::XMVECTOR pos = DirectX::XMVectorSet(_coordinates.Pos.x, _coordinates.Pos.y, _coordinates.Pos.z, 0.f);
+		const DirectX::XMVECTOR toMainLight = DirectX::XMVectorSubtract(mainLight, pos);
+		const DirectX::XMMATRIX S = DirectX::XMMatrixShadow(shadowPlane, toMainLight);
+		const DirectX::XMMATRIX shadowOffsetY = DirectX::XMMatrixTranslation(0.0f, 0.004f, 0.0f);
 
 		world = world * S * shadowOffsetY;
 
@@ -304,7 +304,7 @@ void Shape::DrawShadow(ID3D11DeviceContext* pImmediateContext, Light* lightManag
 
 	
 
-	for (auto& sLight : sLights) {
+	for ( const auto& sLight : sLights) {
 	
 		auto world = DirectX::XMMatrixIdentity();
 		
@@ -313,12 +313,12 @@ void Shape::DrawShadow(ID3D11DeviceContext* pImmediateContext, Light* lightManag
 		world *= DirectX::XMMatrixTranslation(_coordinates.Pos.x, _coordinates.Pos.y, _coordinates.Pos.z);
 	
 	
-		DirectX::XMVECTOR shadowPlane = DirectX::XMVectorSet(0.f, 1.f, 0.f, 5.f);
-		DirectX::XMVECTOR mainLight = DirectX::XMLoadFloat4(&sLight.Pos);
-		DirectX::XMVECTOR pos = DirectX::XMVectorSet(_coordinates.Pos.x, _coordinates.Pos.y, _coordinates.Pos.z, 0.f);
-		DirectX::XMVECTOR toMainLight = DirectX::XMVectorSubtract(mainLight, pos);
-		DirectX::XMMATRIX S = DirectX::XMMatrixShadow(shadowPlane, toMainLight);
-		DirectX::XMMATRIX shadowOffsetY = DirectX::XMMatrixTranslation(0.0f, 0.004f, 0.0f);
+		const DirectX::XMVECTOR shadowPlane = DirectX::XMVectorSet(0.f, 1.f, 0.f, 5.f);
+		const DirectX::XMVECTOR mainLight = DirectX::XMLoadFloat4(&sLight.Pos);
+		const DirectX::XMVECTOR pos = DirectX::XMVectorSet(_coordinates.Pos.x, _coordinates.Pos.y, _coordinates.Pos.z, 0.f);
+		const DirectX::XMVECTOR toMainLight = DirectX::XMVectorSubtract(mainLight, pos);
+		const DirectX::XMMATRIX S = DirectX::XMMatrixShadow(shadowPlane, toMainLight);
+		const DirectX::XMMATRIX shadowOffsetY = DirectX::XMMatrixTranslation(0.0f, 0.004f, 0.0f);
 	
 		world = world * S * shadowOffsetY;
 	
@@ -357,6 +357,41 @@ void Shape::DrawShadow(ID3D11DeviceContext* pImmediateContext, Light* lightManag
 	
 }
 
+Shape& Shape::operator=(const Shape& s) = default;
+
+/*
+Shape& Shape::operator=(const Shape& s) {
+
+	_noOfIndices = s._noOfIndices;
+	_pVertexBuffer = s._pVertexBuffer;
+	_pIndexBuffer = s._pIndexBuffer;
+	_vertexShader = s._vertexShader;
+	_pixelShader = s._pixelShader;
+	_pConstantBuffer = s._pConstantBuffer;
+	_coordinates = s._coordinates;
+	_rasterState = s._rasterState;
+	_textureRV = s._textureRV;
+	_bumpRV = s._bumpRV;
+	_pDepthStencilState = s._pDepthStencilState;
+	return *this;
+	
+}*/
 
 
+Shape::Shape(const Shape& s) {
 
+	_noOfIndices = s._noOfIndices;
+	_pVertexBuffer = s._pVertexBuffer;
+	_pIndexBuffer = s._pIndexBuffer;
+	_vertexShader = s._vertexShader;
+	_pixelShader = s._pixelShader;
+	_pConstantBuffer = s._pConstantBuffer;
+	_coordinates = s._coordinates;
+	_rasterState = s._rasterState;
+	_textureRV = s._textureRV;
+	_bumpRV	= s._bumpRV;
+	_pDepthStencilState = s._pDepthStencilState;
+
+}
+
+Shape::~Shape() = default;

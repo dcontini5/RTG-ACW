@@ -21,7 +21,7 @@ public:
 	~Camera();
 	
 	void SwapCamera() { _activeCamera = !_activeCamera; _view = _activeCamera ? DirectX::XMMatrixLookAtLH(_camera1.Eye, _camera1.At, _camera1.Up) : DirectX::XMMatrixLookAtLH(_camera2.Eye, _camera2.At, _camera2.Up); }
-	DirectX::XMMATRIX GetView() const { return _view; }
+	const DirectX::XMMATRIX& GetView() const { return _view; }
 	DirectX::XMVECTOR GetEye() const { return _activeCamera ? _camera1.Eye : _camera2.Eye; }
 	//todo camera movements
 	

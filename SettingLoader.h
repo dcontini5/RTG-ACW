@@ -21,7 +21,7 @@ struct State {
 	DirectX::XMFLOAT3 Acceleration = { 0.f, -9.8f, 0.f };
 	DirectX::XMFLOAT3 Position;
 
-	State(DirectX::XMFLOAT3 velocity, DirectX::XMFLOAT3 Position): Velocity(velocity), Position(Position) {}
+	State(const DirectX::XMFLOAT3& velocity, const DirectX::XMFLOAT3& position): Velocity(velocity), Position(position) {}
 	
 };
 
@@ -45,7 +45,7 @@ struct SimpleVertex {
 
 };
 
-enum Type {
+enum struct Type {
 
 	box,
 	cube,
@@ -98,21 +98,26 @@ class SettingLoader
 {
 public:
 	SettingLoader();
+
+	SettingLoader(const SettingLoader& sl);
+	
 	~SettingLoader();
-	HRESULT CreateVertexShaders( HRESULT hr,  ID3D11Device* const pd3dDevice, ID3D11DeviceContext* pImmediateContext, const std::string fileName);
-	HRESULT CreatePixelShaders(HRESULT hr, ID3D11Device* pd3dDevice, std::string fileName);
+	HRESULT CreateVertexShaders( HRESULT hr,  ID3D11Device* const pd3dDevice, ID3D11DeviceContext* const pImmediateContext, const std::string& fileName);
+	HRESULT CreatePixelShaders(HRESULT hr, ID3D11Device* const pd3dDevice, const std::string& fileName);
 	ID3D11PixelShader* GetPs(const int i) const { return _pixelShaderList[i]; };
 	ID3D11VertexShader* GetVs(const int i) const { return _vertexShaderList[i]; };
 	ID3D11InputLayout* GetVertexLayout() const { return _pVertexLayout; };
-	void FileLoader(HRESULT, ID3D11Device*, ID3D11DeviceContext*);
-	void ObjLoader(std::string);
-	std::vector<SimpleVertex> GetVertices(int i) const { return _shapeGeometries[i].vertices; };
-	std::vector<UINT16> GetIndices(int i) const { return _shapeGeometries[i].indices; };
-	std::vector<CameraCoordinates> GetCameraCoords() const { return _cameraCoordinates; };
-	std::vector<ShapeCoordinates> GetObjectsCoords() const { return _objectCoordinates; }
+	void FileLoader(HRESULT, ID3D11Device* const, ID3D11DeviceContext* const);
+	void ObjLoader(const std::string&);
+	std::vector<SimpleVertex> GetVertices(const int i) const { return _shapeGeometries[i].vertices; };
+	std::vector<UINT16> GetIndices(const int i) const { return _shapeGeometries[i].indices; };
+	const std::vector<CameraCoordinates>& GetCameraCoords() const { return _cameraCoordinates; };
+	const std::vector<ShapeCoordinates>& GetObjectsCoords() const { return _objectCoordinates; }
 	void CreateParticleGeometry();
-	std::vector<SpotLight> GetSpotCoords() const { return _spotLightsCoordinates; }
-	std::vector<PointLight> GetPointCoords() const { return _pointLightsCoordinates; }
+	const std::vector<SpotLight>& GetSpotCoords() const { return _spotLightsCoordinates; }
+	const std::vector<PointLight>& GetPointCoords() const { return _pointLightsCoordinates; }
+
+	SettingLoader& operator= (const SettingLoader& sl);
 	
 
 private:
@@ -126,7 +131,7 @@ private:
 	std::vector<SpotLight> _spotLightsCoordinates;
 	std::vector<PointLight> _pointLightsCoordinates;
 	
-	static HRESULT CompileShaderFromFile(const WCHAR* szFileName, LPCSTR szEntryPoint, LPCSTR szShaderModel, ID3DBlob** ppBlobOut);
+	static HRESULT CompileShaderFromFile(const WCHAR* const szFileName, LPCSTR szEntryPoint, LPCSTR szShaderModel, ID3DBlob** const ppBlobOut);
 
 
 

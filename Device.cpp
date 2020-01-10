@@ -16,11 +16,17 @@ Device::~Device(){
 	
 }
 
+void Device::Integrate() {
+
+	 for (const auto i : _particleList) i->Integrate(_dt); 
+	
+}
+
 void Device::CollisionDetection() {
 
-	for (auto shape : _shapeList)
-		for (auto particle : _particleList) {
-			auto radius = particle->GetRadius();
+	for (const auto shape : _shapeList)
+		for (const auto particle : _particleList) {
+			const auto radius = particle->GetRadius();
 			auto state = particle->GetState();
 			shape->Collide(state, radius);
 			particle->SetState(state);
@@ -356,9 +362,13 @@ HRESULT Device::InitDevice() {
 	_settingLoader->CreateParticleGeometry();
 	
 	_cameraManager = new Camera(_settingLoader->GetCameraCoords());
-	_lightManager = new Light(_settingLoader->GetPointCoords(), _settingLoader->GetSpotCoords());
 
-	auto j = 0;
+	auto pointCoords = _settingLoader->GetPointCoords();
+	auto spotCoords = _settingLoader->GetSpotCoords();
+	
+	_lightManager = new Light(pointCoords, spotCoords);
+
+	int j = 0;
 	auto coordList = _settingLoader->GetObjectsCoords();
 	
 	for (auto i : coordList) {
@@ -450,7 +460,7 @@ HRESULT Device::InitDevice() {
 	//PARTICLES
 	for(auto i = 0; i<100; i++) {
 		
-		auto randV = static_cast<float>(fmod(rand() + i, 7.5f));
+		const auto randV = static_cast<float>(fmod(rand() + i, 7.5f));
 	
 		D3D11_RASTERIZER_DESC rasterDesc;
 		rasterDesc.CullMode = D3D11_CULL_NONE;
@@ -461,8 +471,10 @@ HRESULT Device::InitDevice() {
 		rasterDesc.DepthClipEnable = false;
 		rasterDesc.MultisampleEnable = false;
 		rasterDesc.SlopeScaledDepthBias = 0.0f;
+
+		auto coords = _settingLoader->GetObjectsCoords()[0];
 		
-		const auto particle = new Particle(_settingLoader->GetVs(5), _settingLoader->GetPs(7), _settingLoader->GetObjectsCoords()[0], {cos( DirectX::XM_2PI / 100 * i  ) * randV, randV , sin(DirectX::XM_2PI / 100 * i) * randV});
+		const auto particle = new Particle(_settingLoader->GetVs(5), _settingLoader->GetPs(7), coords, {cos( DirectX::XM_2PI / 100 * i  ) * randV, randV , sin(DirectX::XM_2PI / 100 * i) * randV});
 		hr = particle->CreateBuffers(hr, _pd3dDevice, _settingLoader->GetVertices(2), _settingLoader->GetIndices(2));
 		hr = particle->CreateRasterState(_pd3dDevice, rasterDesc);
 		hr = particle->CreateDepthStencil(_pd3dDevice, depthStencilDescDisabled);
@@ -564,7 +576,7 @@ void Device::Render() {
 			timeStart = timeCur;
 		lastTime = t;
 		t = (timeCur - timeStart) / 1000.0f;
-		dt = t - lastTime;
+		_dt = t - lastTime;
 	}
 
 
@@ -609,7 +621,7 @@ void Device::Render() {
 	_pSwapChain->Present(0, 0);
 }
 
-Device & Device::operator=(const Device & d)
+Device& Device::operator=(const Device& d)
 {
 	_hInst = d._hInst;
 	_hInst = d._hInst;
@@ -634,7 +646,8 @@ Device & Device::operator=(const Device & d)
 	_settingLoader = d._settingLoader;
 	_shapeList = d._shapeList;
 	_particleList = d._particleList;
-
+	_dt = d._dt;
+	
 	return *this;
 }
 

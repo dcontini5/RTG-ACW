@@ -7,12 +7,12 @@ class Cube : public Shape {
 
 public:
 	
-	Cube(ID3D11VertexShader* vertexShader, ID3D11PixelShader* pixelShader, ShapeCoordinates& coords, Type type) : Shape(vertexShader, pixelShader, coords), _type(type) {}
-	~Cube() = default;
+	Cube(ID3D11VertexShader* const vertexShader, ID3D11PixelShader* const pixelShader, ShapeCoordinates& coords,const Type type) : Shape(vertexShader, pixelShader, coords), _type(type) {}
+	~Cube();
 	void CreateOBB();
-	void Collide(State& state, float& radius) override;
-	void CollisionWithBox(State& state, float& radius);
-	void CollisionWithCube(State& state, float& radius);
+	void Collide(State& state,const float& radius) override;
+	void CollisionWithBox (State& state,const float& radius)const;
+	void CollisionWithCube(State& state,const float& radius)const;
 
 private:
 

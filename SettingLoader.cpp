@@ -5,13 +5,26 @@ SettingLoader::SettingLoader()
 {
 }
 
+SettingLoader::SettingLoader(const SettingLoader& sl) {
+
+	_vertexShaderList = sl._vertexShaderList;
+	_pixelShaderList = sl._pixelShaderList;
+	_pVertexLayout = sl._pVertexLayout;
+	_objectCoordinates = sl._objectCoordinates;
+	_cameraCoordinates = sl._cameraCoordinates;
+	_shapeGeometries = sl._shapeGeometries;
+	_spotLightsCoordinates = sl._spotLightsCoordinates;
+	_pointLightsCoordinates = sl._pointLightsCoordinates;
+	
+}
+
 
 SettingLoader::~SettingLoader()
 = default;
 
-HRESULT SettingLoader::CreateVertexShaders(HRESULT hr, ID3D11Device* const pd3dDevice, ID3D11DeviceContext* pImmediateContext,const std::string fileName ) {
+HRESULT SettingLoader::CreateVertexShaders(HRESULT hr, ID3D11Device* const pd3dDevice, ID3D11DeviceContext* const pImmediateContext, const std::string& fileName ) {
 
-	static bool createLayout = true;
+	const static auto createLayout = true;
 	ID3DBlob* pVSBlob = nullptr;
 
 
@@ -66,7 +79,7 @@ HRESULT SettingLoader::CreateVertexShaders(HRESULT hr, ID3D11Device* const pd3dD
 
 }
 
-HRESULT SettingLoader::CreatePixelShaders(HRESULT hr, ID3D11Device * pd3dDevice, std::string fileName) {
+HRESULT SettingLoader::CreatePixelShaders(HRESULT hr, ID3D11Device* const pd3dDevice, const std::string& fileName) {
 
 	ID3DBlob* pPSBlob = nullptr;
 	
@@ -92,7 +105,7 @@ HRESULT SettingLoader::CreatePixelShaders(HRESULT hr, ID3D11Device * pd3dDevice,
 
 }
 
-void SettingLoader::FileLoader(HRESULT hr, ID3D11Device* pd3Device, ID3D11DeviceContext* pImmediateContext) {
+void SettingLoader::FileLoader(const HRESULT hr, ID3D11Device* const pd3Device, ID3D11DeviceContext* const pImmediateContext) {
 
 	std::ifstream fin("settings.ini");
 	
@@ -137,7 +150,7 @@ void SettingLoader::FileLoader(HRESULT hr, ID3D11Device* pd3Device, ID3D11Device
 
 			object.Pos.x = stof(str.substr(i + 2, str.find(',') - i));
 			i = str.find(',');
-			auto x = str.substr(i + 2, str.find(',', i + 1) - i + 1);
+			const auto x = str.substr(i + 2, str.find(',', i + 1) - i + 1);
 			object.Pos.y = stof( x );
 			i = str.find(',', i + 1);
 			object.Pos.z = stof(str.substr(i + 2, str.size() - i + 1));
@@ -201,7 +214,7 @@ void SettingLoader::FileLoader(HRESULT hr, ID3D11Device* pd3Device, ID3D11Device
 				i = str.find(',');
 				z = stof(str.substr(i + 2, str.find(',', i + 1) - i + 1));
 				i = str.find(',', i + 1);
-				auto w = stof(str.substr(i + 2, str.size() - i + 1));
+				const auto w = stof(str.substr(i + 2, str.size() - i + 1));
 
 				light.Color = { x, y, z, w };
 
@@ -230,7 +243,7 @@ void SettingLoader::FileLoader(HRESULT hr, ID3D11Device* pd3Device, ID3D11Device
 			i = str.find(',');
 			z = stof(str.substr(i + 2, str.find(',', i + 1) - i + 1));
 			i = str.find(',', i + 1);
-			auto w = stof(str.substr(i + 2, str.size() - i + 1));
+			const auto w = stof(str.substr(i + 2, str.size() - i + 1));
 
 			light.Color = { x, y, z, w };
 
@@ -325,12 +338,14 @@ void SettingLoader::FileLoader(HRESULT hr, ID3D11Device* pd3Device, ID3D11Device
 }
 
 
-HRESULT SettingLoader::CompileShaderFromFile(const WCHAR* szFileName, const LPCSTR szEntryPoint, const LPCSTR szShaderModel, ID3DBlob** ppBlobOut)
+HRESULT SettingLoader::CompileShaderFromFile(const WCHAR* const szFileName, const LPCSTR szEntryPoint, const LPCSTR szShaderModel, ID3DBlob** const ppBlobOut)
 {
 	HRESULT hr = S_OK;
 
-	DWORD dwShaderFlags = D3DCOMPILE_ENABLE_STRICTNESS;
+	
 #ifdef _DEBUG
+
+	DWORD dwShaderFlags = D3DCOMPILE_ENABLE_STRICTNESS;
 	// Set the D3DCOMPILE_DEBUG flag to embed debug information in the shaders.
 	// Setting this flag improves the shader debugging experience, but still allows 
 	// the shaders to be optimized and to run exactly the way they will run in 
@@ -339,6 +354,11 @@ HRESULT SettingLoader::CompileShaderFromFile(const WCHAR* szFileName, const LPCS
 
 	// Disable optimizations to further improve shader debugging
 	dwShaderFlags |= D3DCOMPILE_SKIP_OPTIMIZATION;
+
+#else
+
+	const DWORD dwShaderFlags = D3DCOMPILE_ENABLE_STRICTNESS;
+	
 #endif
 
 	ID3DBlob* pErrorBlob = nullptr;
@@ -360,11 +380,11 @@ HRESULT SettingLoader::CompileShaderFromFile(const WCHAR* szFileName, const LPCS
 
 
 
-void SettingLoader::ObjLoader(std::string filename) {
+void SettingLoader::ObjLoader(const std::string& filename) {
 
 	Assimp::Importer importer;
-	const aiScene* scene = importer.ReadFile(filename, aiProcess_Triangulate);
-	const aiMesh* mesh = scene->mMeshes[0];
+	const aiScene* const scene = importer.ReadFile(filename, aiProcess_Triangulate);
+	const aiMesh* const mesh = scene->mMeshes[0];
 	
 
 	ShapeGeometry shape;
@@ -393,7 +413,7 @@ void SettingLoader::ObjLoader(std::string filename) {
 	}
 	
 
-	std::vector<UINT16> indices;
+	const std::vector<UINT16> indices;
 
 	for (unsigned int i = 0; i < mesh->mNumFaces; i++) {
 		
@@ -404,8 +424,8 @@ void SettingLoader::ObjLoader(std::string filename) {
 
 	}
 
-	const aiScene* scene1 = importer.ReadFile(filename, aiProcess_CalcTangentSpace);
-	const aiMesh* tangSpace = scene1->mMeshes[0];
+	const aiScene* const scene1 = importer.ReadFile(filename, aiProcess_CalcTangentSpace);
+	const aiMesh* const tangSpace = scene1->mMeshes[0];
 
 	for (unsigned int i = 0; i < tangSpace->mNumVertices; i++) {
 
@@ -443,5 +463,22 @@ void SettingLoader::CreateParticleGeometry() {
 	particle.indices.push_back(3);
 
 	_shapeGeometries.push_back(particle);
+}
+
+SettingLoader& SettingLoader::operator= (const SettingLoader& sl) {
+
+	_vertexShaderList = sl._vertexShaderList;
+	_pixelShaderList = sl._pixelShaderList;
+	_pVertexLayout = sl._pVertexLayout;
+	_objectCoordinates = sl._objectCoordinates;
+	_cameraCoordinates = sl._cameraCoordinates;
+	_shapeGeometries = sl._shapeGeometries;
+	_spotLightsCoordinates = sl._spotLightsCoordinates;
+	_pointLightsCoordinates = sl._pointLightsCoordinates;
+
+	return *this;
+
+
+	
 }
 

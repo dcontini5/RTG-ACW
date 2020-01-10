@@ -23,7 +23,7 @@ using namespace DirectX;
 //--------------------------------------------------------------------------------------
 int WINAPI wWinMain( const _In_ HINSTANCE hInstance, const _In_opt_ HINSTANCE hPrevInstance, const _In_ LPWSTR lpCmdLine, const _In_ int nCmdShow ) {
 
-	const auto device = new Device();
+	Device* const device = new Device();
 
 	
     UNREFERENCED_PARAMETER( hPrevInstance );
@@ -57,5 +57,7 @@ int WINAPI wWinMain( const _In_ HINSTANCE hInstance, const _In_opt_ HINSTANCE hP
 
 	device->CleanupDevice();
 
+	delete device;
+	
     return static_cast<int>(msg.wParam);
 }
