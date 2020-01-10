@@ -368,7 +368,7 @@ HRESULT Device::InitDevice() {
 	
 	_lightManager = new Light(pointCoords, spotCoords);
 
-	int j = 0;
+	auto j = 0;
 	auto coordList = _settingLoader->GetObjectsCoords();
 	
 	for (auto i : coordList) {
@@ -437,7 +437,7 @@ HRESULT Device::InitDevice() {
 
 	
 		
-		if(!(j + 1) % 2) {
+		if(!((j + 1) % 2)) {
 			
 			const auto randshape = new Cube(_settingLoader->GetVs(3), _settingLoader->GetPs(4), i, Type::cube);
 			randshape->CreateOBB();
