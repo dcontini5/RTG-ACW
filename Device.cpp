@@ -716,6 +716,7 @@ Device& Device::operator=(const Device& d)
 	_dt = d._dt;
 	_effChangeCD = d._effChangeCD;
 	_timeScale = d._timeScale;
+	_t = d._t;
 	
 	return *this;
 }
