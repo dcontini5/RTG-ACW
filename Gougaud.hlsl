@@ -3,53 +3,53 @@
 struct PointLight
 {
     
-    float4 Color;
-    float3 Pos;
+	float4 Color;
+	float3 Pos;
 	
 };
 
 struct SpotLight
 {
 	
-    float4 Pos;
-    float4 Color;
-    float3 Dir;
-    float Spot;
+	float4 Pos;
+	float4 Color;
+	float3 Dir;
+	float Spot;
 	
 };
 
 struct Material
 {
 
-    float4 materialAmb;
-    float4 materialDiff;
-    float4 materialSpec;
+	float4 materialAmb;
+	float4 materialDiff;
+	float4 materialSpec;
 
 
 };
 
 cbuffer ConstantBuffer : register(b0)
 {
-    matrix World;
-    matrix View;
-    matrix Projection;
-    float4 Eye;
-    PointLight PLight;
-    float Time;
-    SpotLight SLights[4];
-    Material mat;
+	matrix World;
+	matrix View;
+	matrix Projection;
+	float4 Eye;
+	PointLight PLight;
+	float Time;
+	SpotLight SLights[4];
+	Material mat;
     
 }
 
 //--------------------------------------------------------------------------------------
 struct VS_INPUT
 {
-    float4 Pos : POSITION;
-    float4 Color : COLOR;
-    float3 N : NORMAL;
-    float2 Tex : TEXCOORD;
-    float3 T : TANGENT;
-    float3 B : BINORMAL;
+	float4 Pos : POSITION;
+	float4 Color : COLOR;
+	float3 N : NORMAL;
+	float2 Tex : TEXCOORD;
+	float3 T : TANGENT;
+	float3 B : BINORMAL;
     
 };
 
@@ -57,16 +57,19 @@ struct VS_INPUT
 
 struct VS_OUTPUT
 {
-    float4 Pos : SV_POSITION;
-    float4 Color : COLOR0;
-    float4 Norm : NORMAL;
-    float4 PosWorld : TEXCOORD0;
-    float2 Tex : TEXCOORD1;
-    float3 RotatedL : TEXCOORD2;
-    float3 viewDirInTang : TEXCOORD3;
-    float3 lightDirInTang : TEXCOORD4;
+	float4 Pos : SV_POSITION;
+	float4 Color : COLOR0;
+	float4 Norm : NORMAL;
+	float4 PosWorld : TEXCOORD0;
+	float2 Tex : TEXCOORD1;
+	float3 RotatedL : TEXCOORD2;
+	float3 viewDirInTang : TEXCOORD3;
+	float3 lightDirInTang : TEXCOORD4;
 
 };
+
+
+
 
 void CalculatePointLight(float3 lightpos, Material mat, float3 viewDis, float3 posWorld, float3 norm, out float4 ambient, out float4 diffuse, out float4 specular);
 

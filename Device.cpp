@@ -24,7 +24,9 @@ void Device::Integrate() {
 
 void Device::CollisionDetection() {
 
-	for (const auto shape : _shapeList)
+	for (const auto shape : _shapeList) {
+
+		if (!shape->IsDrawable()) continue;
 		for (const auto particle : _particleList) {
 			const auto radius = particle->GetRadius();
 			auto state = particle->GetState();
@@ -32,6 +34,7 @@ void Device::CollisionDetection() {
 			particle->SetState(state);
 		}
 
+	}
 	
 }
 
@@ -360,6 +363,7 @@ HRESULT Device::InitDevice() {
 	_settingLoader = new SettingLoader();
 	_settingLoader->FileLoader(hr, _pd3dDevice, _pImmediateContext);
 	_settingLoader->CreateParticleGeometry();
+	_settingLoader->CreateEffects();
 	
 	_cameraManager = new Camera(_settingLoader->GetCameraCoords());
 
@@ -386,8 +390,9 @@ HRESULT Device::InitDevice() {
 			rasterDesc.DepthClipEnable = true;
 			rasterDesc.MultisampleEnable = false;
 			rasterDesc.SlopeScaledDepthBias = 0.0f;
-			
-			const auto sky = new Cube(_settingLoader->GetVs(1), _settingLoader->GetPs(1), i, Type::box);
+
+			auto envMap = _settingLoader->GetEnvMap();
+			const auto sky = new Cube(_settingLoader->GetVs(envMap.VertexShader), _settingLoader->GetPs(envMap.PixelShader), i, Type::box, envMap.material);
 			hr = sky->CreateBuffers(hr, _pd3dDevice, _settingLoader->GetVertices(0), _settingLoader->GetIndices(0));
 			hr = sky->CreateRasterState(_pd3dDevice, rasterDesc);
 			hr = sky->CreateTextureResource(_pd3dDevice, L"skymap.dds");
@@ -412,7 +417,9 @@ HRESULT Device::InitDevice() {
 			rasterDesc.MultisampleEnable = false;
 			rasterDesc.SlopeScaledDepthBias = 0.0f;
 
-			const auto box = new Cube(_settingLoader->GetVs(0), _settingLoader->GetPs(0), i, Type::box);
+			auto boxEff = _settingLoader->GetBoxEffect();
+			
+			const auto box = new Cube(_settingLoader->GetVs(boxEff.VertexShader), _settingLoader->GetPs(boxEff.PixelShader), i, Type::box, boxEff.material);
 			box->CreateOBB();
 			hr = box->CreateBuffers(hr, _pd3dDevice, _settingLoader->GetVertices(0), _settingLoader->GetIndices(0));
 			hr = box->CreateRasterState(_pd3dDevice, rasterDesc);
@@ -435,56 +442,31 @@ HRESULT Device::InitDevice() {
 		rasterDesc.MultisampleEnable = false;
 		rasterDesc.SlopeScaledDepthBias = 0.0f;
 
+		auto randEff = _settingLoader->GetRandomEffect();
 	
 		
 		if(!((j + 1) % 2)) {
 			
-			const auto randshape = new Cube(_settingLoader->GetVs(3), _settingLoader->GetPs(4), i, Type::cube);
+			const auto randshape = new Cube(_settingLoader->GetVs(randEff.VertexShader), _settingLoader->GetPs(randEff.PixelShader), i, Type::cube, randEff.material);
 			randshape->CreateOBB();
 			
 		}else {
 			
 		}
 		
-		const auto randshape = new Sphere(_settingLoader->GetVs(3), _settingLoader->GetPs(4), i);
+		const auto randshape = new Sphere(_settingLoader->GetVs(randEff.VertexShader), _settingLoader->GetPs(randEff.PixelShader), i, randEff.material);
 		hr = randshape->CreateBuffers(hr, _pd3dDevice, _settingLoader->GetVertices((j + 1) % 2 ), _settingLoader->GetIndices((j + 1) % 2));
 		hr = randshape->CreateRasterState(_pd3dDevice, rasterDesc);
 		hr = randshape->CreateDepthStencil(_pd3dDevice, depthStencilDescEnabled);
-		//hr = shape->CreateTextureResource(_pd3dDevice, L"stones.dds");
-		//hr = shape->CreateBumpResource(_pd3dDevice, L"stones_NM_height.dds");
+		hr = randshape->CreateTextureResource(_pd3dDevice, L"stones.dds");
+		hr = randshape->CreateBumpResource(_pd3dDevice, L"stones_NM_height.dds");
 		_shapeList.push_back(randshape);
 		j++;
 	}
 
-
-	//PARTICLES
-	for(auto i = 0; i<100; i++) {
-		
-		const auto randV = static_cast<float>(fmod(rand() + i, 7.5f));
 	
-		D3D11_RASTERIZER_DESC rasterDesc;
-		rasterDesc.CullMode = D3D11_CULL_NONE;
-		rasterDesc.FillMode = D3D11_FILL_SOLID;
-		rasterDesc.ScissorEnable = false;
-		rasterDesc.DepthBias = 0;
-		rasterDesc.DepthBiasClamp = 0.0f;
-		rasterDesc.DepthClipEnable = false;
-		rasterDesc.MultisampleEnable = false;
-		rasterDesc.SlopeScaledDepthBias = 0.0f;
-
-		auto coords = _settingLoader->GetObjectsCoords()[0];
+	_settingLoader->ResetAvaiableEffects();
 		
-		const auto particle = new Particle(_settingLoader->GetVs(5), _settingLoader->GetPs(7), coords, {cos( DirectX::XM_2PI / 100 * i  ) * randV, randV , sin(DirectX::XM_2PI / 100 * i) * randV});
-		hr = particle->CreateBuffers(hr, _pd3dDevice, _settingLoader->GetVertices(2), _settingLoader->GetIndices(2));
-		hr = particle->CreateRasterState(_pd3dDevice, rasterDesc);
-		hr = particle->CreateDepthStencil(_pd3dDevice, depthStencilDescDisabled);
-		hr = particle->CreateTextureResource(_pd3dDevice, L"sand.dds");
-		_particleList.push_back(particle);
-		
-	}
-
-	//todo unroll loops in shaders
-	
 
 	_projection = DirectX::XMMatrixPerspectiveFovLH(DirectX::XM_PIDIV4, width / (FLOAT)height, 0.01f, 200.0f);
 	
@@ -562,11 +544,11 @@ LRESULT Device::WndProc(const HWND hWnd, const UINT message, const WPARAM wParam
 void Device::Render() {
 
 	// Update our time
-	static float t = 0.0f;
+	
 	static float lastTime = 0.0f;
 	if (_driverType == D3D_DRIVER_TYPE_REFERENCE)
 	{
-		t += (float)DirectX::XM_PI * 0.0125f * 2;
+		_t += (float)DirectX::XM_PI * 0.0125f * 2;
 	}
 	else
 	{
@@ -574,9 +556,10 @@ void Device::Render() {
 		const ULONGLONG timeCur = GetTickCount64();
 		if (timeStart == 0)
 			timeStart = timeCur;
-		lastTime = t;
-		t = (timeCur - timeStart) / 1000.0f;
-		_dt = t - lastTime;
+		lastTime = _t;
+		_t = (timeCur - timeStart) / 1000.0f;
+		_dt = _t - lastTime;
+		
 	}
 
 
@@ -593,14 +576,14 @@ void Device::Render() {
 	for (const auto i : _shapeList) {
 
 		//i->Draw(_pImmediateContext, _cameraManager->GetView(), _cameraManager->GetEye(), _projection, t);
-		i->Draw(_pImmediateContext, _lightManager, _cameraManager, _projection, t);
+		i->Draw(_pImmediateContext, _lightManager, _cameraManager, _projection,_t);
 		if(x) {
 						
 			x = false;
 			continue;
 		}
 
-		i->DrawShadow(_pImmediateContext, _lightManager, _cameraManager, _projection, t);
+		i->DrawShadow(_pImmediateContext, _lightManager, _cameraManager, _projection,_t);
 
 	}
 
@@ -611,7 +594,7 @@ void Device::Render() {
 	
 	for (const auto i : _particleList) {
 
-		i->Draw(_pImmediateContext, _cameraManager, _projection, t);
+		i->Draw(_pImmediateContext, _lightManager, _cameraManager, _projection,_t);
 		
 	}
 
@@ -620,6 +603,89 @@ void Device::Render() {
 	
 	_pSwapChain->Present(0, 0);
 }
+
+void Device::ExlpodeShape(int i) {
+
+	D3D11_DEPTH_STENCIL_DESC depthStencilDescDisabled;
+	ZeroMemory(&depthStencilDescDisabled, sizeof(D3D11_DEPTH_STENCIL_DESC));
+
+	depthStencilDescDisabled.DepthEnable = FALSE;
+	depthStencilDescDisabled.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+	depthStencilDescDisabled.DepthFunc = D3D11_COMPARISON_LESS;
+	depthStencilDescDisabled.StencilEnable = FALSE;
+	depthStencilDescDisabled.StencilReadMask = 0xFF;
+	depthStencilDescDisabled.StencilWriteMask = 0xFF;
+
+	// Stencil operations if pixel is front-facing
+	depthStencilDescDisabled.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+	depthStencilDescDisabled.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_INCR;
+	depthStencilDescDisabled.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+	depthStencilDescDisabled.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+	//
+	HRESULT hr = S_OK;
+
+
+	
+	if(_shapeList[i]->IsDrawable()) {
+
+		_shapeList[i]->StopDrawing();
+		ShapeCoordinates coords  = _settingLoader->GetObjectsCoords()[0];
+		coords.Pos = _shapeList[i]->GetCoords().Pos;
+		
+		D3D11_RASTERIZER_DESC rasterDesc;
+		rasterDesc.CullMode = D3D11_CULL_NONE;
+		rasterDesc.FillMode = D3D11_FILL_SOLID;
+		rasterDesc.ScissorEnable = false;
+		rasterDesc.DepthBias = 0;
+		rasterDesc.DepthBiasClamp = 0.0f;
+		rasterDesc.DepthClipEnable = false;
+		rasterDesc.MultisampleEnable = false;
+		rasterDesc.SlopeScaledDepthBias = 0.0f;
+
+		auto particleEff = _settingLoader->GetParticleEffect();
+
+		for (auto j = 0; j < 100; j++) {
+					   			
+		const auto randV = static_cast<float>(fmod(rand() + j, 7.5f));
+
+		const auto particle = new Particle(_settingLoader->GetVs(particleEff.VertexShader), _settingLoader->GetPs(particleEff.PixelShader), coords, { cos(DirectX::XM_2PI / 100 * j) * randV, randV , sin(DirectX::XM_2PI / 100 * j) * randV }, particleEff.material, _t);
+		hr = particle->CreateBuffers(hr, _pd3dDevice, _settingLoader->GetVertices(2), _settingLoader->GetIndices(2));
+		hr = particle->CreateRasterState(_pd3dDevice, rasterDesc);
+		hr = particle->CreateDepthStencil(_pd3dDevice, depthStencilDescDisabled);
+		hr = particle->CreateTextureResource(_pd3dDevice, L"sand.dds");
+			
+		_particleList.push_back(particle);
+
+		}
+
+
+		
+	}
+
+
+	
+}
+
+void Device::ChangeEffects() {
+
+	if (_t < _effChangeCD) return;
+
+	for (auto i = 1; i < _shapeList.size(); i++) {
+
+		if (!_shapeList[i]->IsDrawable()) continue;
+		
+		auto newEff = _settingLoader->GetRandomEffect();
+		
+		_shapeList[i]->SetVS(_settingLoader->GetVs(newEff.VertexShader));
+		_shapeList[i]->SetPS(_settingLoader->GetPs(newEff.PixelShader));
+		_shapeList[i]->SetMaterial(newEff.material);
+		
+	}
+
+	_settingLoader->ResetAvaiableEffects();
+	_effChangeCD = _t + 1.0f;
+}
+
 
 Device& Device::operator=(const Device& d)
 {

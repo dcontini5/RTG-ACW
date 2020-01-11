@@ -94,6 +94,17 @@ struct OBB {
 
 
 
+struct Effect {
+
+
+	int VertexShader;
+	int PixelShader;
+	Material material;
+	
+
+};
+
+
 class SettingLoader
 {
 public:
@@ -116,8 +127,13 @@ public:
 	void CreateParticleGeometry();
 	const std::vector<SpotLight>& GetSpotCoords() const { return _spotLightsCoordinates; }
 	const std::vector<PointLight>& GetPointCoords() const { return _pointLightsCoordinates; }
-
+	void CreateEffects();
+	Effect GetRandomEffect();
+	Effect GetBoxEffect() { return _boxEffect; };
+	Effect GetEnvMap() { return _envMap; };
+	Effect GetParticleEffect() { return  _particleEffect; };
 	SettingLoader& operator= (const SettingLoader& sl);
+	void ResetAvaiableEffects() { _avaiableEffects = { 0, 1, 2, 3 }; };
 	
 
 private:
@@ -130,6 +146,12 @@ private:
 	std::vector<ShapeGeometry> _shapeGeometries;
 	std::vector<SpotLight> _spotLightsCoordinates;
 	std::vector<PointLight> _pointLightsCoordinates;
+
+	Effect _boxEffect{};
+	Effect _envMap{};
+	Effect _particleEffect{};
+	std::vector<Effect> _shapeEffects;
+	std::vector<int> _avaiableEffects = {0, 1, 2, 3};
 	
 	static HRESULT CompileShaderFromFile(const WCHAR* const szFileName, LPCSTR szEntryPoint, LPCSTR szShaderModel, ID3DBlob** const ppBlobOut);
 

@@ -3,7 +3,6 @@
 #include <d3d11_1.h>
 #include <directxcolors.h>
 #include "Resource.h"
-//#include "SettingLoader.h"
 #include <wrl.h>
 #include "DDSTextureLoader.h"
 #include "Shape.h"
@@ -36,7 +35,10 @@ public:
 	void MoveCameraUpDown(const float& dir) const { _cameraManager->MoveCameraUpDown(dir); };
 	void RotateCameraLeftRight(const float& dir) const { _cameraManager->RotateCameraLeftRight(dir); };
 	void RotateCameraUpDown(const float& dir) const { _cameraManager->RotateCameraUpDown(dir); };
-	
+	void SwapLight() const { _lightManager->SwapLight(_t); }
+	void ExlpodeShape(int i);
+	void ChangeEffects();
+	void ChangeTimeScale(const float diff) { if (_t >= 0.01) _timeScale += diff; }
 
 	Device& operator= (const Device& d);
 
@@ -65,8 +67,12 @@ private:
 	SettingLoader* _settingLoader = nullptr;
 	std::vector<Shape*> _shapeList;
 	std::vector<Particle*> _particleList;
-
+	
+	
+	float _effChangeCD = 0.f;
+	float _timeScale = 1.0f;
 	float _dt = 0.f;
+	float _t = 0.f;
 	
 	
 	

@@ -7,7 +7,7 @@ class Cube : public Shape {
 
 public:
 	
-	Cube(ID3D11VertexShader* const vertexShader, ID3D11PixelShader* const pixelShader, ShapeCoordinates& coords,const Type type) : Shape(vertexShader, pixelShader, coords), _type(type) {}
+	Cube(ID3D11VertexShader* const vertexShader, ID3D11PixelShader* const pixelShader, ShapeCoordinates& coords,const Type type,const Material& mat) : Shape(vertexShader, pixelShader, coords, mat), _type(type) {}
 	~Cube();
 	void CreateOBB();
 	void Collide(State& state,const float& radius) override;

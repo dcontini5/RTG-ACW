@@ -42,6 +42,8 @@ HRESULT Shape::CreateBuffers(HRESULT& hr, ID3D11Device* const pd3dDevice,const s
 
 void Shape::Draw(ID3D11DeviceContext* const pImmediateContext, Camera* const camera, const DirectX::XMMATRIX& Projection,const float t) const {
 
+	if (!_drawable) return;
+	
 	// Set vertex buffer
 	const UINT stride = sizeof(SimpleVertex);
 	const UINT offset = 0;
@@ -58,18 +60,7 @@ void Shape::Draw(ID3D11DeviceContext* const pImmediateContext, Camera* const cam
 
 	const auto view =camera->GetView();
 
-	Material shapeMat;
-	shapeMat.ambient = { 0.2f, 0.2f, 0.2f, 1.0f };
-	shapeMat.diffuse = { 0.5f, 0.5f, 0.5f, 1.0f };
-	//shapeMat.specular = { 0.5f, 0.5f, 0.5f, 2.0f };
 
-	
-	//toon mat
-
-	shapeMat.ambient = { 0.4f, 0.4f, 0.4f, 1.0f };
-	shapeMat.diffuse = { 0.5f, 0.5f, 0.5f, 1.0f };
-	shapeMat.specular = { 0.9f, 0.9f, 0.9f, 128.0f };
-	
 	PointLight light;
 
 	light.Color = { 1.0f, 1.0f, 1.0f, 1.0f };
@@ -112,7 +103,7 @@ void Shape::Draw(ID3D11DeviceContext* const pImmediateContext, Camera* const cam
 	cb.SpotLights[1] = sLights[1];
 	cb.SpotLights[2] = sLights[2];
 	cb.SpotLights[3] = sLights[3];
-	cb.Material = shapeMat;
+	cb.Material = _material;
 
 	pImmediateContext->UpdateSubresource(_pConstantBuffer, 0, nullptr, &cb, 0, 0);
 
@@ -135,6 +126,7 @@ void Shape::Draw(ID3D11DeviceContext* const pImmediateContext, Camera* const cam
 
 void Shape::Draw(ID3D11DeviceContext* const pImmediateContext, Light* const lightManager, Camera* const camera, const DirectX::XMMATRIX& Projection,const float& t) const {
 
+	if (!_drawable) return;
 	// Set vertex buffer
 	const UINT stride = sizeof(SimpleVertex);
 	const UINT offset = 0;
@@ -149,21 +141,6 @@ void Shape::Draw(ID3D11DeviceContext* const pImmediateContext, Light* const ligh
 	world *= DirectX::XMMatrixTranslation(_coordinates.Pos.x, _coordinates.Pos.y, _coordinates.Pos.z);
 
 	auto view =camera->GetView();
-
-	
-	
-	
-	Material shapeMat;
-	shapeMat.ambient = { 0.2f, 0.2f, 0.2f, 1.0f };
-	shapeMat.diffuse = { 0.5f, 0.5f, 0.5f, 1.0f };
-	//shapeMat.specular = { 0.5f, 0.5f, 0.5f, 2.0f };
-
-
-	//toon mat
-
-	shapeMat.ambient = { 0.4f, 0.4f, 0.4f, 1.0f };
-	shapeMat.diffuse = { 0.5f, 0.5f, 0.5f, 1.0f };
-	shapeMat.specular = { 0.9f, 0.9f, 0.9f, 128.0f };
 
 	PointLight light;
 	ZeroMemory(&light, sizeof(light));
@@ -193,7 +170,7 @@ void Shape::Draw(ID3D11DeviceContext* const pImmediateContext, Light* const ligh
 		
 	}
 
-	cb.Material = shapeMat;
+	cb.Material = _material;
 
 	pImmediateContext->UpdateSubresource(_pConstantBuffer, 0, nullptr, &cb, 0, 0);
 
@@ -217,7 +194,7 @@ void Shape::Draw(ID3D11DeviceContext* const pImmediateContext, Light* const ligh
 
 void Shape::DrawShadow(ID3D11DeviceContext* const pImmediateContext, Light* const lightManager, Camera* const camera, const DirectX::XMMATRIX& Projection,const float& t) const {
 
-
+	if (!_drawable) return;
 	// Set vertex buffer
 	const UINT stride = sizeof(SimpleVertex);
 	const UINT offset = 0;
@@ -345,9 +322,8 @@ void Shape::DrawShadow(ID3D11DeviceContext* const pImmediateContext, Light* cons
 	
 }
 
-Shape& Shape::operator=(const Shape& s) = default;
 
-/*
+
 Shape& Shape::operator=(const Shape& s) {
 
 	_noOfIndices = s._noOfIndices;
@@ -363,10 +339,10 @@ Shape& Shape::operator=(const Shape& s) {
 	_pDepthStencilState = s._pDepthStencilState;
 	return *this;
 	
-}*/
+}
 
 
-Shape::Shape(const Shape& s) {
+Shape::Shape(const Shape& s){
 
 	_noOfIndices = s._noOfIndices;
 	_pVertexBuffer = s._pVertexBuffer;

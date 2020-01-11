@@ -465,6 +465,47 @@ void SettingLoader::CreateParticleGeometry() {
 	_shapeGeometries.push_back(particle);
 }
 
+void SettingLoader::CreateEffects() {
+
+	const Material shiny { { 0.2f, 0.2f, 0.2f, 1.0f }, { 0.5f, 0.5f, 0.5f, 1.0f }, { 0.9f, 0.9f, 0.9f, 128.0f } };
+
+	const Material opaque { { 0.2f, 0.2f, 0.2f, 1.0f }, { 0.5f, 0.5f, 0.5f, 1.0f }, { 0.5f, 0.5f, 0.5f, 2.0f } };
+
+	_boxEffect = { 0, 0,  opaque };
+	_envMap = { 1, 1,  opaque };
+	_particleEffect = { 2, 2,  opaque };
+			
+	
+	for(auto i = 3; i<=_pixelShaderList.size(); i++) {
+
+		Material material;
+		switch (i) {
+
+			case 3: material = shiny; break;
+			case 4: 
+			case 5: material = opaque; break;
+			case 6: _shapeEffects.push_back({ 5, i, shiny }); continue;
+			case 7: _shapeEffects.push_back({ 5, 0, shiny }); continue;
+			default: break;
+			
+		}
+
+		_shapeEffects.push_back({ i, i, material });
+		
+	}
+
+	
+}
+
+Effect SettingLoader::GetRandomEffect() {
+
+	auto i = rand() % _avaiableEffects.size();
+	auto eff = _avaiableEffects[i];
+	const Effect effect = _shapeEffects[eff];
+	_avaiableEffects.erase(_avaiableEffects.begin() + i);
+	return effect;
+}
+
 SettingLoader& SettingLoader::operator= (const SettingLoader& sl) {
 
 	_vertexShaderList = sl._vertexShaderList;
@@ -475,6 +516,7 @@ SettingLoader& SettingLoader::operator= (const SettingLoader& sl) {
 	_shapeGeometries = sl._shapeGeometries;
 	_spotLightsCoordinates = sl._spotLightsCoordinates;
 	_pointLightsCoordinates = sl._pointLightsCoordinates;
+
 
 	return *this;
 

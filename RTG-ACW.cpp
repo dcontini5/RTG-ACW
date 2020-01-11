@@ -23,8 +23,10 @@ using namespace DirectX;
 //--------------------------------------------------------------------------------------
 int WINAPI wWinMain( const _In_ HINSTANCE hInstance, const _In_opt_ HINSTANCE hPrevInstance, const _In_ LPWSTR lpCmdLine, const _In_ int nCmdShow ) {
 
-	Device* const device = new Device();
+	Device* device = new Device();
+
 	const int IsCTRLDown = 32768;
+	const int IsSHIFTDown = 13108;
 	
     UNREFERENCED_PARAMETER( hPrevInstance );
     UNREFERENCED_PARAMETER( lpCmdLine );
@@ -47,9 +49,9 @@ int WINAPI wWinMain( const _In_ HINSTANCE hInstance, const _In_opt_ HINSTANCE hP
             TranslateMessage( &msg );
             DispatchMessage( &msg );
 
-			auto x = GetAsyncKeyState(VK_RCONTROL);
-
-            switch (msg.wParam + GetAsyncKeyState(VK_LCONTROL)) {
+			
+	
+            switch (msg.wParam + GetAsyncKeyState(VK_LCONTROL) + GetAsyncKeyState(VK_SHIFT)) {
 
 				case(VK_ESCAPE):
             		msg.message = WM_QUIT;
@@ -57,15 +59,14 @@ int WINAPI wWinMain( const _In_ HINSTANCE hInstance, const _In_opt_ HINSTANCE hP
             	
 				case(VK_F1):  device->SwapCamera(1); break;
 				case(VK_F2):  device->SwapCamera(0); break;
-				case(VK_F5):  //todo change effects
-				case(VK_F6):  //todo switch lighting mode
-				case(VK_F8):  //todo switch rendering mode
-				case(0x31):  //todo boom boom
-				case(0x32):  //todo boom boom
-				case(0x33):  //todo boom boom
-				case(0x54):  //todo speeds up time
-				case(0x54 + 1):  //todo slows down time
-				case(0x52):  break;//todo reset
+				case(VK_F5):  device->ChangeEffects(); break;
+				case(VK_F6):  device->SwapLight(); break;
+				case(0x31):   device->ExlpodeShape(1); break;
+				case(0x32):   device->ExlpodeShape(2); break;
+				case(0x33):   device->ExlpodeShape(3); break;
+				case(0x54):   device->ChangeTimeScale(-0.01); break;
+				case(0x54 - IsSHIFTDown):  device->ChangeTimeScale(0.01); break;
+				case(0x52): //todo reset             		
 				case(VK_PRIOR): device->MoveCameraUpDown(1.f); break;
 				case(VK_NEXT):  device->MoveCameraUpDown(-1.f); break;
 				case(VK_LEFT - IsCTRLDown):
