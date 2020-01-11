@@ -1,6 +1,6 @@
 ﻿#include "Light.h"
 
-void Light::SwapLight(float t) {
+void Light::SwapLight(const float t) {
 
 	if (t >= _changeCD) {
 		

@@ -499,8 +499,8 @@ void SettingLoader::CreateEffects() {
 
 Effect SettingLoader::GetRandomEffect() {
 
-	auto i = rand() % _avaiableEffects.size();
-	auto eff = _avaiableEffects[i];
+	const auto i = rand() % _avaiableEffects.size();
+	const auto eff = _avaiableEffects[i];
 	const Effect effect = _shapeEffects[eff];
 	_avaiableEffects.erase(_avaiableEffects.begin() + i);
 	return effect;
@@ -516,11 +516,28 @@ SettingLoader& SettingLoader::operator= (const SettingLoader& sl) {
 	_shapeGeometries = sl._shapeGeometries;
 	_spotLightsCoordinates = sl._spotLightsCoordinates;
 	_pointLightsCoordinates = sl._pointLightsCoordinates;
-
+	_avaiableEffects = sl._avaiableEffects;
+	_boxEffect = sl._boxEffect;
+	_envMap = sl._envMap;
+	_particleEffect = sl._particleEffect;
+	_shapeEffects = sl._shapeEffects;
 
 	return *this;
 
 
+	
+}
+
+void SettingLoader::ResetAvaiableEffects() {
+
+	 _avaiableEffects.clear();
+
+	 for(auto i = 0; i < _shapeEffects.size(); i++ ) {
+
+		 _avaiableEffects.push_back(i);
+
+	 }
+		
 	
 }
 

@@ -40,7 +40,7 @@ HRESULT Shape::CreateBuffers(HRESULT& hr, ID3D11Device* const pd3dDevice,const s
 }
 
 
-void Shape::Draw(ID3D11DeviceContext* const pImmediateContext, Camera* const camera, const DirectX::XMMATRIX& Projection,const float t) const {
+void Shape::Draw(ID3D11DeviceContext* const pImmediateContext,const Camera* const camera, const DirectX::XMMATRIX& Projection,const float t) const {
 
 	if (!_drawable) return;
 	
@@ -124,7 +124,7 @@ void Shape::Draw(ID3D11DeviceContext* const pImmediateContext, Camera* const cam
 
 }
 
-void Shape::Draw(ID3D11DeviceContext* const pImmediateContext, Light* const lightManager, Camera* const camera, const DirectX::XMMATRIX& Projection,const float& t) const {
+void Shape::Draw(ID3D11DeviceContext* const pImmediateContext, Light* const lightManager,const Camera* const camera, const DirectX::XMMATRIX& Projection,const float& t) const {
 
 	if (!_drawable) return;
 	// Set vertex buffer
@@ -140,7 +140,7 @@ void Shape::Draw(ID3D11DeviceContext* const pImmediateContext, Light* const ligh
 	world *= DirectX::XMMatrixRotationRollPitchYaw(_coordinates.Rot.x, _coordinates.Rot.y, _coordinates.Rot.z);
 	world *= DirectX::XMMatrixTranslation(_coordinates.Pos.x, _coordinates.Pos.y, _coordinates.Pos.z);
 
-	auto view =camera->GetView();
+	const auto view =camera->GetView();
 
 	PointLight light;
 	ZeroMemory(&light, sizeof(light));
@@ -192,7 +192,7 @@ void Shape::Draw(ID3D11DeviceContext* const pImmediateContext, Light* const ligh
 	
 }
 
-void Shape::DrawShadow(ID3D11DeviceContext* const pImmediateContext, Light* const lightManager, Camera* const camera, const DirectX::XMMATRIX& Projection,const float& t) const {
+void Shape::DrawShadow(ID3D11DeviceContext* const pImmediateContext, Light* const lightManager,const Camera* const camera, const DirectX::XMMATRIX& Projection,const float& t) const {
 
 	if (!_drawable) return;
 	// Set vertex buffer
@@ -337,6 +337,8 @@ Shape& Shape::operator=(const Shape& s) {
 	_textureRV = s._textureRV;
 	_bumpRV = s._bumpRV;
 	_pDepthStencilState = s._pDepthStencilState;
+	_drawable = s._drawable;
+	_material = s._material;
 	return *this;
 	
 }

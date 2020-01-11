@@ -23,10 +23,9 @@ using namespace DirectX;
 //--------------------------------------------------------------------------------------
 int WINAPI wWinMain( const _In_ HINSTANCE hInstance, const _In_opt_ HINSTANCE hPrevInstance, const _In_ LPWSTR lpCmdLine, const _In_ int nCmdShow ) {
 
-	Device* device = new Device();
+	Device* const device = new Device();
 
 	const int IsCTRLDown = 32768;
-	const int IsSHIFTDown = 13108;
 	
     UNREFERENCED_PARAMETER( hPrevInstance );
     UNREFERENCED_PARAMETER( lpCmdLine );
@@ -49,24 +48,23 @@ int WINAPI wWinMain( const _In_ HINSTANCE hInstance, const _In_opt_ HINSTANCE hP
             TranslateMessage( &msg );
             DispatchMessage( &msg );
 
-			
-	
-            switch (msg.wParam + GetAsyncKeyState(VK_LCONTROL) + GetAsyncKeyState(VK_SHIFT)) {
+            switch (msg.wParam) {
 
 				case(VK_ESCAPE):
-            		msg.message = WM_QUIT;
-            		continue; 
-            	
+           		msg.message = WM_QUIT;
 				case(VK_F1):  device->SwapCamera(1); break;
 				case(VK_F2):  device->SwapCamera(0); break;
-				case(VK_F5):  device->ChangeEffects(); break;
 				case(VK_F6):  device->SwapLight(); break;
 				case(0x31):   device->ExlpodeShape(1); break;
 				case(0x32):   device->ExlpodeShape(2); break;
 				case(0x33):   device->ExlpodeShape(3); break;
-				case(0x54):   device->ChangeTimeScale(-0.01); break;
-				case(0x54 - IsSHIFTDown):  device->ChangeTimeScale(0.01); break;
-				case(0x52): //todo reset             		
+				case(0x54):
+            	if (!GetAsyncKeyState(VK_SHIFT))  
+					device->ChangeTimeScale(-0.50); 
+				else 
+					device->ChangeTimeScale(0.50);
+            	continue;
+				case(VK_F5):  device->ChangeEffects(); break;
 				case(VK_PRIOR): device->MoveCameraUpDown(1.f); break;
 				case(VK_NEXT):  device->MoveCameraUpDown(-1.f); break;
 				case(VK_LEFT - IsCTRLDown):

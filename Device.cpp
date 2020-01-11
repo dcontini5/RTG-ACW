@@ -558,6 +558,7 @@ void Device::Render() {
 			timeStart = timeCur;
 		lastTime = _t;
 		_t = (timeCur - timeStart) / 1000.0f;
+		
 		_dt = _t - lastTime;
 		
 	}
@@ -604,7 +605,7 @@ void Device::Render() {
 	_pSwapChain->Present(0, 0);
 }
 
-void Device::ExlpodeShape(int i) {
+void Device::ExlpodeShape(const int i) {
 
 	D3D11_DEPTH_STENCIL_DESC depthStencilDescDisabled;
 	ZeroMemory(&depthStencilDescDisabled, sizeof(D3D11_DEPTH_STENCIL_DESC));
@@ -674,7 +675,7 @@ void Device::ChangeEffects() {
 
 		if (!_shapeList[i]->IsDrawable()) continue;
 		
-		auto newEff = _settingLoader->GetRandomEffect();
+		const auto newEff = _settingLoader->GetRandomEffect();
 		
 		_shapeList[i]->SetVS(_settingLoader->GetVs(newEff.VertexShader));
 		_shapeList[i]->SetPS(_settingLoader->GetPs(newEff.PixelShader));
@@ -713,6 +714,8 @@ Device& Device::operator=(const Device& d)
 	_shapeList = d._shapeList;
 	_particleList = d._particleList;
 	_dt = d._dt;
+	_effChangeCD = d._effChangeCD;
+	_timeScale = d._timeScale;
 	
 	return *this;
 }
