@@ -3,7 +3,7 @@
 
 
 Device::Device(){
-
+	
 	
 }
 
@@ -71,7 +71,7 @@ HRESULT Device::InitWindow(const HINSTANCE hInstance, const int nCmdShow) {
 	ShowWindow(_hWnd, nCmdShow);
 
 	return S_OK;
-	
+		
 }
 
 //--------------------------------------------------------------------------------------
@@ -593,14 +593,14 @@ void Device::Render() {
 	for (const auto i : _shapeList) {
 
 		//i->Draw(_pImmediateContext, _cameraManager->GetView(), _cameraManager->GetEye(), _projection, t);
-		i->Draw(_pImmediateContext, _lightManager, _cameraManager->GetView(), _cameraManager->GetEye(), _projection, t);
+		i->Draw(_pImmediateContext, _lightManager, _cameraManager, _projection, t);
 		if(x) {
 						
 			x = false;
 			continue;
 		}
 
-		i->DrawShadow(_pImmediateContext, _lightManager, _cameraManager->GetView(), _cameraManager->GetEye(), _projection, t);
+		i->DrawShadow(_pImmediateContext, _lightManager, _cameraManager, _projection, t);
 
 	}
 
@@ -611,7 +611,7 @@ void Device::Render() {
 	
 	for (const auto i : _particleList) {
 
-		i->Draw(_pImmediateContext, _cameraManager->GetView(), _cameraManager->GetEye(), _projection, t);
+		i->Draw(_pImmediateContext, _cameraManager, _projection, t);
 		
 	}
 

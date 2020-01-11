@@ -30,6 +30,13 @@ public:
 	void CleanupDevice();
 	static LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 	void Render();
+	void SwapCamera(const int& i) const { _cameraManager->SwapCamera(i); };
+	void MoveCameraLeftRight(const float& dir) const { _cameraManager->MoveCameraLeftRight(dir); };
+	void MoveCameraBackForward(const float& dir) const { _cameraManager->MoveCameraBackForward(dir); };
+	void MoveCameraUpDown(const float& dir) const { _cameraManager->MoveCameraUpDown(dir); };
+	void RotateCameraLeftRight(const float& dir) const { _cameraManager->RotateCameraLeftRight(dir); };
+	void RotateCameraUpDown(const float& dir) const { _cameraManager->RotateCameraUpDown(dir); };
+	
 
 	Device& operator= (const Device& d);
 

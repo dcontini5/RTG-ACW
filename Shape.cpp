@@ -40,7 +40,7 @@ HRESULT Shape::CreateBuffers(HRESULT& hr, ID3D11Device* const pd3dDevice,const s
 }
 
 
-void Shape::Draw(ID3D11DeviceContext* const pImmediateContext,const DirectX::XMMATRIX& view,const DirectX::XMVECTOR& eye,const DirectX::XMMATRIX& Projection,const float t) const {
+void Shape::Draw(ID3D11DeviceContext* const pImmediateContext, Camera* const camera, const DirectX::XMMATRIX& Projection,const float t) const {
 
 	// Set vertex buffer
 	const UINT stride = sizeof(SimpleVertex);
@@ -55,6 +55,8 @@ void Shape::Draw(ID3D11DeviceContext* const pImmediateContext,const DirectX::XMM
 	world *= DirectX::XMMatrixScaling(_coordinates.Scal.x, _coordinates.Scal.y, _coordinates.Scal.z);
 	world *= DirectX::XMMatrixRotationRollPitchYaw(_coordinates.Rot.x, _coordinates.Rot.y, _coordinates.Rot.z);
 	world *= DirectX::XMMatrixTranslation(_coordinates.Pos.x, _coordinates.Pos.y, _coordinates.Pos.z);
+
+	const auto view =camera->GetView();
 
 	Material shapeMat;
 	shapeMat.ambient = { 0.2f, 0.2f, 0.2f, 1.0f };
@@ -97,32 +99,13 @@ void Shape::Draw(ID3D11DeviceContext* const pImmediateContext,const DirectX::XMM
 	sLights[3].Color = { 0.0f, 0.0f, 0.0f, 0.0f };
 	sLights[3].Direction = { 5.0f, -5.0f, -5.0f };
 	sLights[3].Spot = 20.f;
-
-	//sLights[0].Pos = { 5.0f, 5.0f, -5.0f, 1.0f };
-	//sLights[0].Color = { 0.5f, 0.5f, 0.5f, 0.5f };
-	//sLights[0].Direction = { -1.0f, -1.0f, 1.0f };
-	//sLights[0].Spot = 20.f;
-	//
-	//sLights[1].Pos = { 5.0f, 5.0f, 5.0f, 1.0f };
-	//sLights[1].Color = { 0.5f, 0.5f, 0.5f, 0.5f };
-	//sLights[1].Direction = { -1.0f, -1.0f, -1.0f };
-	//sLights[1].Spot = 20.f;
-	//
-	//sLights[2].Pos = { -5.0f, 5.0f, -5.0f, 1.0f };
-	//sLights[2].Color = { 0.5f, 0.5f, 0.5f, 0.5f };
-	//sLights[2].Direction = { 1.0f, -1.0f, 1.0f };
-	//sLights[2].Spot = 20.f;
-	//
-	//sLights[3].Pos = { -5.0f, 5.0f, 5.0f, 1.0f };
-	//sLights[3].Color = { 0.5f, 0.5f, 0.5f, 0.5f };
-	//sLights[3].Direction = { 1.0f, -1.0f, -1.0f };
-	//sLights[3].Spot = 20.f;
+	
 
 	ConstantBuffer cb;
 	cb.World = DirectX::XMMatrixTranspose(world);
 	cb.View = DirectX::XMMatrixTranspose(view);
 	cb.Projection = DirectX::XMMatrixTranspose(Projection);
-	cb.Eye = eye;
+	cb.Eye = camera->GetEye();
 	cb.PointLight = light;
 	cb.Time = t;
 	cb.SpotLights[0] = sLights[0];
@@ -150,8 +133,7 @@ void Shape::Draw(ID3D11DeviceContext* const pImmediateContext,const DirectX::XMM
 
 }
 
-void Shape::Draw(ID3D11DeviceContext* const pImmediateContext, Light* const lightManager,const DirectX::XMMATRIX& view,
-	const DirectX::XMVECTOR& eye,const DirectX::XMMATRIX& Projection,const float& t) const {
+void Shape::Draw(ID3D11DeviceContext* const pImmediateContext, Light* const lightManager, Camera* const camera, const DirectX::XMMATRIX& Projection,const float& t) const {
 
 	// Set vertex buffer
 	const UINT stride = sizeof(SimpleVertex);
@@ -160,13 +142,17 @@ void Shape::Draw(ID3D11DeviceContext* const pImmediateContext, Light* const ligh
 	pImmediateContext->IASetIndexBuffer(_pIndexBuffer, DXGI_FORMAT_R16_UINT, 0);
 
 
-
 	auto world = DirectX::XMMatrixIdentity();
 
 	world *= DirectX::XMMatrixScaling(_coordinates.Scal.x, _coordinates.Scal.y, _coordinates.Scal.z);
 	world *= DirectX::XMMatrixRotationRollPitchYaw(_coordinates.Rot.x, _coordinates.Rot.y, _coordinates.Rot.z);
 	world *= DirectX::XMMatrixTranslation(_coordinates.Pos.x, _coordinates.Pos.y, _coordinates.Pos.z);
 
+	auto view =camera->GetView();
+
+	
+	
+	
 	Material shapeMat;
 	shapeMat.ambient = { 0.2f, 0.2f, 0.2f, 1.0f };
 	shapeMat.diffuse = { 0.5f, 0.5f, 0.5f, 1.0f };
@@ -188,13 +174,14 @@ void Shape::Draw(ID3D11DeviceContext* const pImmediateContext, Light* const ligh
 
 	lightManager->SetLight(light, sLights);
 
+	
 	ConstantBuffer cb;
 	ZeroMemory(&cb, sizeof(cb));
 	
 	cb.World = DirectX::XMMatrixTranspose(world);
 	cb.View = DirectX::XMMatrixTranspose(view);
 	cb.Projection = DirectX::XMMatrixTranspose(Projection);
-	cb.Eye = eye;
+	cb.Eye = camera->GetEye();
 	cb.PointLight = light;
 	cb.Time = t;
 	if(sLights.size() == 4) {
@@ -228,7 +215,7 @@ void Shape::Draw(ID3D11DeviceContext* const pImmediateContext, Light* const ligh
 	
 }
 
-void Shape::DrawShadow(ID3D11DeviceContext* const pImmediateContext, Light* const lightManager,const DirectX::XMMATRIX& view,const DirectX::XMVECTOR& eye,const DirectX::XMMATRIX& Projection,const float& t) const {
+void Shape::DrawShadow(ID3D11DeviceContext* const pImmediateContext, Light* const lightManager, Camera* const camera, const DirectX::XMMATRIX& Projection,const float& t) const {
 
 
 	// Set vertex buffer
@@ -241,7 +228,7 @@ void Shape::DrawShadow(ID3D11DeviceContext* const pImmediateContext, Light* cons
 	Material shadowMat;
 	shadowMat.ambient = { 0.0f, 0.0f, 0.0f, 1.0f };
 	shadowMat.diffuse = { 0.0f, 0.0f, 0.0f, 0.5f };
-	shadowMat.specular = { 0.0f, 0.0f, 0.0f, 16.0f };
+	shadowMat.specular = { 0.0f, 0.0f, 0.0f, 1.0f };
 
 
 	PointLight light;
@@ -262,7 +249,8 @@ void Shape::DrawShadow(ID3D11DeviceContext* const pImmediateContext, Light* cons
 		world *= DirectX::XMMatrixScaling(_coordinates.Scal.x, _coordinates.Scal.y, _coordinates.Scal.z);
 		world *= DirectX::XMMatrixRotationRollPitchYaw(_coordinates.Rot.x, _coordinates.Rot.y, _coordinates.Rot.z);
 		world *= DirectX::XMMatrixTranslation(_coordinates.Pos.x, _coordinates.Pos.y, _coordinates.Pos.z);
-
+		
+		const auto view =camera->GetView();
 
 		const DirectX::XMVECTOR shadowPlane = DirectX::XMVectorSet(0.f, 1.f, 0.f, 5.f);
 		const DirectX::XMVECTOR mainLight = DirectX::XMLoadFloat3(&light.Pos);
@@ -279,7 +267,7 @@ void Shape::DrawShadow(ID3D11DeviceContext* const pImmediateContext, Light* cons
 		cb.World = DirectX::XMMatrixTranspose(world);
 		cb.View = DirectX::XMMatrixTranspose(view);
 		cb.Projection = DirectX::XMMatrixTranspose(Projection);
-		cb.Eye = eye;
+		cb.Eye = camera->GetEye();
 		cb.PointLight = light;
 		cb.Time = t;
 		cb.Material = shadowMat;
@@ -311,7 +299,7 @@ void Shape::DrawShadow(ID3D11DeviceContext* const pImmediateContext, Light* cons
 		world *= DirectX::XMMatrixScaling(_coordinates.Scal.x, _coordinates.Scal.y, _coordinates.Scal.z);
 		world *= DirectX::XMMatrixRotationRollPitchYaw(_coordinates.Rot.x, _coordinates.Rot.y, _coordinates.Rot.z);
 		world *= DirectX::XMMatrixTranslation(_coordinates.Pos.x, _coordinates.Pos.y, _coordinates.Pos.z);
-	
+		const auto view =camera->GetView();
 	
 		const DirectX::XMVECTOR shadowPlane = DirectX::XMVectorSet(0.f, 1.f, 0.f, 5.f);
 		const DirectX::XMVECTOR mainLight = DirectX::XMLoadFloat4(&sLight.Pos);
@@ -328,7 +316,7 @@ void Shape::DrawShadow(ID3D11DeviceContext* const pImmediateContext, Light* cons
 		cb.World = DirectX::XMMatrixTranspose(world);
 		cb.View = DirectX::XMMatrixTranspose(view);
 		cb.Projection = DirectX::XMMatrixTranspose(Projection);
-		cb.Eye = eye;
+		cb.Eye = camera->GetEye();
 		cb.PointLight = light;
 		cb.Time = t;
 		cb.SpotLights[0] = sLights[0];

@@ -292,7 +292,7 @@ void SettingLoader::FileLoader(const HRESULT hr, ID3D11Device* const pd3Device, 
 			i = str.find(',', i + 1);
 			z = stof(str.substr(i + 2, str.size() - i + 1));
 
-			camera.At = DirectX::XMVectorSet(x, y, z, 0.0f);
+			camera.Front = DirectX::XMVectorSet(x, y, z, 0.0f);
 			
 			getline(fin, str);			
 			i = str.find('=');

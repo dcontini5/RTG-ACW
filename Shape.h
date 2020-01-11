@@ -28,9 +28,9 @@ public:
 	HRESULT CreateDepthStencil(ID3D11Device* const pd3dDevice, const D3D11_DEPTH_STENCIL_DESC& depthStencilDesc) { return pd3dDevice->CreateDepthStencilState(&depthStencilDesc, &_pDepthStencilState); };
 		
 
-	void Draw(ID3D11DeviceContext* const pImmediateContext, const DirectX::XMMATRIX& view, const DirectX::XMVECTOR& eye, const DirectX::XMMATRIX& Projection, const float t) const;
-	void Draw(ID3D11DeviceContext* const pImmediateContext, Light* const lightManager, const DirectX::XMMATRIX& view, const DirectX::XMVECTOR& eye, const DirectX::XMMATRIX& projection, const float& t) const;
-	void DrawShadow(ID3D11DeviceContext* const pImmediateContext, Light* const lightManager, const DirectX::XMMATRIX& view, const DirectX::XMVECTOR& eye, const DirectX::XMMATRIX& projection, const float& t) const;
+	void Draw(ID3D11DeviceContext* const pImmediateContext, Camera* const camera, const DirectX::XMMATRIX& Projection, const float t) const;
+	void Draw(ID3D11DeviceContext* const pImmediateContext, Light* const lightManager, Camera* const camera, const DirectX::XMMATRIX& projection, const float& t) const;
+	void DrawShadow(ID3D11DeviceContext* const pImmediateContext, Light* const lightManager, Camera* const camera, const DirectX::XMMATRIX& projection, const float& t) const;
 	UINT16 GetNumberOfIndices() const { return _noOfIndices; }
 	const ShapeCoordinates& GetCoords() const { return _coordinates; }
 	void SetPos(const DirectX::XMFLOAT3& newPos) { _coordinates.Pos = newPos; }
