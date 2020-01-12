@@ -8,7 +8,6 @@
 #include "Shape.h"
 #include "Particle.h"
 #include "Light.h"
-#include "Cube.h"
 
 class Device{
 public:

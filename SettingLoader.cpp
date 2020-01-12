@@ -469,7 +469,7 @@ void SettingLoader::CreateEffects() {
 
 	const Material shiny { { 0.2f, 0.2f, 0.2f, 1.0f }, { 0.5f, 0.5f, 0.5f, 1.0f }, { 0.9f, 0.9f, 0.9f, 128.0f } };
 
-	const Material opaque { { 0.2f, 0.2f, 0.2f, 1.0f }, { 0.5f, 0.5f, 0.5f, 1.0f }, { 0.5f, 0.5f, 0.5f, 2.0f } };
+	const Material opaque { { 0.2f, 0.2f, 0.2f, 1.0f }, { 0.3f, 0.3f, 0.3f, 1.0f }, { 0.15f, 0.15f, 0.15f, 1.0f } };
 
 	_boxEffect = { 0, 0,  opaque };
 	_envMap = { 1, 1,  opaque };

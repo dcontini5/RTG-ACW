@@ -8,7 +8,7 @@ void Particle::Integrate(const float& t) {
 	auto acc = XMLoadFloat3(&_state.Acceleration);
 	auto vel = XMLoadFloat3(&_state.Velocity);
 	auto pos = XMVectorSet(this->GetCoords().Pos.x, this->GetCoords().Pos.y, this->GetCoords().Pos.z, 0.f);
-	const auto drag = 0.080605f *  vel * vel;
+	const auto drag = 0.060605f *  vel * vel;
 	
 	acc -= drag;
 	pos += vel * t;

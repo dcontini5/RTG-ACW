@@ -53,7 +53,6 @@ enum struct Type {
 	
 };
 
-
 struct Material {
 
 	DirectX::XMFLOAT4 ambient;
@@ -84,9 +83,6 @@ struct ShapeGeometry {
 
 	
 };
-
-
-
 
 struct Effect {
 

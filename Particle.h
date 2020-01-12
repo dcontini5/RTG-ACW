@@ -1,6 +1,5 @@
 #pragma once
 #include "Shape.h"
-#include "Cube.h"
 
 using namespace DirectX;
 

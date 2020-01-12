@@ -1,5 +1,6 @@
 #include "Device.h"
 #include "Sphere.h"
+#include "Cube.h"
 
 
 Device::Device(){
@@ -647,7 +648,7 @@ void Device::ExlpodeShape(const int i) {
 
 		for (auto j = 0; j < 100; j++) {
 					   			
-		const auto randV = static_cast<float>(fmod(rand() + j, 7.5f));
+		const auto randV = static_cast<float>(fmod(rand() + j, 6.5f) + 1.f);
 
 		const auto particle = new Particle(_settingLoader->GetVs(particleEff.VertexShader), _settingLoader->GetPs(particleEff.PixelShader), coords, { cos(DirectX::XM_2PI / 100 * j) * randV, randV , sin(DirectX::XM_2PI / 100 * j) * randV }, particleEff.material, _t);
 		hr = particle->CreateBuffers(hr, _pd3dDevice, _settingLoader->GetVertices(2), _settingLoader->GetIndices(2));
@@ -699,6 +700,7 @@ void Device::ResetScene() {
 	_cameraManager->SetCameras(_settingLoader->GetCameraCoords());
 	_lightManager->SelectLight(0);
 	_particleList.clear();
+	
 	
 	
 }
