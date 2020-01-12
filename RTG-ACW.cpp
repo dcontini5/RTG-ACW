@@ -48,7 +48,7 @@ int WINAPI wWinMain( const _In_ HINSTANCE hInstance, const _In_opt_ HINSTANCE hP
             TranslateMessage( &msg );
             DispatchMessage( &msg );
 
-            switch (msg.wParam) {
+            switch (msg.wParam + GetAsyncKeyState(VK_LCONTROL)) {
 
 				case(VK_ESCAPE):
            		msg.message = WM_QUIT;

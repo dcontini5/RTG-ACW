@@ -89,7 +89,7 @@ float4 PS(VS_OUTPUT input) : SV_Target
     for (int i = 0; i < 4; i++)
     {
          
-        CalculateSpotLights(SLights[i].Color, SLights[i].Pos.xyz, SLights[i].Dir, mat, viewDis, bumpedN, input.Norm.xyz, A, D, S);
+        CalculateSpotLights(SLights[i].Color, SLights[i].Pos.xyz, SLights[i].Dir, mat, viewDis, input.PosWorld.xyz, bumpedN, A, D, S);
         ambient += A;
         diffuse += D;
         specular += S;
