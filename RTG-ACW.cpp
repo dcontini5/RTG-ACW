@@ -58,6 +58,7 @@ int WINAPI wWinMain( const _In_ HINSTANCE hInstance, const _In_opt_ HINSTANCE hP
 				case(0x31):   device->ExlpodeShape(1); break;
 				case(0x32):   device->ExlpodeShape(2); break;
 				case(0x33):   device->ExlpodeShape(3); break;
+				case(0x52):   device->ResetScene(); break;
 				case(0x54):
             	if (!GetAsyncKeyState(VK_SHIFT))  
 					device->ChangeTimeScale(-0.50); 

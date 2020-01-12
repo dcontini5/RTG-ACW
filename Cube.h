@@ -1,6 +1,13 @@
 #pragma once
 #include "Shape.h"
 
+struct OBB {
+
+	DirectX::XMVECTOR AxisOrientation[3];
+	DirectX::XMVECTOR Center;
+	float BoxHalfwidth[3];
+};
+
 using namespace DirectX;
 
 class Cube : public Shape {

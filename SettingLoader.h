@@ -85,12 +85,6 @@ struct ShapeGeometry {
 	
 };
 
-struct OBB {
-
-	DirectX::XMVECTOR AxisOrientation[3];
-	DirectX::XMVECTOR Center;
-	float BoxHalfwidth[3];
-};
 
 
 
@@ -109,10 +103,9 @@ class SettingLoader
 {
 public:
 	SettingLoader();
-
 	SettingLoader(const SettingLoader& sl);
-	
 	~SettingLoader();
+	
 	HRESULT CreateVertexShaders( HRESULT hr,  ID3D11Device* const pd3dDevice, ID3D11DeviceContext* const pImmediateContext, const std::string& fileName);
 	HRESULT CreatePixelShaders(HRESULT hr, ID3D11Device* const pd3dDevice, const std::string& fileName);
 	ID3D11PixelShader* GetPs(const int i) const { return _pixelShaderList[i]; };

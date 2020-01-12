@@ -10,8 +10,7 @@
 #include "Light.h"
 #include "Cube.h"
 
-class Device
-{
+class Device{
 public:
 
 	Device();
@@ -39,6 +38,7 @@ public:
 	void ExlpodeShape(int i);
 	void ChangeEffects();
 	void ChangeTimeScale(const float diff) { if (_t >= 0.01) _timeScale += diff; }
+	void ResetScene();
 
 	Device& operator= (const Device& d);
 

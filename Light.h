@@ -30,6 +30,7 @@ public:
 	~Light() = default;
  	void SetLight(PointLight& pLight, std::vector<SpotLight>& sLight) { if (!_activeLight) sLight = _spotlights; else pLight = _pointLights[_activeLight - 1]; };
 	void SwapLight(float t);
+	void SelectLight(const int i) { _activeLight = i; };
 
 	
 private:

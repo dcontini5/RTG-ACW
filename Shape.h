@@ -20,10 +20,9 @@ public:
 		_material(mat){
 		
 	}
-
 	Shape(const Shape& s);
-
 	virtual ~Shape();
+	
 	HRESULT CreateBuffers(HRESULT& hr, ID3D11Device* const pd3dDevice, const std::vector<SimpleVertex>& vertices, const std::vector<UINT16>& indices);
 	HRESULT CreateRasterState(ID3D11Device* const pd3dDevice, const D3D11_RASTERIZER_DESC& rasterDesc) { return  pd3dDevice->CreateRasterizerState(&rasterDesc, &_rasterState); };
 	HRESULT CreateTextureResource(ID3D11Device* const pd3dDevice, const wchar_t* const filename) { return DirectX::CreateDDSTextureFromFile(pd3dDevice, filename, nullptr, &_textureRV); };
@@ -54,7 +53,7 @@ private:
 	ID3D11VertexShader* _vertexShader = nullptr;
 	ID3D11PixelShader* _pixelShader = nullptr;
 	ID3D11Buffer* _pConstantBuffer = nullptr;
-	ShapeCoordinates _coordinates{};
+	ShapeCoordinates _coordinates = {};
 	ID3D11RasterizerState* _rasterState = nullptr;
 	ID3D11ShaderResourceView* _textureRV = nullptr;
 	ID3D11ShaderResourceView* _bumpRV = nullptr;

@@ -4,8 +4,6 @@
 
 using namespace DirectX;
 
-
-
 class Particle : public Shape{
 
 public:

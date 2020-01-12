@@ -688,6 +688,21 @@ void Device::ChangeEffects() {
 }
 
 
+void Device::ResetScene() {
+
+	for(const auto i : _shapeList) {
+
+		i->StartDrawing();
+		
+	}
+	ChangeEffects();
+	_cameraManager->SetCameras(_settingLoader->GetCameraCoords());
+	_lightManager->SelectLight(0);
+	_particleList.clear();
+	
+	
+}
+
 Device& Device::operator=(const Device& d)
 {
 	_hInst = d._hInst;
