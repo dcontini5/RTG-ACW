@@ -166,7 +166,7 @@ HRESULT Device::InitDevice() {
 		hr = _pd3dDevice->QueryInterface(__uuidof(ID3D11Device1), reinterpret_cast<void**>(&_pd3dDevice1));
 		if (SUCCEEDED(hr))
 		{
-			(void)_pImmediateContext->QueryInterface(__uuidof(ID3D11DeviceContext1), reinterpret_cast<void**>(&_pImmediateContext1));
+			static_cast<void>(_pImmediateContext->QueryInterface(__uuidof(ID3D11DeviceContext1), reinterpret_cast<void**>(&_pImmediateContext1)));
 		}
 
 		DXGI_SWAP_CHAIN_DESC1 sd;
@@ -261,8 +261,8 @@ HRESULT Device::InitDevice() {
 
 	// Setup the viewport
 	D3D11_VIEWPORT vp;
-	vp.Width = (FLOAT)width;
-	vp.Height = (FLOAT)height;
+	vp.Width = static_cast<FLOAT>(width);
+	vp.Height = static_cast<FLOAT>(height);
 	vp.MinDepth = 0.0f;
 	vp.MaxDepth = 1.0f;
 	vp.TopLeftX = 0;
@@ -469,7 +469,7 @@ HRESULT Device::InitDevice() {
 	_settingLoader->ResetAvaiableEffects();
 		
 
-	_projection = DirectX::XMMatrixPerspectiveFovLH(DirectX::XM_PIDIV4, width / (FLOAT)height, 0.01f, 200.0f);
+	_projection = DirectX::XMMatrixPerspectiveFovLH(DirectX::XM_PIDIV4, width / static_cast<FLOAT>(height), 0.01f, 200.0f);
 	
 
 	D3D11_SAMPLER_DESC sampDesc;
@@ -549,7 +549,7 @@ void Device::Render() {
 	static float lastTime = 0.0f;
 	if (_driverType == D3D_DRIVER_TYPE_REFERENCE)
 	{
-		_t += (float)DirectX::XM_PI * 0.0125f * 2;
+		_t += static_cast<float>(DirectX::XM_PI) * 0.0125f * 2;
 	}
 	else
 	{
@@ -652,7 +652,7 @@ void Device::ExlpodeShape(const int i) {
 		const auto randV = static_cast<float>(fmod(rand() + j, 6.5f) + 1.f);
 
 		particleEff.material.ambient.w = _t + 5.f;
-		const auto particle = new Particle(_settingLoader->GetVs(particleEff.VertexShader), _settingLoader->GetPs(particleEff.PixelShader), coords, { cos(DirectX::XM_2PI / 100 * j) * randV, randV , sin(DirectX::XM_2PI / 100 * j) * randV }, particleEff.material, _t + 5.f);
+		const auto particle = new Particle(_settingLoader->GetVs(particleEff.VertexShader), _settingLoader->GetPs(particleEff.PixelShader), coords, { cos(DirectX::XM_2PI / 100 * j) * randV, randV , sin(DirectX::XM_2PI / 100 * j) * randV }, particleEff.material);
 		hr = particle->CreateBuffers(hr, _pd3dDevice, _settingLoader->GetVertices(2), _settingLoader->GetIndices(2));
 		hr = particle->CreateRasterState(_pd3dDevice, rasterDesc);
 		hr = particle->CreateDepthStencil(_pd3dDevice, depthStencilDescDisabled);
