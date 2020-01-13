@@ -580,7 +580,7 @@ void Device::Render() {
 		//i->Draw(_pImmediateContext, _cameraManager->GetView(), _cameraManager->GetEye(), _projection, t);
 		i->Draw(_pImmediateContext, _lightManager, _cameraManager, _projection,_t);
 		if(x) {
-						
+			
 			x = false;
 			continue;
 		}
@@ -645,12 +645,14 @@ void Device::ExlpodeShape(const int i) {
 		rasterDesc.SlopeScaledDepthBias = 0.0f;
 
 		auto particleEff = _settingLoader->GetParticleEffect();
-
+		
+		
 		for (auto j = 0; j < 100; j++) {
 					   			
 		const auto randV = static_cast<float>(fmod(rand() + j, 6.5f) + 1.f);
 
-		const auto particle = new Particle(_settingLoader->GetVs(particleEff.VertexShader), _settingLoader->GetPs(particleEff.PixelShader), coords, { cos(DirectX::XM_2PI / 100 * j) * randV, randV , sin(DirectX::XM_2PI / 100 * j) * randV }, particleEff.material, _t);
+		particleEff.material.ambient.w = _t + 5.f;
+		const auto particle = new Particle(_settingLoader->GetVs(particleEff.VertexShader), _settingLoader->GetPs(particleEff.PixelShader), coords, { cos(DirectX::XM_2PI / 100 * j) * randV, randV , sin(DirectX::XM_2PI / 100 * j) * randV }, particleEff.material, _t + 5.f);
 		hr = particle->CreateBuffers(hr, _pd3dDevice, _settingLoader->GetVertices(2), _settingLoader->GetIndices(2));
 		hr = particle->CreateRasterState(_pd3dDevice, rasterDesc);
 		hr = particle->CreateDepthStencil(_pd3dDevice, depthStencilDescDisabled);
@@ -698,7 +700,7 @@ void Device::ResetScene() {
 	}
 	ChangeEffects();
 	_cameraManager->SetCameras(_settingLoader->GetCameraCoords());
-	_lightManager->SelectLight(0);
+	_lightManager->SelectLight(1);
 	_particleList.clear();
 	
 	

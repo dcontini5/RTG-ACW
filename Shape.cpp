@@ -215,7 +215,11 @@ void Shape::DrawShadow(ID3D11DeviceContext* const pImmediateContext, Light* cons
 	std::vector<SpotLight> sLights;
 	ZeroMemory(&sLights, sizeof(sLights));
 
-	lightManager->SetLight(light, sLights);
+	lightManager->SetShadow(light, sLights);
+
+
+	
+
 
 
 	if(sLights.size() != 4) {

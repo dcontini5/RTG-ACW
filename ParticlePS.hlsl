@@ -61,8 +61,8 @@ float4 PS(VS_OUTPUT input) : SV_Target
 
 	float4 texColor = txColor.SampleLevel(txSampler, input.Tex, 100.0f);
 	texColor *= (1.0f - smoothstep(0.0f, 0.5f, length(input.Tex - 0.5f)));
-	float fadingRate = (1 - Time / mat.materialAmb.a); //time to live is stored in the amb mat alpha
-
-	return texColor * fadingRate;
+	float fadingRate = (1 - Time / mat.materialAmb.w); //time to live is stored in the amb mat alpha
+    return texColor * fadingRate;
+    
 
 }
