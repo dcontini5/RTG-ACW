@@ -7,7 +7,7 @@ class Particle : public Shape{
 
 public:
 	
-	Particle(ID3D11VertexShader* const vertexShader, ID3D11PixelShader* const pixelShader,ShapeCoordinates& coords,const DirectX::XMFLOAT3& velocity, Material& mat) :
+	Particle(ID3D11VertexShader* const vertexShader, ID3D11PixelShader* const pixelShader,ShapeCoordinates& coords,const DirectX::XMFLOAT3& velocity, Material& mat,const float ttl) :
 		Shape(vertexShader, pixelShader, coords, mat), _state(velocity, coords.Pos), _timeToLive(mat.ambient.w),
 		_radius(0.3f){
 		
