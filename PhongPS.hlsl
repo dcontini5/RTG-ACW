@@ -120,7 +120,7 @@ void CalculateSpotLights(float4 lightcol,float3 lightpos, float3 direction,  Mat
     
     float3 Direction = normalize(direction - lightpos);
     float spot = pow(max(dot(-lightDir, Direction), 0.0f), mat.materialSpec.w);
-    float att = dot(float3(1.0f, 0.0f, 0.0f), float3(1.0f, lightDirLenght, lightDirLenght * lightDirLenght));
+    float att = spot; // dot(float3(1.0f, 0.0f, 0.0f), float3(1.0f, lightDirLenght, lightDirLenght * lightDirLenght));
     
     ambient = mat.materialAmb * lightcol * spot;
     diffuse = diff * mat.materialDiff * lightcol * att;
